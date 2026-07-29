@@ -1,0 +1,303 @@
+import {
+  Building2Icon,
+  ContactIcon,
+  CreditCardIcon,
+  FileTextIcon,
+  FlagIcon,
+  HeartPulseIcon,
+  InboxIcon,
+  LayoutDashboardIcon,
+  MegaphoneIcon,
+  MessageSquareIcon,
+  ScrollTextIcon,
+  SettingsIcon,
+  ShieldIcon,
+  SmartphoneIcon,
+  UserIcon,
+  UsersIcon,
+  ActivityIcon,
+  WebhookIcon,
+} from 'lucide-react';
+import { ROUTES } from '@/config/routes';
+import type { NavGroup, SearchCategoryConfig } from '@/types/navigation.types';
+
+export function getClientNavigation(orgSlug: string): NavGroup[] {
+  return [
+    {
+      id: 'main',
+      items: [
+        {
+          id: 'dashboard',
+          label: 'لوحة التحكم',
+          href: ROUTES.app.dashboard(orgSlug),
+          icon: LayoutDashboardIcon,
+          permission: 'org.read',
+          exact: true,
+        },
+        {
+          id: 'inbox',
+          label: 'صندوق الوارد',
+          href: ROUTES.app.inbox(orgSlug),
+          icon: InboxIcon,
+          permission: 'messages.read',
+        },
+        {
+          id: 'contacts',
+          label: 'جهات الاتصال',
+          href: ROUTES.app.contacts(orgSlug),
+          icon: ContactIcon,
+          permission: 'contacts.read',
+        },
+        {
+          id: 'templates',
+          label: 'القوالب',
+          href: ROUTES.app.templates(orgSlug),
+          icon: FileTextIcon,
+          permission: 'templates.read',
+        },
+        {
+          id: 'messages',
+          label: 'الرسائل',
+          href: ROUTES.app.messages(orgSlug),
+          icon: MessageSquareIcon,
+          permission: 'messages.read',
+        },
+      ],
+    },
+    {
+      id: 'settings',
+      label: 'الإعدادات',
+      items: [
+        {
+          id: 'settings',
+          label: 'الإعدادات',
+          href: ROUTES.app.settings.root(orgSlug),
+          icon: SettingsIcon,
+          permission: 'org.read',
+          children: [
+            {
+              id: 'settings-organization',
+              label: 'المنظمة',
+              href: ROUTES.app.settings.organization(orgSlug),
+              icon: Building2Icon,
+              permission: 'org.manage',
+            },
+            {
+              id: 'settings-team',
+              label: 'الفريق',
+              href: ROUTES.app.settings.team(orgSlug),
+              icon: UsersIcon,
+              permission: 'team.manage',
+            },
+            {
+              id: 'settings-whatsapp',
+              label: 'WhatsApp',
+              href: ROUTES.app.settings.whatsapp(orgSlug),
+              icon: SmartphoneIcon,
+              permission: 'whatsapp.manage',
+            },
+            {
+              id: 'settings-meta',
+              label: 'Meta',
+              href: ROUTES.app.settings.meta(orgSlug),
+              icon: ShieldIcon,
+              permission: 'meta.manage',
+            },
+            {
+              id: 'settings-billing',
+              label: 'الفوترة',
+              href: ROUTES.app.settings.billing(orgSlug),
+              icon: CreditCardIcon,
+              permission: 'billing.manage',
+            },
+            {
+              id: 'settings-profile',
+              label: 'الملف الشخصي',
+              href: ROUTES.app.settings.profile(orgSlug),
+              icon: UserIcon,
+              permission: 'org.read',
+            },
+            {
+              id: 'settings-security',
+              label: 'الأمان',
+              href: ROUTES.app.settings.security(orgSlug),
+              icon: ShieldIcon,
+              permission: 'org.read',
+            },
+          ],
+        },
+      ],
+    },
+  ];
+}
+
+export const ADMIN_NAVIGATION: NavGroup[] = [
+  {
+    id: 'main',
+    items: [
+      {
+        id: 'admin-dashboard',
+        label: 'لوحة التحكم',
+        href: ROUTES.admin.dashboard,
+        icon: LayoutDashboardIcon,
+        permission: 'platform.admin',
+        exact: true,
+      },
+      {
+        id: 'admin-organizations',
+        label: 'المنظمات',
+        href: ROUTES.admin.organizations,
+        icon: Building2Icon,
+        permission: 'platform.admin',
+      },
+      {
+        id: 'admin-users',
+        label: 'المستخدمون',
+        href: ROUTES.admin.users,
+        icon: UsersIcon,
+        permission: 'platform.admin',
+      },
+      {
+        id: 'admin-plans',
+        label: 'الخطط',
+        href: ROUTES.admin.plans,
+        icon: CreditCardIcon,
+        permission: 'platform.admin',
+      },
+      {
+        id: 'admin-subscriptions',
+        label: 'الاشتراكات',
+        href: ROUTES.admin.subscriptions,
+        icon: FileTextIcon,
+        permission: 'platform.admin',
+      },
+    ],
+  },
+  {
+    id: 'platform',
+    label: 'المنصة',
+    items: [
+      {
+        id: 'admin-audit-logs',
+        label: 'سجل التدقيق',
+        href: ROUTES.admin.auditLogs,
+        icon: ScrollTextIcon,
+        permission: 'platform.admin',
+      },
+      {
+        id: 'admin-feature-flags',
+        label: 'Feature Flags',
+        href: ROUTES.admin.featureFlags,
+        icon: FlagIcon,
+        permission: 'platform.admin',
+      },
+      {
+        id: 'admin-announcements',
+        label: 'الإعلانات',
+        href: ROUTES.admin.announcements,
+        icon: MegaphoneIcon,
+        permission: 'platform.admin',
+      },
+      {
+        id: 'admin-meta-config',
+        label: 'إعدادات Meta',
+        href: ROUTES.admin.metaConfig,
+        icon: WebhookIcon,
+        permission: 'platform.admin',
+      },
+      {
+        id: 'admin-settings',
+        label: 'الإعدادات العامة',
+        href: ROUTES.admin.settings,
+        icon: SettingsIcon,
+        permission: 'platform.admin',
+      },
+    ],
+  },
+  {
+    id: 'system',
+    label: 'النظام',
+    items: [
+      {
+        id: 'admin-health',
+        label: 'صحة النظام',
+        href: ROUTES.admin.system.health,
+        icon: HeartPulseIcon,
+        permission: 'platform.admin',
+      },
+      {
+        id: 'admin-monitoring',
+        label: 'مراقبة النظام',
+        href: ROUTES.admin.system.monitoring,
+        icon: ActivityIcon,
+        permission: 'platform.admin',
+      },
+    ],
+  },
+];
+
+export const SEARCH_CATEGORIES: SearchCategoryConfig[] = [
+  {
+    id: 'contacts',
+    label: 'جهات الاتصال',
+    enabled: false,
+    description: 'سيتم الربط بـ GET /contacts?search=',
+  },
+  {
+    id: 'conversations',
+    label: 'المحادثات',
+    enabled: false,
+    description: 'سيتم الربط بـ GET /conversations?customerPhone=',
+  },
+  {
+    id: 'templates',
+    label: 'القوالب',
+    enabled: false,
+    description: 'سيتم الربط بـ GET /templates',
+  },
+  {
+    id: 'organizations',
+    label: 'المنظمات',
+    enabled: false,
+    description: 'سيتم الربط بـ GET /organizations',
+  },
+  {
+    id: 'users',
+    label: 'المستخدمون',
+    enabled: false,
+    description: 'سيتم الربط بـ GET /admin/users',
+  },
+];
+
+export const BREADCRUMB_LABELS: Record<string, string> = {
+  app: 'التطبيق',
+  admin: 'الإدارة',
+  dashboard: 'لوحة التحكم',
+  inbox: 'صندوق الوارد',
+  contacts: 'جهات الاتصال',
+  templates: 'القوالب',
+  messages: 'الرسائل',
+  settings: 'الإعدادات',
+  organization: 'المنظمة',
+  team: 'الفريق',
+  whatsapp: 'WhatsApp',
+  meta: 'Meta',
+  billing: 'الفوترة',
+  profile: 'الملف الشخصي',
+  security: 'الأمان',
+  webhooks: 'Webhooks',
+  'api-keys': 'مفاتيح API',
+  organizations: 'المنظمات',
+  users: 'المستخدمون',
+  plans: 'الخطط',
+  subscriptions: 'الاشتراكات',
+  system: 'النظام',
+  health: 'صحة النظام',
+  monitoring: 'مراقبة النظام',
+  'audit-logs': 'سجل التدقيق',
+  'feature-flags': 'Feature Flags',
+  announcements: 'الإعلانات',
+  'meta-config': 'إعدادات Meta',
+  'global-settings': 'الإعدادات العامة',
+  new: 'جديد',
+};
