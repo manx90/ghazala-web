@@ -11,6 +11,7 @@ import type { RequestConfig } from '@/types/api.types';
 import { ApiError } from '@/types/api.types';
 import type { AuthResponse } from '@/types/auth.types';
 import { parseApiError } from '@/utils/error';
+import { dispatchUnauthorizedEvent } from '@/utils/events';
 import { organizationStorage, tokenStorage } from '@/utils/storage';
 
 declare module 'axios' {
@@ -33,6 +34,12 @@ function generateRequestId(): string {
   return crypto.randomUUID();
 }
 
+function getCookieSuffix(): string {
+  const secure =
+    typeof window !== 'undefined' && window.location.protocol === 'https:' ? '; Secure' : '';
+  return `; path=/; max-age=604800; SameSite=Lax${secure}`;
+}
+
 function setAuthCookie(value: string | null): void {
   if (typeof document === 'undefined') return;
 
@@ -41,7 +48,7 @@ function setAuthCookie(value: string | null): void {
     return;
   }
 
-  document.cookie = `${AUTH_COOKIE_NAME}=1; path=/; max-age=604800; SameSite=Lax`;
+  document.cookie = `${AUTH_COOKIE_NAME}=1${getCookieSuffix()}`;
 }
 
 function setOrgCookie(orgId: string | null): void {
@@ -52,7 +59,7 @@ function setOrgCookie(orgId: string | null): void {
     return;
   }
 
-  document.cookie = `${ORG_COOKIE_NAME}=${orgId}; path=/; max-age=604800; SameSite=Lax`;
+  document.cookie = `${ORG_COOKIE_NAME}=${encodeURIComponent(orgId)}${getCookieSuffix()}`;
 }
 
 export function syncAuthCookies(): void {
@@ -184,8 +191,18 @@ function createAxiosInstance(): AxiosInstance {
         } catch (refreshError) {
           tokenStorage.clearTokens();
           syncAuthCookies();
-          return Promise.reject(parseApiError(refreshError));
+          const apiError = parseApiError(refreshError);
+          if (apiError.isUnauthorized) {
+            dispatchUnauthorizedEvent(apiError);
+          }
+          return Promise.reject(apiError);
         }
+      }
+
+      if (status === 401) {
+        const apiError = parseApiError(error);
+        dispatchUnauthorizedEvent(apiError);
+        return Promise.reject(apiError);
       }
 
       if (shouldRetry(error, config)) {

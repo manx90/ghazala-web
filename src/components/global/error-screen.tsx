@@ -4,7 +4,7 @@ import { AlertTriangleIcon, RefreshCwIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { PageContainer } from '@/components/global/page-container';
-import { getErrorMessage } from '@/utils/error';
+import { sanitizeErrorForDisplay } from '@/utils/sanitize-error';
 import { cn } from '@/lib/utils';
 
 interface ErrorScreenProps {
@@ -24,7 +24,8 @@ export function ErrorScreen({
   className,
   fullScreen = true,
 }: ErrorScreenProps) {
-  const resolvedMessage = message ?? (error ? getErrorMessage(error) : 'حدث خطأ غير متوقع');
+  const resolvedMessage =
+    message ?? (error ? sanitizeErrorForDisplay(error) : 'حدث خطأ غير متوقع');
 
   return (
     <div

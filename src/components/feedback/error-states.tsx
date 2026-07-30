@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
-import { getErrorMessage } from '@/utils/error';
+import { sanitizeErrorForDisplay } from '@/utils/sanitize-error';
 
 interface ErrorStateProps {
   title?: string;
@@ -59,7 +59,7 @@ export function ApiErrorState({ error, onRetry, ...rest }: ErrorStateProps) {
     <ErrorLayout
       icon={<AlertTriangleIcon className="size-10" />}
       title="تعذر تحميل البيانات"
-      message={error ? getErrorMessage(error) : 'حدث خطأ في الاتصال بالخادم'}
+      message={error ? sanitizeErrorForDisplay(error) : 'حدث خطأ في الاتصال بالخادم'}
       error={error}
       onRetry={onRetry}
       {...rest}

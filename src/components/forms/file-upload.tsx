@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useRef, useState } from 'react';
+import { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import { UploadIcon, XIcon, FileIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -88,7 +88,16 @@ interface ImageUploadProps {
 export function ImageUpload({ value, onChange, preview, className, shape = 'square', size = 96 }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
-  const src = value ? URL.createObjectURL(value) : preview;
+
+  const objectUrl = useMemo(() => (value ? URL.createObjectURL(value) : null), [value]);
+
+  useEffect(() => {
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [objectUrl]);
+
+  const src = objectUrl ?? preview;
 
   return (
     <div className={cn('flex items-center gap-4', className)}>

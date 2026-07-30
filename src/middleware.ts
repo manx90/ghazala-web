@@ -25,7 +25,7 @@ function isAdminRoute(pathname: string): boolean {
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isAuthenticated = request.cookies.has(AUTH_COOKIE_NAME);
+  const isAuthenticated = request.cookies.get(AUTH_COOKIE_NAME)?.value === '1';
 
   if (pathname === ROUTES.home) {
     const target = isAuthenticated ? ROUTES.app.root : ROUTES.auth.login;

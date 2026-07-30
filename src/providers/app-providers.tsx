@@ -2,6 +2,7 @@
 
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { ErrorBoundary } from '@/components/global/error-boundary';
 import { AuthProvider } from '@/providers/auth-provider';
 import { QueryProvider } from '@/providers/query-provider';
 import { SocketProvider } from '@/providers/socket-provider';
@@ -24,9 +25,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
         <TooltipProvider delay={200}>
           <AuthProvider>
             <SocketProvider>
-              <SyncEffects />
-              <OfflineBanner />
-              {children}
+              <ErrorBoundary>
+                <SyncEffects />
+                <OfflineBanner />
+                {children}
+              </ErrorBoundary>
               <Toaster richColors closeButton position="top-center" />
             </SocketProvider>
           </AuthProvider>

@@ -1,6 +1,8 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { OnboardingCompleteGuard } from '@/components/guards/onboarding-complete-guard';
+import { OrganizationGuard } from '@/components/guards/organization-guard';
 import { ClientShell } from '@/components/layout/client-shell';
 
 interface OrgSlugLayoutProps {
@@ -8,5 +10,11 @@ interface OrgSlugLayoutProps {
 }
 
 export default function OrgSlugLayout({ children }: OrgSlugLayoutProps) {
-  return <ClientShell>{children}</ClientShell>;
+  return (
+    <OrganizationGuard>
+      <OnboardingCompleteGuard>
+        <ClientShell>{children}</ClientShell>
+      </OnboardingCompleteGuard>
+    </OrganizationGuard>
+  );
 }

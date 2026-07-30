@@ -9,11 +9,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ROUTES } from '@/config/routes';
 import { organizationApi } from '@/features/auth/api/organization.api';
+import { fetchOnboardingState } from '@/features/onboarding/services/onboarding.service';
 import { useLogin } from '@/features/auth/hooks';
 import { loginSchema, type LoginFormValues } from '@/features/auth/schemas/auth.schemas';
 import { useOrganizationStore } from '@/store/organization.store';
 import { UserRole } from '@/types/auth.types';
+import { resolveOnboardingPath } from '@/utils/onboarding';
 import { getPostLoginRedirect, sanitizeRedirectPath } from '@/utils/route';
+import { organizationStorage } from '@/utils/storage';
 import { AuthCardLayout } from './auth-card-layout';
 import { FormField } from './form-field';
 
@@ -42,7 +45,9 @@ export function LoginForm() {
         if (response.user.role === UserRole.USER) {
           const orgList = await organizationApi.list();
           setOrganizations(orgList.items);
-          const matchedOrg = orgList.items[0] ?? null;
+          const storedOrgId = organizationStorage.getId();
+          const matchedOrg =
+            orgList.items.find((org) => org.id === storedOrgId) ?? orgList.items[0] ?? null;
           if (matchedOrg) {
             organizationApi.selectOrganization(matchedOrg);
             setCurrentOrganization(matchedOrg);
@@ -50,7 +55,12 @@ export function LoginForm() {
           }
         }
 
-        const fallback = getPostLoginRedirect(response.user.role, orgSlug);
+        let fallback = getPostLoginRedirect(response.user.role, orgSlug);
+        if (response.user.role === UserRole.USER && orgSlug) {
+          const state = await fetchOnboardingState(orgSlug);
+          fallback = resolveOnboardingPath(state);
+        }
+
         router.replace(sanitizeRedirectPath(returnUrl, fallback));
       },
     });

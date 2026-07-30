@@ -1,7 +1,9 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useNetworkAware } from '@/hooks/use-network-aware';
+import { uploadFile } from '@/services/api/upload';
+import { parseApiError } from '@/utils/error';
 
 export interface UploadProgress {
   loaded: number;
@@ -22,19 +24,16 @@ interface UseFileUploadOptions {
   onError?: (error: Error) => void;
   maxSizeMB?: number;
   acceptedTypes?: string;
+  maxRetries?: number;
 }
 
 const MAX_SIZE_MB = 10;
 const ACCEPTED_TYPES = 'image/*,application/pdf,application/vnd.*,text/*';
 
-/**
- * ⚠️ Backend endpoint مفقود: POST /media/upload
- * هذا الـ hook جاهز للتكامل فور توفر الـ endpoint.
- * حالياً يقوم بقراءة الملف محلياً ويعيد data URL كـ preview فقط.
- */
 export function useFileUpload(options: UseFileUploadOptions = {}) {
-  const { maxSizeMB = MAX_SIZE_MB, acceptedTypes = ACCEPTED_TYPES } = options;
+  const { maxSizeMB = MAX_SIZE_MB, acceptedTypes = ACCEPTED_TYPES, maxRetries = 2 } = options;
   const { isOnline } = useNetworkAware();
+  const abortRef = useRef<AbortController | null>(null);
   const [state, setState] = useState<FileUploadState>({
     file: null,
     progress: null,
@@ -44,7 +43,15 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
   });
 
   const reset = useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
     setState({ file: null, progress: null, isUploading: false, error: null, success: false });
+  }, []);
+
+  const cancel = useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setState((prev) => ({ ...prev, isUploading: false, progress: null }));
   }, []);
 
   const validateFile = useCallback(
@@ -82,19 +89,63 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
   const upload = useCallback(async (): Promise<string | null> => {
     if (!state.file) return null;
 
-    const missingEndpoint = new Error(
-      'Endpoint رفع الملفات غير متوفر في الـ backend. المطلوب: POST /media/upload',
-    );
-    setState((prev) => ({ ...prev, isUploading: false, error: missingEndpoint, success: false }));
-    options.onError?.(missingEndpoint);
-    return null;
-  }, [state.file, options]);
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    setState((prev) => ({
+      ...prev,
+      isUploading: true,
+      error: null,
+      progress: { loaded: 0, total: state.file!.size, percentage: 0 },
+    }));
+
+    try {
+      const result = await uploadFile({
+        file: state.file,
+        signal: controller.signal,
+        maxRetries,
+        onProgress: (percentage) => {
+          setState((prev) => ({
+            ...prev,
+            progress: {
+              loaded: Math.round((state.file!.size * percentage) / 100),
+              total: state.file!.size,
+              percentage,
+            },
+          }));
+        },
+      });
+
+      setState((prev) => ({ ...prev, isUploading: false, progress: null, success: true }));
+      options.onSuccess?.(result.url);
+      return result.url;
+    } catch (error) {
+      const parsed = parseApiError(error);
+      setState((prev) => ({
+        ...prev,
+        isUploading: false,
+        progress: null,
+        error: parsed,
+        success: false,
+      }));
+      options.onError?.(parsed);
+      return null;
+    } finally {
+      abortRef.current = null;
+    }
+  }, [state.file, maxRetries, options]);
 
   const uploadWithPreview = useCallback(async (): Promise<string | null> => {
     const file = state.file;
     if (!file) return null;
 
-    setState((prev) => ({ ...prev, isUploading: true, progress: { loaded: 0, total: file.size, percentage: 0 }, error: null }));
+    setState((prev) => ({
+      ...prev,
+      isUploading: true,
+      progress: { loaded: 0, total: file.size, percentage: 0 },
+      error: null,
+    }));
 
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -126,5 +177,5 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
     });
   }, [state.file, options]);
 
-  return { ...state, selectFile, upload, uploadWithPreview, reset, validateFile };
+  return { ...state, selectFile, upload, uploadWithPreview, reset, cancel, validateFile };
 }

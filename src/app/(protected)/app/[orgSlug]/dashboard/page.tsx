@@ -5,7 +5,7 @@ import { RefreshCwIcon } from 'lucide-react';
 import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
-import { ConversationCharts } from '@/features/dashboard/components/conversation-charts';
+import { ConversationChartsLazy } from '@/features/dashboard/components/conversation-charts-lazy';
 import { DashboardKpis } from '@/features/dashboard/components/dashboard-kpis';
 import { MetaConnectionCard } from '@/features/dashboard/components/meta-connection-card';
 import { PhoneHealthCard } from '@/features/dashboard/components/phone-health-card';
@@ -35,7 +35,7 @@ export default function DashboardPage() {
 
         <DashboardKpis stats={stats} phones={phones} templates={templates} />
 
-        <ConversationCharts stats={stats} />
+        <ConversationChartsLazy stats={stats} />
 
         <div className="grid gap-4 lg:grid-cols-3">
           <div className="lg:col-span-2">

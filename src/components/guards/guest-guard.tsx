@@ -2,6 +2,7 @@
 
 import { useEffect, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
+import { LoadingScreen } from '@/components/global/loading-screen';
 import { useSession } from '@/features/auth/hooks/use-session';
 import { getPostLoginRedirect } from '@/utils/route';
 
@@ -20,11 +21,11 @@ export function GuestGuard({ children }: GuestGuardProps) {
   }, [isAuthenticated, isSessionLoading, user, currentOrganization?.slug, router]);
 
   if (isSessionLoading) {
-    return null;
+    return <LoadingScreen label="جاري التحميل..." />;
   }
 
   if (isAuthenticated) {
-    return null;
+    return <LoadingScreen label="جاري إعادة التوجيه..." />;
   }
 
   return children;

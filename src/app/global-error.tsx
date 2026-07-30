@@ -1,6 +1,7 @@
 'use client';
 
 import { ErrorScreen } from '@/components/global/error-screen';
+import { sanitizeRuntimeError } from '@/utils/sanitize-error';
 
 interface GlobalErrorPageProps {
   error: Error & { digest?: string };
@@ -13,7 +14,7 @@ export default function GlobalErrorPage({ error, reset }: GlobalErrorPageProps) 
       <body>
         <ErrorScreen
           title="خطأ في النظام"
-          message={error.message}
+          message={sanitizeRuntimeError(error)}
           onRetry={reset}
         />
       </body>

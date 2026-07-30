@@ -28,7 +28,7 @@ export function getPostLoginRedirect(role: UserRole, orgSlug?: string | null): s
   }
 
   if (orgSlug) {
-    return ROUTES.app.dashboard(orgSlug);
+    return ROUTES.app.root;
   }
 
   return ROUTES.onboarding.createOrganization;
