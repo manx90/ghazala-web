@@ -35,7 +35,7 @@ function NotificationButtonComponent() {
             <span
               className={cn(
                 'absolute -top-1 -left-1 flex size-4 items-center justify-center rounded-full',
-                'bg-destructive text-[10px] font-medium text-white',
+                'bg-destructive text-[10px] font-medium text-white ring-2 ring-background',
               )}
               aria-hidden="true"
             >

@@ -1,6 +1,6 @@
 'use client';
 
-import { Loader2Icon } from 'lucide-react';
+import { Loader2Icon, MessageCircleIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getErrorMessage } from '@/utils/error';
 import { toastError } from '@/components/global/toast-helpers';
@@ -35,6 +35,8 @@ export function MetaEmbeddedSignupButton({
   return (
     <Button
       type="button"
+      variant="gradient"
+      size="lg"
       className="w-full"
       disabled={disabled || isLaunching}
       onClick={() => void handleClick()}
@@ -45,7 +47,10 @@ export function MetaEmbeddedSignupButton({
           Connecting...
         </>
       ) : (
-        'Connect with WhatsApp'
+        <>
+          <MessageCircleIcon />
+          Connect with WhatsApp
+        </>
       )}
     </Button>
   );

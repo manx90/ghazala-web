@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2Icon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -62,16 +63,26 @@ export function ContactForm({
   }, [contact, reset]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
       {mode === 'create' && (
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="phone">رقم الهاتف *</Label>
-          <Input id="phone" dir="ltr" {...register('phone')} aria-invalid={!!errors.phone} />
-          {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
+          <Input
+            id="phone"
+            dir="ltr"
+            placeholder="9665XXXXXXXX"
+            {...register('phone')}
+            aria-invalid={!!errors.phone}
+          />
+          {errors.phone ? (
+            <p className="text-xs text-destructive">{errors.phone.message}</p>
+          ) : (
+            <p className="text-xs text-muted-foreground">أدخل الرقم بالصيغة الدولية بدون +</p>
+          )}
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="firstName">الاسم الأول</Label>
           <Input id="firstName" {...register('firstName')} />
@@ -82,10 +93,11 @@ export function ContactForm({
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="profileName">اسم الملف</Label>
           <Input id="profileName" {...register('profileName')} />
+          <p className="text-xs text-muted-foreground">الاسم الظاهر في حساب WhatsApp</p>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="email">البريد الإلكتروني</Label>
@@ -94,7 +106,7 @@ export function ContactForm({
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="waId">WhatsApp ID</Label>
           <Input id="waId" dir="ltr" {...register('waId')} />
@@ -119,7 +131,7 @@ export function ContactForm({
       </div>
 
       {mode === 'edit' && (
-        <div className="flex items-center justify-between rounded-lg border p-3">
+        <div className="flex items-center justify-between rounded-xl border bg-muted/40 p-3.5">
           <div className="flex flex-col gap-0.5">
             <Label htmlFor="isBlocked">حظر جهة الاتصال</Label>
             <p className="text-xs text-muted-foreground">منع إرسال واستقبال الرسائل</p>
@@ -132,13 +144,14 @@ export function ContactForm({
         </div>
       )}
 
-      <div className="flex justify-end gap-2">
+      <div className="flex justify-end gap-2 border-t pt-4">
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
             إلغاء
           </Button>
         )}
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" variant="gradient" disabled={isLoading}>
+          {isLoading && <Loader2Icon data-icon="inline-start" className="animate-spin" />}
           {mode === 'create' ? 'إضافة جهة اتصال' : 'حفظ التغييرات'}
         </Button>
       </div>

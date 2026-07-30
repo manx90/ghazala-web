@@ -45,19 +45,23 @@ export function RegisterForm() {
       footer={
         <>
           لديك حساب بالفعل؟{' '}
-          <Link href={ROUTES.auth.login} className="font-medium text-primary hover:underline">
+          <Link
+            href={ROUTES.auth.login}
+            className="font-semibold text-primary underline-offset-4 transition-colors hover:text-secondary hover:underline"
+          >
             تسجيل الدخول
           </Link>
         </>
       }
     >
-      <form onSubmit={onSubmit} className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField id="firstName" label="الاسم الأول" error={errors.firstName?.message}>
             <Input
               id="firstName"
               autoComplete="given-name"
               aria-invalid={Boolean(errors.firstName)}
+              className="h-11"
               {...register('firstName')}
             />
           </FormField>
@@ -67,6 +71,7 @@ export function RegisterForm() {
               id="lastName"
               autoComplete="family-name"
               aria-invalid={Boolean(errors.lastName)}
+              className="h-11"
               {...register('lastName')}
             />
           </FormField>
@@ -77,7 +82,10 @@ export function RegisterForm() {
             id="email"
             type="email"
             autoComplete="email"
+            dir="ltr"
+            placeholder="name@company.com"
             aria-invalid={Boolean(errors.email)}
+            className="h-11"
             {...register('email')}
           />
         </FormField>
@@ -87,12 +95,20 @@ export function RegisterForm() {
             id="password"
             type="password"
             autoComplete="new-password"
+            dir="ltr"
+            placeholder="••••••••"
             aria-invalid={Boolean(errors.password)}
+            className="h-11"
             {...register('password')}
           />
         </FormField>
 
-        <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
+        <Button
+          type="submit"
+          variant="gradient"
+          className="h-11 w-full text-sm font-semibold"
+          disabled={registerMutation.isPending}
+        >
           {registerMutation.isPending ? (
             <>
               <Loader2Icon className="animate-spin" />

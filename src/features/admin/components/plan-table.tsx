@@ -78,18 +78,27 @@ export function PlanTable({ plans, selectedIds = [], onSelectionChange, onDisabl
                 />
               </TableCell>
             )}
-            <TableCell className="font-medium">{plan.name}</TableCell>
-            <TableCell className="font-mono text-xs">{plan.code}</TableCell>
             <TableCell>
-              {plan.monthlyPrice} {plan.currency}
+              <div className="flex items-center gap-3">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-xs font-bold text-primary ring-1 ring-primary/10">
+                  {plan.name.trim().charAt(0) || '—'}
+                </span>
+                <span className="font-medium">{plan.name}</span>
+              </div>
+            </TableCell>
+            <TableCell className="font-mono text-xs text-muted-foreground" dir="ltr">{plan.code}</TableCell>
+            <TableCell>
+              <span className="font-medium tabular-nums">{plan.monthlyPrice}</span>{' '}
+              <span className="text-xs text-muted-foreground">{plan.currency}</span>
             </TableCell>
             <TableCell>
-              {plan.yearlyPrice} {plan.currency}
+              <span className="font-medium tabular-nums">{plan.yearlyPrice}</span>{' '}
+              <span className="text-xs text-muted-foreground">{plan.currency}</span>
             </TableCell>
             <TableCell>
               <StatusBadge status={plan.isActive ? 'ACTIVE' : 'DISABLED'} />
             </TableCell>
-            <TableCell className="text-muted-foreground">{formatDateTime(plan.createdAt)}</TableCell>
+            <TableCell className="text-xs text-muted-foreground">{formatDateTime(plan.createdAt)}</TableCell>
             <TableCell>
               <DropdownMenu>
                 <DropdownMenuTrigger

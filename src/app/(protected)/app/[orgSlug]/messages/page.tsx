@@ -1,5 +1,6 @@
 'use client';
 
+import type React from 'react';
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -96,57 +97,66 @@ export default function MessagesPage() {
           onRetry={() => void messagesQuery.refetch()}
           skeletonRows={8}
         >
-          <div className="rounded-xl border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>المستلم</TableHead>
-                  <TableHead>النوع</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>تاريخ الإنشاء</TableHead>
-                  <TableHead className="text-left">إجراء</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedMessages.map((message) => (
-                  <TableRow key={message.id}>
-                    <TableCell className="font-medium">{message.recipient}</TableCell>
-                    <TableCell>{MESSAGE_TYPE_LABELS[message.messageType] ?? message.messageType}</TableCell>
-                    <TableCell>
-                      <StatusBadge status={message.status} />
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatDateTime(message.createdAt)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm" render={<Link href={`/app/${orgSlug}/messages/${message.id}`} />}>
-                          التفاصيل
-                        </Button>
-                        {message.status === MessageStatus.FAILED && (
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            disabled={retryMutation.isPending}
-                            onClick={() => void handleRetry(message.id)}
-                          >
-                            إعادة المحاولة
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
+          <div
+            className="stagger-in flex flex-col gap-4"
+            style={{ '--stagger-delay': '120ms' } as React.CSSProperties}
+          >
+            <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50">
+                    <TableHead>المستلم</TableHead>
+                    <TableHead>النوع</TableHead>
+                    <TableHead>الحالة</TableHead>
+                    <TableHead>تاريخ الإنشاء</TableHead>
+                    <TableHead className="text-left">إجراء</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {paginatedMessages.map((message) => (
+                    <TableRow key={message.id}>
+                      <TableCell dir="ltr" className="text-start font-mono text-xs font-medium">
+                        {message.recipient}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {MESSAGE_TYPE_LABELS[message.messageType] ?? message.messageType}
+                      </TableCell>
+                      <TableCell>
+                        <StatusBadge status={message.status} />
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {formatDateTime(message.createdAt)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button variant="ghost" size="sm" render={<Link href={`/app/${orgSlug}/messages/${message.id}`} />}>
+                            التفاصيل
+                          </Button>
+                          {message.status === MessageStatus.FAILED && (
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              disabled={retryMutation.isPending}
+                              onClick={() => void handleRetry(message.id)}
+                            >
+                              إعادة المحاولة
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
 
-          <PaginationControls
-            page={page}
-            limit={limit}
-            total={outboundMessages.length}
-            onPageChange={setPage}
-          />
+            <PaginationControls
+              page={page}
+              limit={limit}
+              total={outboundMessages.length}
+              onPageChange={setPage}
+            />
+          </div>
         </QueryState>
       </div>
     </PageContainer>

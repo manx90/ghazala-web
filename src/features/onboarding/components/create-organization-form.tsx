@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2Icon } from 'lucide-react';
+import { Building2Icon, Loader2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -65,14 +65,17 @@ export function CreateOrganizationForm() {
   });
 
   return (
-    <PageContainer size="sm" className="py-12">
-      <Card>
-        <CardHeader>
-          <CardTitle>إنشاء منظمة</CardTitle>
+    <PageContainer size="sm" className="max-w-lg py-10">
+      <Card className="glass-strong animate-fade-in-up shadow-xl">
+        <CardHeader className="flex flex-col items-center gap-3 pt-8 text-center">
+          <span className="bg-gradient-brand glow-brand flex size-14 items-center justify-center rounded-2xl text-primary-foreground shadow-lg">
+            <Building2Icon className="size-7" aria-hidden="true" />
+          </span>
+          <CardTitle className="text-xl">إنشاء منظمة</CardTitle>
           <CardDescription>أنشئ منظمتك للبدء في استخدام غزالة</CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={onSubmit} className="space-y-4">
+        <CardContent className="pb-8">
+          <form onSubmit={onSubmit} className="flex flex-col gap-5">
             <FormField id="name" label="اسم المنظمة" error={errors.name?.message}>
               <Input
                 id="name"
@@ -127,7 +130,13 @@ export function CreateOrganizationForm() {
               </Select>
             </FormField>
 
-            <Button type="submit" className="w-full" disabled={createOrganization.isPending}>
+            <Button
+              type="submit"
+              variant="gradient"
+              size="lg"
+              className="mt-1 w-full"
+              disabled={createOrganization.isPending}
+            >
               {createOrganization.isPending ? (
                 <>
                   <Loader2Icon className="animate-spin" />

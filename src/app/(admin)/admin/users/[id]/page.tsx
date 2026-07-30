@@ -1,17 +1,26 @@
 'use client';
 
-import { ArrowRightIcon, ShieldCheckIcon, ShieldOffIcon, Trash2Icon } from 'lucide-react';
+import {
+  ArrowRightIcon,
+  BadgeCheckIcon,
+  CalendarPlusIcon,
+  LogInIcon,
+  MailIcon,
+  ShieldCheckIcon,
+  ShieldOffIcon,
+  Trash2Icon,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { DeleteDialog } from '@/components/global/delete-dialog';
-import { InformationCard } from '@/components/cards';
 import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
 import { QueryState } from '@/components/shared/query-state';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 import { Button } from '@/components/ui/button';
+import { AdminDetailHero, AdminInfoGrid } from '@/features/admin/components/admin-detail-ui';
 import {
   useAdminUser,
   useDeleteUser,
@@ -35,6 +44,10 @@ export default function AdminUserDetailPage() {
 
   const isSuperAdmin = user?.role === UserRole.SUPER_ADMIN;
   const fullName = user ? [user.firstName, user.lastName].filter(Boolean).join(' ') : '';
+  const initials = user
+    ? [user.firstName, user.lastName].filter(Boolean).map((p) => p.trim().charAt(0)).join('').toUpperCase() ||
+      user.email.charAt(0).toUpperCase()
+    : '';
 
   return (
     <PageContainer size="md">
@@ -60,51 +73,67 @@ export default function AdminUserDetailPage() {
         >
           {user && (
             <>
-              <InformationCard
-                title="معلومات المستخدم"
-                rows={[
-                  { label: 'البريد', value: user.email },
-                  { label: 'البريد موثّق', value: user.emailVerified ? 'نعم' : 'لا' },
-                  { label: 'آخر دخول', value: user.lastLoginAt ? formatDateTime(user.lastLoginAt) : '—' },
-                  { label: 'تاريخ التسجيل', value: formatDateTime(user.createdAt) },
-                ]}
-              />
-
-              <div className="flex items-center justify-between">
-                <div className="flex gap-2">
-                  <StatusBadge status={user.role} />
-                  <StatusBadge status={user.status} />
-                </div>
-                {!isSuperAdmin && (
-                  <div className="flex flex-wrap gap-2">
-                    {user.status !== UserStatus.ACTIVE && (
-                      <Button
-                        size="sm"
-                        onClick={() => enableMutation.mutate(user.id)}
-                        disabled={enableMutation.isPending}
-                      >
-                        <ShieldCheckIcon data-icon="inline-start" />
-                        تفعيل
-                      </Button>
-                    )}
-                    {user.status !== UserStatus.DISABLED && (
+              <AdminDetailHero
+                title={fullName || user.email}
+                subtitle={user.email}
+                initials={initials}
+                badges={
+                  <>
+                    <StatusBadge status={user.role} />
+                    <StatusBadge status={user.status} />
+                  </>
+                }
+                actions={
+                  !isSuperAdmin ? (
+                    <>
+                      {user.status !== UserStatus.ACTIVE && (
+                        <Button
+                          size="sm"
+                          onClick={() => enableMutation.mutate(user.id)}
+                          disabled={enableMutation.isPending}
+                        >
+                          <ShieldCheckIcon data-icon="inline-start" />
+                          تفعيل
+                        </Button>
+                      )}
+                      {user.status !== UserStatus.DISABLED && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => disableMutation.mutate(user.id)}
+                          disabled={disableMutation.isPending}
+                        >
+                          <ShieldOffIcon data-icon="inline-start" />
+                          تعطيل
+                        </Button>
+                      )}
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => disableMutation.mutate(user.id)}
-                        disabled={disableMutation.isPending}
+                        className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        onClick={() => setDeleteOpen(true)}
                       >
-                        <ShieldOffIcon data-icon="inline-start" />
-                        تعطيل
+                        <Trash2Icon data-icon="inline-start" />
+                        حذف
                       </Button>
-                    )}
-                    <Button size="sm" variant="destructive" onClick={() => setDeleteOpen(true)}>
-                      <Trash2Icon data-icon="inline-start" />
-                      حذف
-                    </Button>
-                  </div>
-                )}
-              </div>
+                    </>
+                  ) : undefined
+                }
+              />
+
+              <AdminInfoGrid
+                title="معلومات المستخدم"
+                items={[
+                  { label: 'البريد', value: user.email, icon: MailIcon },
+                  { label: 'البريد موثّق', value: user.emailVerified ? 'نعم' : 'لا', icon: BadgeCheckIcon },
+                  {
+                    label: 'آخر دخول',
+                    value: user.lastLoginAt ? formatDateTime(user.lastLoginAt) : '—',
+                    icon: LogInIcon,
+                  },
+                  { label: 'تاريخ التسجيل', value: formatDateTime(user.createdAt), icon: CalendarPlusIcon },
+                ]}
+              />
 
               <UnavailableFeatureAlert
                 title="عمليات غير متوفرة"

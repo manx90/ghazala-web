@@ -19,7 +19,7 @@ function LegalHeader() {
           className="flex items-center gap-2 text-base font-bold"
           aria-label="غزالة - الصفحة الرئيسية"
         >
-          <span className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary text-primary-foreground">
+          <span className="flex size-8 items-center justify-center rounded-lg bg-gradient-brand text-primary-foreground shadow-sm">
             <MessageCircleIcon className="size-4" aria-hidden />
           </span>
           غزالة
@@ -128,7 +128,7 @@ export function LegalPage({ document }: { document: LegalDocument }) {
           {document.sections.map((section) => (
             <section key={section.id} id={section.id} className="scroll-mt-28 pt-10">
               <h2 className="flex items-center gap-3 text-xl font-bold tracking-tight">
-                <span className="h-6 w-1 rounded-full bg-gradient-to-b from-primary to-secondary" aria-hidden />
+                <span className="h-6 w-1 rounded-full bg-gradient-brand" aria-hidden />
                 {section.title}
               </h2>
               <div className="mt-4 space-y-4">

@@ -3,6 +3,7 @@
 import { ArchiveIcon, ArrowRightIcon, RefreshCwIcon, Trash2Icon } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import type React from 'react';
 import { useState } from 'react';
 import { ConfirmDialog } from '@/components/global/confirm-dialog';
 import { DeleteDialog } from '@/components/global/delete-dialog';
@@ -91,7 +92,14 @@ export default function TemplateDetailPage() {
           emptyTitle="القالب غير موجود"
           onRetry={() => refetch()}
         >
-          {template && <TemplatePreview template={template} />}
+          {template && (
+            <div
+              className="stagger-in"
+              style={{ '--stagger-delay': '120ms' } as React.CSSProperties}
+            >
+              <TemplatePreview template={template} />
+            </div>
+          )}
         </QueryState>
 
         <ConfirmDialog

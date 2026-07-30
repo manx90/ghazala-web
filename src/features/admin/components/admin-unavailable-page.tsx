@@ -1,5 +1,5 @@
+import { ConstructionIcon } from 'lucide-react';
 import { PageContainer } from '@/components/global/page-container';
-import { PageHeader } from '@/components/shared/page-header';
 import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 
 interface AdminUnavailablePageProps {
@@ -15,13 +15,21 @@ export function AdminUnavailablePage({
 }: AdminUnavailablePageProps) {
   return (
     <PageContainer size="md">
-      <div className="flex flex-col gap-6">
-        <PageHeader title={title} description={description} />
-        <UnavailableFeatureAlert
-          title="واجهة برمجة غير متوفرة"
-          description="هذه الميزة تتطلب endpoints في الـ backend قبل تفعيلها."
-          requiredEndpoints={requiredEndpoints}
-        />
+      <div className="flex flex-col items-center gap-6 py-10 text-center">
+        <div className="animate-float flex size-14 items-center justify-center rounded-2xl bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+          <ConstructionIcon className="size-6" aria-hidden="true" />
+        </div>
+        <div className="flex max-w-lg flex-col gap-2">
+          <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+          <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
+        </div>
+        <div className="w-full text-start">
+          <UnavailableFeatureAlert
+            title="واجهة برمجة غير متوفرة"
+            description="هذه الميزة تتطلب endpoints في الـ backend قبل تفعيلها."
+            requiredEndpoints={requiredEndpoints}
+          />
+        </div>
       </div>
     </PageContainer>
   );

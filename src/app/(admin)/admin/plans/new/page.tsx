@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlanForm } from '@/features/admin/components/plan-form';
 import { useCreatePlan } from '@/features/admin/hooks/use-admin-plans';
 import type { PlanFormValues } from '@/features/admin/schemas/plan.schemas';
@@ -47,14 +46,7 @@ export default function AdminPlanNewPage() {
           }
         />
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">بيانات الخطة</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <PlanForm mode="create" onSubmit={handleSubmit} isLoading={createMutation.isPending} />
-          </CardContent>
-        </Card>
+        <PlanForm mode="create" onSubmit={handleSubmit} isLoading={createMutation.isPending} />
       </div>
     </PageContainer>
   );

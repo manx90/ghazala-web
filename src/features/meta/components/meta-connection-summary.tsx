@@ -1,9 +1,10 @@
 'use client';
 
-import { Loader2Icon, UnplugIcon } from 'lucide-react';
+import { CheckCircle2Icon, Loader2Icon, UnplugIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/global/confirm-dialog';
 import { StatusBadge } from '@/components/shared/status-badge';
+import { ConnectionStatusPill } from '@/features/meta/components/connection-status-pill';
 import { formatDateTime } from '@/utils/date';
 import type { MetaIntegration } from '@/types/meta.types';
 import type { PhoneNumber, WhatsappBusinessAccount } from '@/types/whatsapp.types';
@@ -22,7 +23,7 @@ interface MetaConnectionSummaryProps {
 
 function DetailRow({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="flex items-start justify-between gap-4 text-sm">
+    <div className="flex items-start justify-between gap-4 px-4 py-3 text-sm transition-colors hover:bg-muted/40">
       <dt className="shrink-0 text-muted-foreground">{label}</dt>
       <dd className="text-left font-medium" dir="ltr">
         {value ?? '—'}
@@ -44,16 +45,21 @@ export function MetaConnectionSummary({
 
   return (
     <>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between rounded-lg border p-4">
-          <div className="space-y-1">
-            <p className="text-sm font-medium">حالة الاتصال</p>
-            <p className="text-xs text-muted-foreground">تم ربط WhatsApp Business بنجاح</p>
+      <div className="space-y-5">
+        <div className="flex items-center justify-between gap-4 rounded-xl border border-success/30 bg-success/5 p-4">
+          <div className="flex items-center gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-success/15 text-success">
+              <CheckCircle2Icon className="size-5" aria-hidden="true" />
+            </span>
+            <div className="space-y-0.5">
+              <p className="text-sm font-medium">حالة الاتصال</p>
+              <p className="text-xs text-muted-foreground">تم ربط WhatsApp Business بنجاح</p>
+            </div>
           </div>
-          <StatusBadge status="CONNECTED" />
+          <ConnectionStatusPill connected />
         </div>
 
-        <dl className="space-y-3 rounded-lg border p-4">
+        <dl className="divide-y divide-border overflow-hidden rounded-xl border bg-card">
           <DetailRow label="Business Name" value={businessAccount?.name ?? integration.metaBusinessId} />
           <DetailRow
             label="WhatsApp Business Account"

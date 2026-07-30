@@ -20,7 +20,13 @@ export function PageContainer({
   size = 'lg',
 }: PageContainerProps) {
   return (
-    <div className={cn('mx-auto w-full flex-1 px-4 py-6 sm:px-6 lg:px-8', sizeClasses[size], className)}>
+    <div
+      className={cn(
+        'animate-fade-in mx-auto w-full flex-1 px-4 py-6 sm:px-6 lg:px-8',
+        sizeClasses[size],
+        className,
+      )}
+    >
       {children}
     </div>
   );

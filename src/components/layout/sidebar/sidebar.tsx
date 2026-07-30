@@ -29,7 +29,7 @@ function SidebarComponent({ variant, navigation, className }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'hidden h-svh flex-col border-e border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-300 ease-in-out lg:flex',
+        'hidden h-svh flex-col border-e border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-300 ease-out lg:flex',
         isCollapsed ? 'w-16' : 'w-64',
         className,
       )}
@@ -44,10 +44,15 @@ function SidebarComponent({ variant, navigation, className }: SidebarProps) {
         {!isCollapsed && (
           <Link
             href={homeHref}
-            className="flex flex-col gap-0.5 truncate focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md px-1"
+            className="flex items-center gap-2.5 truncate rounded-md px-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <span className="text-sm font-semibold tracking-tight">{env.NEXT_PUBLIC_APP_NAME}</span>
-            <span className="text-xs text-muted-foreground">{portalLabel}</span>
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-brand text-sm font-bold text-white shadow-sm">
+              {env.NEXT_PUBLIC_APP_NAME.trim().charAt(0)}
+            </span>
+            <span className="flex flex-col gap-0.5 truncate">
+              <span className="text-sm font-semibold tracking-tight">{env.NEXT_PUBLIC_APP_NAME}</span>
+              <span className="text-xs text-muted-foreground">{portalLabel}</span>
+            </span>
           </Link>
         )}
         <Button

@@ -2,6 +2,7 @@
 
 import { GitMergeIcon, PlusIcon, SearchIcon, UploadIcon, DownloadIcon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import type React from 'react';
 import { useMemo, useState } from 'react';
 import { DeleteDialog } from '@/components/global/delete-dialog';
 import { ModalWrapper } from '@/components/global/modal-wrapper';
@@ -114,7 +115,7 @@ export default function ContactsPage() {
                 <GitMergeIcon data-icon="inline-start" />
                 دمج ({selectedIds.length})
               </Button>
-              <Button onClick={() => setCreateOpen(true)}>
+              <Button variant="gradient" onClick={() => setCreateOpen(true)}>
                 <PlusIcon data-icon="inline-start" />
                 جهة اتصال جديدة
               </Button>
@@ -123,10 +124,12 @@ export default function ContactsPage() {
         />
 
         <div className="grid gap-4 md:grid-cols-2">
-          <Card>
+          <Card className="stagger-in" style={{ '--stagger-delay': '60ms' } as React.CSSProperties}>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <UploadIcon className="size-4" />
+              <CardTitle className="flex items-center gap-2.5 text-base">
+                <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                  <UploadIcon className="size-4" aria-hidden="true" />
+                </span>
                 استيراد جهات الاتصال
               </CardTitle>
             </CardHeader>
@@ -138,10 +141,12 @@ export default function ContactsPage() {
               />
             </CardContent>
           </Card>
-          <Card>
+          <Card className="stagger-in" style={{ '--stagger-delay': '120ms' } as React.CSSProperties}>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <DownloadIcon className="size-4" />
+              <CardTitle className="flex items-center gap-2.5 text-base">
+                <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                  <DownloadIcon className="size-4" aria-hidden="true" />
+                </span>
                 تصدير جهات الاتصال
               </CardTitle>
             </CardHeader>
@@ -155,16 +160,24 @@ export default function ContactsPage() {
           </Card>
         </div>
 
-        <div className="flex gap-2">
-          <Input
-            placeholder="بحث بالاسم أو الهاتف..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            className="max-w-sm"
-          />
+        <div
+          className="stagger-in flex flex-wrap items-center gap-2 rounded-xl border bg-card p-3 shadow-2xs"
+          style={{ '--stagger-delay': '180ms' } as React.CSSProperties}
+        >
+          <div className="relative w-full max-w-sm">
+            <SearchIcon
+              className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
+            />
+            <Input
+              placeholder="بحث بالاسم أو الهاتف..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              className="ps-9"
+            />
+          </div>
           <Button variant="outline" onClick={handleSearch}>
-            <SearchIcon data-icon="inline-start" />
             بحث
           </Button>
         </div>
@@ -184,20 +197,25 @@ export default function ContactsPage() {
           }
           onRetry={() => refetch()}
         >
-          <ContactTable
-            contacts={contacts}
-            orgSlug={orgSlug}
-            selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
-            onDelete={setDeleteTarget}
-            onMerge={() => setMergeOpen(true)}
-          />
-          <PaginationControls
-            page={data?.page ?? page}
-            limit={data?.limit ?? PAGE_LIMIT}
-            total={data?.total ?? 0}
-            onPageChange={setPage}
-          />
+          <div
+            className="stagger-in flex flex-col gap-4"
+            style={{ '--stagger-delay': '240ms' } as React.CSSProperties}
+          >
+            <ContactTable
+              contacts={contacts}
+              orgSlug={orgSlug}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+              onDelete={setDeleteTarget}
+              onMerge={() => setMergeOpen(true)}
+            />
+            <PaginationControls
+              page={data?.page ?? page}
+              limit={data?.limit ?? PAGE_LIMIT}
+              total={data?.total ?? 0}
+              onPageChange={setPage}
+            />
+          </div>
         </QueryState>
 
         <ModalWrapper

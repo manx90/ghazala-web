@@ -147,18 +147,15 @@ export function launchEmbeddedSignup(
             response_type: 'code',
             override_default_response_type: true,
             extras: {
+              featureType: 'embedded_signup_v2',
               setup: {},
-              featureType: '',
               sessionInfoVersion: '3',
             },
           },
         );
       })
       .catch((error: unknown) => {
-        fail(
-          messageHandler,
-          error instanceof Error ? error : new Error('فشل تحميل Facebook SDK'),
-        );
+        fail(messageHandler, error instanceof Error ? error : new Error('فشل تحميل Facebook SDK'));
       });
   });
 }

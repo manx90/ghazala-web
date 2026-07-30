@@ -41,18 +41,24 @@ export function ResetPasswordForm() {
       title="إعادة تعيين كلمة المرور"
       description="أدخل رمز OTP وكلمة المرور الجديدة"
       footer={
-        <Link href={ROUTES.auth.login} className="font-medium text-primary hover:underline">
+        <Link
+          href={ROUTES.auth.login}
+          className="font-semibold text-primary underline-offset-4 transition-colors hover:text-secondary hover:underline"
+        >
           العودة لتسجيل الدخول
         </Link>
       }
     >
-      <form onSubmit={onSubmit} className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-5">
         <FormField id="email" label="البريد الإلكتروني" error={errors.email?.message}>
           <Input
             id="email"
             type="email"
             autoComplete="email"
+            dir="ltr"
+            placeholder="name@company.com"
             aria-invalid={Boolean(errors.email)}
+            className="h-11"
             {...register('email')}
           />
         </FormField>
@@ -63,7 +69,9 @@ export function ResetPasswordForm() {
             inputMode="numeric"
             maxLength={6}
             autoComplete="one-time-code"
+            dir="ltr"
             aria-invalid={Boolean(errors.otp)}
+            className="h-11 text-center font-mono tracking-[0.5em]"
             {...register('otp')}
           />
         </FormField>
@@ -73,12 +81,20 @@ export function ResetPasswordForm() {
             id="password"
             type="password"
             autoComplete="new-password"
+            dir="ltr"
+            placeholder="••••••••"
             aria-invalid={Boolean(errors.password)}
+            className="h-11"
             {...register('password')}
           />
         </FormField>
 
-        <Button type="submit" className="w-full" disabled={resetPassword.isPending}>
+        <Button
+          type="submit"
+          variant="gradient"
+          className="h-11 w-full text-sm font-semibold"
+          disabled={resetPassword.isPending}
+        >
           {resetPassword.isPending ? (
             <>
               <Loader2Icon className="animate-spin" />

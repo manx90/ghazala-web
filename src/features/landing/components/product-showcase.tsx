@@ -31,7 +31,7 @@ export function ProductShowcase() {
   const y = useTransform(scrollYProgress, [0, 1], reduceMotion ? [0, 0] : [48, -48]);
 
   return (
-    <section id="product" className="scroll-mt-24 overflow-hidden py-20 sm:py-28" ref={ref}>
+    <section id="product" className="scroll-mt-24 overflow-hidden py-20 sm:py-24" ref={ref}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal>
           <div className="mx-auto max-w-2xl text-center">
@@ -71,7 +71,7 @@ export function ProductShowcase() {
                       key={item.label}
                       className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs ${
                         item.active
-                          ? 'bg-gradient-to-l from-primary/15 to-secondary/15 font-semibold text-primary'
+                          ? 'bg-gradient-brand-soft font-semibold text-primary'
                           : 'text-muted-foreground'
                       }`}
                     >

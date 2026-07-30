@@ -1,11 +1,40 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
-import { Loader2Icon } from 'lucide-react';
+import { Fragment, useCallback, useEffect, useRef } from 'react';
+import { Loader2Icon, MessageSquareTextIcon } from 'lucide-react';
+import { format, isSameDay, isToday, isYesterday, parseISO } from 'date-fns';
+import { arSA } from 'date-fns/locale';
 import { EmptyState } from '@/components/global/empty-state';
-import { SkeletonLoader } from '@/components/global/skeleton-loader';
+import { Skeleton } from '@/components/ui/skeleton';
 import { MessageBubble } from '@/features/inbox/components/message-bubble';
 import type { Message } from '@/types/message.types';
+import { cn } from '@/lib/utils';
+
+const SKELETON_BUBBLES = [
+  'h-11 w-2/3 self-start',
+  'h-14 w-1/2 self-end',
+  'h-11 w-3/5 self-start',
+  'h-16 w-1/2 self-start',
+  'h-11 w-2/5 self-end',
+  'h-12 w-3/5 self-start',
+];
+
+// فاصل اليوم: يُعرض ككبسولة عند تغيّر تاريخ الرسائل
+function DayDivider({ date }: { date: Date }) {
+  const label = isToday(date)
+    ? 'اليوم'
+    : isYesterday(date)
+      ? 'أمس'
+      : format(date, 'd MMMM yyyy', { locale: arSA });
+
+  return (
+    <div className="flex justify-center py-1.5">
+      <span className="rounded-full border border-border/50 bg-muted px-3.5 py-1 text-[11px] font-medium text-muted-foreground shadow-2xs">
+        {label}
+      </span>
+    </div>
+  );
+}
 
 interface MessageThreadProps {
   messages: Message[];
@@ -62,16 +91,19 @@ export function MessageThread({
 
   if (isLoading) {
     return (
-      <div className="flex flex-1 items-center justify-center p-6">
-        <SkeletonLoader rows={6} />
+      <div className="flex flex-1 flex-col gap-3 overflow-hidden bg-muted/30 bg-grid-pattern px-4 py-6">
+        {SKELETON_BUBBLES.map((classes) => (
+          <Skeleton key={classes} className={cn('rounded-2xl', classes)} />
+        ))}
       </div>
     );
   }
 
   if (!messages.length) {
     return (
-      <div className="flex flex-1 items-center justify-center p-6">
+      <div className="flex flex-1 items-center justify-center bg-muted/30 bg-grid-pattern p-6">
         <EmptyState
+          icon={<MessageSquareTextIcon />}
           title="لا توجد رسائل"
           description="ابدأ المحادثة بإرسال رسالة للعميل"
         />
@@ -82,26 +114,37 @@ export function MessageThread({
   return (
     <div
       ref={scrollRef}
-      className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-4"
+      className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto bg-muted/30 bg-grid-pattern px-4 py-4"
       onScroll={handleScroll}
     >
       {hasOlderMessages && (
-        <div className="flex justify-center py-2">
+        <div className="flex justify-center py-1.5">
           {isLoadingOlder ? (
-            <Loader2Icon className="size-4 animate-spin text-muted-foreground" />
+            <Loader2Icon className="size-4 animate-spin text-primary" />
           ) : (
-            <span className="text-xs text-muted-foreground">مرّر للأعلى لتحميل رسائل أقدم</span>
+            <span className="rounded-full bg-muted px-3.5 py-1 text-[11px] text-muted-foreground shadow-2xs">
+              مرّر للأعلى لتحميل رسائل أقدم
+            </span>
           )}
         </div>
       )}
 
-      {messages.map((message) => (
-        <MessageBubble key={message.id} message={message} />
-      ))}
+      {messages.map((message, index) => {
+        const currentDate = parseISO(message.createdAt);
+        const previousDate = index > 0 ? parseISO(messages[index - 1].createdAt) : null;
+        const showDayDivider = !previousDate || !isSameDay(currentDate, previousDate);
+
+        return (
+          <Fragment key={message.id}>
+            {showDayDivider && <DayDivider date={currentDate} />}
+            <MessageBubble message={message} />
+          </Fragment>
+        );
+      })}
 
       {isFetching && !isLoadingOlder && (
         <div className="flex justify-center py-1">
-          <Loader2Icon className="size-4 animate-spin text-muted-foreground" />
+          <Loader2Icon className="size-4 animate-spin text-primary" />
         </div>
       )}
 

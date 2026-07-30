@@ -43,7 +43,8 @@ interface StatusBadgeProps {
 export function StatusBadge({ status, className }: StatusBadgeProps) {
   const config = STATUS_MAP[status] ?? { label: status, variant: 'outline' as const };
   return (
-    <Badge variant={config.variant} className={cn(className)}>
+    <Badge variant={config.variant} className={cn('gap-1.5', className)}>
+      <span aria-hidden="true" className="size-1.5 rounded-full bg-current opacity-70" />
       {config.label}
     </Badge>
   );

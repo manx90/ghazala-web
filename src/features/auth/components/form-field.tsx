@@ -17,7 +17,7 @@ export function FormField({ id, label, error, children, className }: FormFieldPr
     <div className={cn('space-y-2', className)}>
       <Label htmlFor={id}>{label}</Label>
       {children}
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {error ? <p className="animate-fade-in text-sm text-destructive">{error}</p> : null}
     </div>
   );
 }

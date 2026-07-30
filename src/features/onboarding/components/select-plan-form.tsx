@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Loader2Icon } from 'lucide-react';
+import { useState, type CSSProperties } from 'react';
+import { CheckCircle2Icon, Loader2Icon, SparklesIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PageContainer } from '@/components/global/page-container';
 import {
@@ -32,27 +32,34 @@ export function SelectPlanForm() {
   };
 
   return (
-    <PageContainer size="md" className="py-12">
-      <div className="mb-8 space-y-2 text-center">
-        <h1 className="text-2xl font-semibold">اختر خطتك</h1>
+    <PageContainer size="md" className="py-10">
+      <div className="animate-fade-in-up mb-8 flex flex-col items-center gap-3 text-center">
+        <span className="bg-gradient-brand glow-brand flex size-14 items-center justify-center rounded-2xl text-primary-foreground shadow-lg">
+          <SparklesIcon className="size-7" aria-hidden="true" />
+        </span>
+        <h1 className="text-3xl font-bold tracking-tight">اختر خطتك</h1>
         <p className="text-sm text-muted-foreground">اختر الخطة المناسبة لاحتياجات منظمتك</p>
       </div>
 
-      <div className="mb-6 flex justify-center gap-2">
-        <Button
-          type="button"
-          variant={billingCycle === BillingCycle.MONTHLY ? 'default' : 'outline'}
-          onClick={() => setBillingCycle(BillingCycle.MONTHLY)}
-        >
-          شهري
-        </Button>
-        <Button
-          type="button"
-          variant={billingCycle === BillingCycle.YEARLY ? 'default' : 'outline'}
-          onClick={() => setBillingCycle(BillingCycle.YEARLY)}
-        >
-          سنوي
-        </Button>
+      <div className="animate-fade-in-up mb-8 flex justify-center">
+        <div className="inline-flex items-center gap-1 rounded-full bg-muted p-1 ring-1 ring-border">
+          <Button
+            type="button"
+            variant={billingCycle === BillingCycle.MONTHLY ? 'gradient' : 'ghost'}
+            className="rounded-full"
+            onClick={() => setBillingCycle(BillingCycle.MONTHLY)}
+          >
+            شهري
+          </Button>
+          <Button
+            type="button"
+            variant={billingCycle === BillingCycle.YEARLY ? 'gradient' : 'ghost'}
+            className="rounded-full"
+            onClick={() => setBillingCycle(BillingCycle.YEARLY)}
+          >
+            سنوي
+          </Button>
+        </div>
       </div>
 
       <QueryState
@@ -66,7 +73,7 @@ export function SelectPlanForm() {
         skeletonRows={3}
       >
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {plansQuery.data?.items.map((plan) => {
+          {plansQuery.data?.items.map((plan, index) => {
             const price =
               billingCycle === BillingCycle.MONTHLY ? plan.monthlyPrice : plan.yearlyPrice;
             const isSelected = selectedPlanId === plan.id;
@@ -75,29 +82,45 @@ export function SelectPlanForm() {
               <Card
                 key={plan.id}
                 className={cn(
-                  'cursor-pointer transition-colors',
-                  isSelected && 'ring-2 ring-primary',
+                  'card-interactive stagger-in relative cursor-pointer transition-all duration-300 hover:ring-primary/50',
+                  isSelected && 'bg-gradient-brand-soft ring-2 ring-primary',
                 )}
+                style={{ '--stagger-delay': `${index * 80}ms` } as CSSProperties}
                 onClick={() => setSelectedPlanId(plan.id)}
               >
+                {isSelected && (
+                  <span className="bg-gradient-brand animate-scale-in absolute end-3 top-3 flex size-6 items-center justify-center rounded-full text-primary-foreground shadow-md">
+                    <CheckCircle2Icon className="size-4" aria-hidden="true" />
+                  </span>
+                )}
                 <CardHeader>
-                  <CardTitle>{plan.name}</CardTitle>
+                  <CardTitle className="text-lg">{plan.name}</CardTitle>
                   {plan.description ? (
                     <CardDescription>{plan.description}</CardDescription>
                   ) : null}
                 </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold">
-                    {price} {plan.currency}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {billingCycle === BillingCycle.MONTHLY ? 'شهرياً' : 'سنوياً'}
-                  </p>
+                <CardContent className="flex flex-col gap-4">
+                  <div>
+                    <p className="text-3xl font-bold tracking-tight">
+                      {price} <span className="text-base font-medium text-muted-foreground">{plan.currency}</span>
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {billingCycle === BillingCycle.MONTHLY ? 'شهرياً' : 'سنوياً'}
+                    </p>
+                  </div>
+                  {plan.description ? (
+                    <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2Icon className="mt-0.5 size-4 shrink-0 text-secondary" aria-hidden="true" />
+                        {plan.description}
+                      </li>
+                    </ul>
+                  ) : null}
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="bg-transparent">
                   <Button
                     type="button"
-                    variant={isSelected ? 'default' : 'outline'}
+                    variant={isSelected ? 'gradient' : 'outline'}
                     className="w-full"
                     onClick={() => setSelectedPlanId(plan.id)}
                   >
@@ -109,9 +132,11 @@ export function SelectPlanForm() {
           })}
         </div>
 
-        <div className="mt-8 flex justify-center">
+        <div className="animate-fade-in-up mt-10 flex justify-center">
           <Button
+            variant="gradient"
             size="lg"
+            className="min-w-56"
             disabled={!selectedPlanId || subscribePlan.isPending}
             onClick={handleSubscribe}
           >

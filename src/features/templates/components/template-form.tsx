@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
+import { Loader2Icon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -100,89 +101,122 @@ export function TemplateForm({ onSubmit, isLoading = false, onCancel }: Template
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="flex max-w-2xl flex-col gap-4">
-      {wabaData?.items.length ? (
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="flex max-w-2xl flex-col gap-5">
+      <div className="flex flex-col gap-5">
+        <h3 className="flex items-center gap-2 text-sm font-semibold">
+          <span className="h-4 w-1 rounded-full bg-gradient-brand" aria-hidden="true" />
+          المعلومات الأساسية
+        </h3>
+
+        {wabaData?.items.length ? (
+          <div className="flex flex-col gap-1.5">
+            <Label>حساب WhatsApp Business</Label>
+            <Select value={wabaId} onValueChange={(value) => setValue('wabaId', value ?? '')}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="اختر الحساب" />
+              </SelectTrigger>
+              <SelectContent>
+                {wabaData.items.map((account) => (
+                  <SelectItem key={account.id} value={account.wabaId}>
+                    {account.name ?? account.wabaId}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        ) : null}
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="name">اسم القالب *</Label>
+            <Input
+              id="name"
+              dir="ltr"
+              placeholder="welcome_message"
+              {...register('name')}
+              aria-invalid={!!errors.name}
+            />
+            {errors.name ? (
+              <p className="text-xs text-destructive">{errors.name.message}</p>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                أحرف إنجليزية صغيرة وأرقام وشرطة سفلية فقط
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="language">رمز اللغة *</Label>
+            <Input id="language" dir="ltr" placeholder="ar" {...register('language')} />
+            {errors.language ? (
+              <p className="text-xs text-destructive">{errors.language.message}</p>
+            ) : (
+              <p className="text-xs text-muted-foreground">مثال: ar أو en_US</p>
+            )}
+          </div>
+        </div>
+
         <div className="flex flex-col gap-1.5">
-          <Label>حساب WhatsApp Business</Label>
-          <Select value={wabaId} onValueChange={(value) => setValue('wabaId', value ?? '')}>
+          <Label>التصنيف *</Label>
+          <Select
+            value={category}
+            onValueChange={(value) => setValue('category', value as TemplateCategory)}
+          >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="اختر الحساب" />
+              <SelectValue placeholder="اختر التصنيف" />
             </SelectTrigger>
             <SelectContent>
-              {wabaData.items.map((account) => (
-                <SelectItem key={account.id} value={account.wabaId}>
-                  {account.name ?? account.wabaId}
+              {CATEGORY_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-        </div>
-      ) : null}
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="name">اسم القالب *</Label>
-          <Input
-            id="name"
-            dir="ltr"
-            placeholder="welcome_message"
-            {...register('name')}
-            aria-invalid={!!errors.name}
-          />
-          {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="language">رمز اللغة *</Label>
-          <Input id="language" dir="ltr" placeholder="ar" {...register('language')} />
-          {errors.language && (
-            <p className="text-xs text-destructive">{errors.language.message}</p>
+          {errors.category ? (
+            <p className="text-xs text-destructive">{errors.category.message}</p>
+          ) : (
+            <p className="text-xs text-muted-foreground">يحدد كيفية تصنيف Meta للقالب</p>
           )}
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <Label>التصنيف *</Label>
-        <Select
-          value={category}
-          onValueChange={(value) => setValue('category', value as TemplateCategory)}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="اختر التصنيف" />
-          </SelectTrigger>
-          <SelectContent>
-            {CATEGORY_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {errors.category && <p className="text-xs text-destructive">{errors.category.message}</p>}
+      <div className="flex flex-col gap-5 border-t pt-5">
+        <h3 className="flex items-center gap-2 text-sm font-semibold">
+          <span className="h-4 w-1 rounded-full bg-gradient-brand" aria-hidden="true" />
+          محتوى القالب
+        </h3>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="headerText">نص الترويسة (اختياري)</Label>
+          <Input id="headerText" {...register('headerText')} />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="bodyText">نص القالب *</Label>
+          <Textarea id="bodyText" rows={5} {...register('bodyText')} aria-invalid={!!errors.bodyText} />
+          {errors.bodyText ? (
+            <p className="text-xs text-destructive">{errors.bodyText.message}</p>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              يمكنك تضمين متغيرات مثل {'{{1}}'} ليتم تعبئتها عند الإرسال
+            </p>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="footerText">نص التذييل (اختياري)</Label>
+          <Input id="footerText" {...register('footerText')} />
+        </div>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="headerText">نص الترويسة (اختياري)</Label>
-        <Input id="headerText" {...register('headerText')} />
-      </div>
-
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="bodyText">نص القالب *</Label>
-        <Textarea id="bodyText" rows={5} {...register('bodyText')} aria-invalid={!!errors.bodyText} />
-        {errors.bodyText && <p className="text-xs text-destructive">{errors.bodyText.message}</p>}
-      </div>
-
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="footerText">نص التذييل (اختياري)</Label>
-        <Input id="footerText" {...register('footerText')} />
-      </div>
-
-      <div className="flex justify-end gap-2">
+      <div className="flex justify-end gap-2 border-t pt-4">
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
             إلغاء
           </Button>
         )}
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" variant="gradient" disabled={isLoading}>
+          {isLoading && <Loader2Icon data-icon="inline-start" className="animate-spin" />}
           إنشاء القالب
         </Button>
       </div>

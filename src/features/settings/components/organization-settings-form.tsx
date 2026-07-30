@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, type CSSProperties } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2Icon } from 'lucide-react';
+import { Building2Icon, Loader2Icon, Settings2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -102,10 +102,15 @@ export function OrganizationSettingsForm() {
     >
       {data && (
         <div className="flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>معلومات المنظمة</CardTitle>
-              <CardDescription>بيانات عامة للمنظمة (للقراءة فقط)</CardDescription>
+          <Card className="stagger-in">
+            <CardHeader className="flex flex-row items-start gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                <Building2Icon className="size-5" aria-hidden="true" />
+              </span>
+              <div>
+                <CardTitle>معلومات المنظمة</CardTitle>
+                <CardDescription>بيانات عامة للمنظمة (للقراءة فقط)</CardDescription>
+              </div>
             </CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1">
@@ -114,7 +119,7 @@ export function OrganizationSettingsForm() {
               </div>
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">المعرّف</p>
-                <p className="font-mono text-sm">{data.slug}</p>
+                <p className="font-mono text-sm" dir="ltr">{data.slug}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">الحالة</p>
@@ -123,13 +128,18 @@ export function OrganizationSettingsForm() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>إعدادات المنظمة</CardTitle>
-              <CardDescription>الشعار، المنطقة الزمنية، والدولة</CardDescription>
+          <Card className="stagger-in" style={{ '--stagger-delay': '80ms' } as CSSProperties}>
+            <CardHeader className="flex flex-row items-start gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                <Settings2Icon className="size-5" aria-hidden="true" />
+              </span>
+              <div>
+                <CardTitle>إعدادات المنظمة</CardTitle>
+                <CardDescription>الشعار، المنطقة الزمنية، والدولة</CardDescription>
+              </div>
             </CardHeader>
             <CardContent>
-              <form onSubmit={onSubmit} className="flex flex-col gap-4">
+              <form onSubmit={onSubmit} className="flex flex-col gap-5">
                 <div className="space-y-2">
                   <Label htmlFor="logo">رابط الشعار</Label>
                   <Input
@@ -194,7 +204,7 @@ export function OrganizationSettingsForm() {
                 </div>
 
                 <div className="flex justify-end">
-                  <Button type="submit" disabled={updateSettings.isPending}>
+                  <Button type="submit" variant="gradient" disabled={updateSettings.isPending}>
                     {updateSettings.isPending && <Loader2Icon className="animate-spin" />}
                     حفظ التغييرات
                   </Button>

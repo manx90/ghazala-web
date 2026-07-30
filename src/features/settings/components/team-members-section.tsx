@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2Icon, PlusIcon, Trash2Icon } from 'lucide-react';
+import { Loader2Icon, PlusIcon, Trash2Icon, UsersIcon } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -82,13 +83,18 @@ export function TeamMembersSection() {
 
   return (
     <>
-      <Card>
+      <Card className="stagger-in">
         <CardHeader className="flex flex-row items-start justify-between gap-4">
-          <div>
-            <CardTitle>أعضاء الفريق</CardTitle>
-            <CardDescription>إدارة أعضاء المنظمة وأدوارهم</CardDescription>
+          <div className="flex items-start gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+              <UsersIcon className="size-5" aria-hidden="true" />
+            </span>
+            <div>
+              <CardTitle>أعضاء الفريق</CardTitle>
+              <CardDescription>إدارة أعضاء المنظمة وأدوارهم</CardDescription>
+            </div>
           </div>
-          <Button onClick={() => setAddOpen(true)}>
+          <Button variant="gradient" onClick={() => setAddOpen(true)}>
             <PlusIcon />
             إضافة عضو
           </Button>
@@ -102,7 +108,7 @@ export function TeamMembersSection() {
             emptyTitle="لا يوجد أعضاء"
             emptyDescription="أضف أعضاء للفريق للبدء"
             emptyAction={
-              <Button onClick={() => setAddOpen(true)}>
+              <Button variant="gradient" onClick={() => setAddOpen(true)}>
                 <PlusIcon />
                 إضافة عضو
               </Button>
@@ -123,9 +129,19 @@ export function TeamMembersSection() {
                 {data?.items.map((member) => (
                   <TableRow key={member.id}>
                     <TableCell>
-                      {member.user.firstName} {member.user.lastName}
+                      <div className="flex items-center gap-3">
+                        <Avatar>
+                          <AvatarFallback>
+                            {member.user.firstName?.[0] ?? ''}
+                            {member.user.lastName?.[0] ?? ''}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium">
+                          {member.user.firstName} {member.user.lastName}
+                        </span>
+                      </div>
                     </TableCell>
-                    <TableCell>{member.user.email}</TableCell>
+                    <TableCell className="text-muted-foreground">{member.user.email}</TableCell>
                     <TableCell>
                       <Select
                         value={member.role}
@@ -134,7 +150,10 @@ export function TeamMembersSection() {
                         }
                         disabled={updateMember.isPending}
                       >
-                        <SelectTrigger className="w-32">
+                        <SelectTrigger
+                          size="sm"
+                          className="rounded-full border-transparent bg-muted text-xs font-medium shadow-none hover:bg-accent"
+                        >
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -175,18 +194,20 @@ export function TeamMembersSection() {
             <Button variant="outline" onClick={() => setAddOpen(false)}>
               إلغاء
             </Button>
-            <Button onClick={() => void handleAddMember()} disabled={addMember.isPending}>
+            <Button variant="gradient" onClick={() => void handleAddMember()} disabled={addMember.isPending}>
               {addMember.isPending && <Loader2Icon className="animate-spin" />}
               إضافة
             </Button>
           </>
         }
       >
-        <form className="flex flex-col gap-4" onSubmit={handleAddMember}>
+        <form className="flex flex-col gap-5" onSubmit={handleAddMember}>
           <div className="space-y-2">
             <Label htmlFor="userId">معرف المستخدم</Label>
             <Input
               id="userId"
+              dir="ltr"
+              className="text-left font-mono text-xs"
               placeholder="550e8400-e29b-41d4-a716-446655440000"
               {...addForm.register('userId')}
               aria-invalid={Boolean(addForm.formState.errors.userId)}

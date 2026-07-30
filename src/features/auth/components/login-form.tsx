@@ -69,16 +69,16 @@ export function LoginForm() {
     <div>
       <Link
         href={ROUTES.home}
-        className="mb-8 flex items-center justify-center gap-2 text-lg font-bold lg:hidden"
+        className="mb-8 flex items-center justify-center gap-3 lg:hidden"
         aria-label="غزالة - الصفحة الرئيسية"
       >
-        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-md">
-          <MessageCircleIcon className="size-5" aria-hidden />
+        <span className="flex size-12 items-center justify-center rounded-2xl bg-gradient-brand text-white shadow-md glow-brand">
+          <MessageCircleIcon className="size-6" aria-hidden />
         </span>
-        غزالة
+        <span className="text-xl font-bold tracking-tight">غزالة</span>
       </Link>
 
-      <div className="rounded-3xl border border-border/60 bg-card/80 p-7 shadow-xl backdrop-blur-xl sm:p-9">
+      <div className="glass-strong rounded-2xl p-7 shadow-xl sm:p-9">
         <div className="mb-7 text-center">
           <h1 className="text-2xl font-bold tracking-tight">مرحباً بعودتك</h1>
           <p className="mt-2 text-sm text-muted-foreground">أدخل بيانات حسابك للمتابعة إلى لوحة التحكم</p>
@@ -114,7 +114,7 @@ export function LoginForm() {
           <div className="flex justify-end">
             <Link
               href={ROUTES.auth.forgotPassword}
-              className="text-sm font-medium text-primary transition-colors hover:text-secondary hover:underline"
+              className="text-sm font-medium text-primary underline-offset-4 transition-colors hover:text-secondary hover:underline"
             >
               نسيت كلمة المرور؟
             </Link>
@@ -122,7 +122,8 @@ export function LoginForm() {
 
           <Button
             type="submit"
-            className="h-11 w-full bg-gradient-to-l from-primary to-secondary text-sm font-semibold shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30"
+            variant="gradient"
+            className="h-11 w-full text-sm font-semibold"
             disabled={login.isPending}
           >
             {login.isPending ? (
@@ -141,7 +142,7 @@ export function LoginForm() {
         ليس لديك حساب؟{' '}
         <Link
           href={ROUTES.auth.register}
-          className="font-semibold text-primary transition-colors hover:text-secondary hover:underline"
+          className="font-semibold text-primary underline-offset-4 transition-colors hover:text-secondary hover:underline"
         >
           إنشاء حساب جديد
         </Link>

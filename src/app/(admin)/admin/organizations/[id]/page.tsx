@@ -1,17 +1,26 @@
 'use client';
 
-import { ArrowRightIcon, PauseIcon, PlayIcon, Trash2Icon } from 'lucide-react';
+import {
+  ArrowRightIcon,
+  CalendarClockIcon,
+  CalendarPlusIcon,
+  ClockIcon,
+  GlobeIcon,
+  PauseIcon,
+  PlayIcon,
+  Trash2Icon,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { DeleteDialog } from '@/components/global/delete-dialog';
-import { InformationCard } from '@/components/cards';
 import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
 import { QueryState } from '@/components/shared/query-state';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 import { Button } from '@/components/ui/button';
+import { AdminDetailHero, AdminInfoGrid } from '@/features/admin/components/admin-detail-ui';
 import {
   useActivateOrganization,
   useAdminOrganization,
@@ -58,46 +67,56 @@ export default function AdminOrganizationDetailPage() {
         >
           {org && (
             <>
-              <InformationCard
-                title="معلومات أساسية"
-                rows={[
-                  { label: 'البلد', value: org.country },
-                  { label: 'المنطقة الزمنية', value: org.timezone },
-                  { label: 'تاريخ الإنشاء', value: formatDateTime(org.createdAt) },
-                  { label: 'آخر تحديث', value: formatDateTime(org.updatedAt) },
-                ]}
-              />
-
-              <div className="flex items-center justify-between">
-                <StatusBadge status={org.status} />
-                <div className="flex flex-wrap gap-2">
-                  {org.status !== OrganizationStatus.ACTIVE && (
-                    <Button
-                      size="sm"
-                      onClick={() => activateMutation.mutate(org.id)}
-                      disabled={activateMutation.isPending}
-                    >
-                      <PlayIcon data-icon="inline-start" />
-                      تفعيل
-                    </Button>
-                  )}
-                  {org.status !== OrganizationStatus.SUSPENDED && (
+              <AdminDetailHero
+                title={org.name}
+                subtitle={org.slug}
+                initials={org.name.trim().charAt(0) || '—'}
+                badges={<StatusBadge status={org.status} />}
+                actions={
+                  <>
+                    {org.status !== OrganizationStatus.ACTIVE && (
+                      <Button
+                        size="sm"
+                        onClick={() => activateMutation.mutate(org.id)}
+                        disabled={activateMutation.isPending}
+                      >
+                        <PlayIcon data-icon="inline-start" />
+                        تفعيل
+                      </Button>
+                    )}
+                    {org.status !== OrganizationStatus.SUSPENDED && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => suspendMutation.mutate(org.id)}
+                        disabled={suspendMutation.isPending}
+                      >
+                        <PauseIcon data-icon="inline-start" />
+                        تعليق
+                      </Button>
+                    )}
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => suspendMutation.mutate(org.id)}
-                      disabled={suspendMutation.isPending}
+                      className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      onClick={() => setDeleteOpen(true)}
                     >
-                      <PauseIcon data-icon="inline-start" />
-                      تعليق
+                      <Trash2Icon data-icon="inline-start" />
+                      حذف
                     </Button>
-                  )}
-                  <Button size="sm" variant="destructive" onClick={() => setDeleteOpen(true)}>
-                    <Trash2Icon data-icon="inline-start" />
-                    حذف
-                  </Button>
-                </div>
-              </div>
+                  </>
+                }
+              />
+
+              <AdminInfoGrid
+                title="معلومات أساسية"
+                items={[
+                  { label: 'البلد', value: org.country, icon: GlobeIcon },
+                  { label: 'المنطقة الزمنية', value: org.timezone, icon: ClockIcon },
+                  { label: 'تاريخ الإنشاء', value: formatDateTime(org.createdAt), icon: CalendarPlusIcon },
+                  { label: 'آخر تحديث', value: formatDateTime(org.updatedAt), icon: CalendarClockIcon },
+                ]}
+              />
 
               <UnavailableFeatureAlert
                 title="تفاصيل إضافية غير متوفرة"

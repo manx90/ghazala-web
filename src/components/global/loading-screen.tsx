@@ -23,8 +23,16 @@ export function LoadingScreen({
       aria-live="polite"
       aria-busy="true"
     >
-      <Loader2Icon className="size-8 animate-spin text-primary" aria-hidden="true" />
-      <p className="text-sm text-muted-foreground">{label}</p>
+      <div className="relative flex items-center justify-center">
+        <span
+          aria-hidden="true"
+          className="absolute size-14 animate-ping rounded-2xl bg-primary/10"
+        />
+        <span className="flex size-14 items-center justify-center rounded-2xl bg-gradient-brand shadow-lg glow-brand">
+          <Loader2Icon className="size-6 animate-spin text-white" aria-hidden="true" />
+        </span>
+      </div>
+      <p className="text-sm font-medium text-muted-foreground">{label}</p>
     </div>
   );
 }

@@ -13,7 +13,7 @@ interface MessageBubbleProps {
 
 function MessageStatusTicks({ status }: { status: MessageStatus }) {
   if (status === MessageStatus.FAILED) {
-    return <AlertCircleIcon className="size-3.5 text-destructive" aria-label="فشل الإرسال" />;
+    return <AlertCircleIcon className="size-3.5 text-red-300" aria-label="فشل الإرسال" />;
   }
 
   if (status === MessageStatus.QUEUED || status === MessageStatus.SENDING) {
@@ -29,7 +29,7 @@ function MessageStatusTicks({ status }: { status: MessageStatus }) {
   }
 
   if (status === MessageStatus.READ) {
-    return <CheckCheckIcon className="size-3.5 text-sky-500" aria-label="مقروءة" />;
+    return <CheckCheckIcon className="size-3.5 text-sky-300" aria-label="مقروءة" />;
   }
 
   return null;
@@ -43,21 +43,25 @@ function MediaPreview({ url, type, caption, filename }: {
 }) {
   if (type === MessageType.IMAGE || type === MessageType.STICKER) {
     return (
-      <div className="space-y-1">
+      <div className="space-y-1.5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={url} alt={caption ?? 'صورة'} className="max-h-48 rounded-md object-cover" />
+        <img
+          src={url}
+          alt={caption ?? 'صورة'}
+          className="max-h-56 rounded-xl object-cover ring-1 ring-black/10"
+        />
         {caption && <p className="text-sm whitespace-pre-wrap">{caption}</p>}
       </div>
     );
   }
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1.5">
       <a
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-sm underline underline-offset-2"
+        className="inline-flex items-center gap-1.5 rounded-lg bg-black/10 px-2.5 py-1.5 text-sm font-medium transition-colors hover:bg-black/15"
       >
         {filename ?? 'فتح المرفق'}
       </a>
@@ -71,17 +75,22 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   const content = getMessageContent(message);
 
   return (
-    <div className={cn('flex w-full', isOutbound ? 'justify-start' : 'justify-end')}>
+    <div
+      className={cn(
+        'flex w-full animate-fade-in-up',
+        isOutbound ? 'justify-start' : 'justify-end',
+      )}
+    >
       <div
         className={cn(
-          'max-w-[85%] rounded-2xl px-3 py-2 text-sm shadow-sm',
+          'max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed',
           isOutbound
-            ? 'rounded-tr-sm bg-primary text-primary-foreground'
-            : 'rounded-tl-sm bg-muted text-foreground',
+            ? 'rounded-tr-sm bg-gradient-brand text-white shadow-md'
+            : 'rounded-tl-sm border border-border/60 bg-card text-foreground shadow-2xs',
         )}
       >
         {message.messageType === MessageType.TEMPLATE && content.templateName && (
-          <p className="mb-1 text-xs opacity-80">قالب: {content.templateName}</p>
+          <p className="mb-1.5 text-[11px] font-medium opacity-75">قالب: {content.templateName}</p>
         )}
 
         {content.mediaUrl ? (
@@ -97,8 +106,8 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
         <div
           className={cn(
-            'mt-1 flex items-center gap-1 text-[10px]',
-            isOutbound ? 'text-primary-foreground/80' : 'text-muted-foreground',
+            'mt-1 flex items-center justify-end gap-1 text-[10px]',
+            isOutbound ? 'text-white/70' : 'text-muted-foreground/80',
           )}
         >
           <span>{formatTime(message.createdAt)}</span>
@@ -106,7 +115,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         </div>
 
         {message.status === MessageStatus.FAILED && message.errorMessage && (
-          <p className="mt-1 text-xs text-destructive">{message.errorMessage}</p>
+          <p className="mt-1 text-xs text-red-200">{message.errorMessage}</p>
         )}
       </div>
     </div>

@@ -152,7 +152,7 @@ export function DataTable<TData>({
       {toolbar}
 
       {bulkActions && selectedIds.length > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-muted/50 px-3 py-2">
+        <div className="animate-fade-in-down flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary/20 bg-gradient-brand-soft px-3 py-2 shadow-2xs">
           <span className="text-sm font-medium">
             {selectedIds.length} محدد
           </span>
@@ -162,7 +162,7 @@ export function DataTable<TData>({
         </div>
       )}
 
-      <div className="rounded-lg border">
+      <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
         {isLoading ? (
           <TableSkeleton rows={Math.min(pagination.limit, 8)} columns={columns.length + (onRowSelectionChange ? 1 : 0)} />
         ) : isError ? (
@@ -193,7 +193,7 @@ export function DataTable<TData>({
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id} className="bg-muted/30">
+                <TableRow key={headerGroup.id} className="bg-muted/50 hover:bg-muted/50">
                   {headerGroup.headers.map((header) => {
                     const canSort = header.column.getCanSort();
                     const sortDir = header.column.getIsSorted();
@@ -202,7 +202,7 @@ export function DataTable<TData>({
                         {header.isPlaceholder ? null : canSort ? (
                           <button
                             type="button"
-                            className="inline-flex items-center gap-1 hover:text-foreground"
+                            className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
                             onClick={header.column.getToggleSortingHandler()}
                           >
                             <span>{flexRender(header.column.columnDef.header, header.getContext())}</span>

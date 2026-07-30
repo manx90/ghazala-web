@@ -23,7 +23,7 @@ interface TemplateSummaryCardProps {
 }
 
 export function TemplateSummaryCard({ templates }: TemplateSummaryCardProps) {
-  const items = templates.data?.items ?? [];
+  const items = useMemo(() => templates.data?.items ?? [], [templates.data?.items]);
 
   const statusCounts = useMemo(() => {
     const counts = Object.values(TemplateStatus).reduce(
@@ -45,10 +45,12 @@ export function TemplateSummaryCard({ templates }: TemplateSummaryCardProps) {
   }, [items]);
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileTextIcon className="size-4 text-muted-foreground" />
+        <CardTitle className="flex items-center gap-2.5 tracking-tight">
+          <span className="flex size-8 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+            <FileTextIcon className="size-4" aria-hidden="true" />
+          </span>
           ملخص القوالب
         </CardTitle>
         <CardDescription>توزيع القوالب حسب الحالة</CardDescription>
@@ -67,13 +69,21 @@ export function TemplateSummaryCard({ templates }: TemplateSummaryCardProps) {
             {statusCounts.map(({ status, count }) => (
               <div
                 key={status}
-                className="flex items-center justify-between rounded-lg border px-3 py-2"
+                className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5 transition-colors duration-200 hover:bg-muted/40"
               >
                 <StatusBadge status={status} />
-                <span className="text-sm font-semibold">{count}</span>
+                <span className="flex size-7 items-center justify-center rounded-md bg-gradient-brand-soft text-xs font-bold text-primary ring-1 ring-primary/10 tabular-nums">
+                  {count}
+                </span>
               </div>
             ))}
-            <p className="text-xs text-muted-foreground">الإجمالي: {templates.data?.total ?? 0} قالب</p>
+            <p className="border-t border-border/60 pt-3 text-xs text-muted-foreground">
+              الإجمالي:{' '}
+              <span className="font-semibold text-foreground tabular-nums">
+                {templates.data?.total ?? 0}
+              </span>{' '}
+              قالب
+            </p>
           </div>
         </QueryState>
       </CardContent>

@@ -13,7 +13,7 @@ export function PricingCta() {
     <section className="py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <Reveal>
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary to-secondary px-6 py-16 text-center text-primary-foreground shadow-2xl sm:px-12">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-brand px-6 py-16 text-center text-primary-foreground shadow-2xl sm:px-12">
             <div
               aria-hidden
               className="absolute inset-0 bg-[linear-gradient(to_left,rgb(255_255_255/0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgb(255_255_255/0.06)_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_80%_at_50%_50%,black,transparent)]"

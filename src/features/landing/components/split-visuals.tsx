@@ -146,7 +146,7 @@ function BroadcastVisual() {
                   transition={
                     reduceMotion ? { duration: 0 } : { duration: 0.9, delay: 0.15 * index, ease: 'easeOut' }
                   }
-                  className="h-full rounded-full bg-gradient-to-l from-primary to-secondary"
+                  className="h-full rounded-full bg-gradient-brand"
                 />
               </div>
             </div>

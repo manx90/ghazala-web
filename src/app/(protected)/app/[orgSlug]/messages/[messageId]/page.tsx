@@ -2,7 +2,15 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowRightIcon, RefreshCwIcon } from 'lucide-react';
+import type React from 'react';
+import {
+  ArrowRightIcon,
+  CalendarIcon,
+  FileTextIcon,
+  PhoneIcon,
+  RefreshCwIcon,
+  RepeatIcon,
+} from 'lucide-react';
 import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
 import { QueryState } from '@/components/shared/query-state';
@@ -157,42 +165,72 @@ export default function MessageDetailPage() {
                   }
                 />
 
-                <Card>
+                <Card
+                  className="stagger-in"
+                  style={{ '--stagger-delay': '60ms' } as React.CSSProperties}
+                >
                   <CardHeader>
                     <CardTitle>تفاصيل الرسالة</CardTitle>
                     <CardDescription>معلومات الإرسال والمحتوى</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <dl className="grid gap-3 text-sm sm:grid-cols-2">
-                      <div className="flex flex-col gap-0.5">
-                        <dt className="text-muted-foreground">المستلم</dt>
-                        <dd className="font-medium">{messageQuery.data.recipient}</dd>
+                    <dl className="grid gap-4 text-sm sm:grid-cols-2">
+                      <div className="flex items-center gap-3">
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                          <PhoneIcon className="size-4" aria-hidden="true" />
+                        </span>
+                        <div className="flex min-w-0 flex-col gap-0.5">
+                          <dt className="text-xs text-muted-foreground">المستلم</dt>
+                          <dd dir="ltr" className="truncate text-start font-mono text-xs font-medium">
+                            {messageQuery.data.recipient}
+                          </dd>
+                        </div>
                       </div>
-                      <div className="flex flex-col gap-0.5">
-                        <dt className="text-muted-foreground">النوع</dt>
-                        <dd>{MESSAGE_TYPE_LABELS[messageQuery.data.messageType] ?? messageQuery.data.messageType}</dd>
+                      <div className="flex items-center gap-3">
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                          <FileTextIcon className="size-4" aria-hidden="true" />
+                        </span>
+                        <div className="flex flex-col gap-0.5">
+                          <dt className="text-xs text-muted-foreground">النوع</dt>
+                          <dd>{MESSAGE_TYPE_LABELS[messageQuery.data.messageType] ?? messageQuery.data.messageType}</dd>
+                        </div>
                       </div>
-                      <div className="flex flex-col gap-0.5">
-                        <dt className="text-muted-foreground">تاريخ الإنشاء</dt>
-                        <dd>{formatDateTime(messageQuery.data.createdAt)}</dd>
+                      <div className="flex items-center gap-3">
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                          <CalendarIcon className="size-4" aria-hidden="true" />
+                        </span>
+                        <div className="flex flex-col gap-0.5">
+                          <dt className="text-xs text-muted-foreground">تاريخ الإنشاء</dt>
+                          <dd>{formatDateTime(messageQuery.data.createdAt)}</dd>
+                        </div>
                       </div>
-                      <div className="flex flex-col gap-0.5">
-                        <dt className="text-muted-foreground">عدد المحاولات</dt>
-                        <dd>
-                          {messageQuery.data.retryCount} / {messageQuery.data.maxRetries}
-                        </dd>
+                      <div className="flex items-center gap-3">
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                          <RepeatIcon className="size-4" aria-hidden="true" />
+                        </span>
+                        <div className="flex flex-col gap-0.5">
+                          <dt className="text-xs text-muted-foreground">عدد المحاولات</dt>
+                          <dd>
+                            {messageQuery.data.retryCount} / {messageQuery.data.maxRetries}
+                          </dd>
+                        </div>
                       </div>
                       {messageQuery.data.errorMessage && (
-                        <div className="flex flex-col gap-0.5 sm:col-span-2">
-                          <dt className="text-destructive">رسالة الخطأ</dt>
-                          <dd className="text-destructive">{messageQuery.data.errorMessage}</dd>
+                        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3.5 sm:col-span-2">
+                          <p className="text-xs font-medium text-destructive">رسالة الخطأ</p>
+                          <p className="mt-1 text-sm text-destructive/90">
+                            {messageQuery.data.errorMessage}
+                          </p>
                         </div>
                       )}
                     </dl>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card
+                  className="stagger-in"
+                  style={{ '--stagger-delay': '120ms' } as React.CSSProperties}
+                >
                   <CardHeader>
                     <CardTitle>مسار الحالة</CardTitle>
                     <CardDescription>تتبّع مراحل إرسال الرسالة</CardDescription>
@@ -206,17 +244,17 @@ export default function MessageDetailPage() {
                       emptyTitle="لا توجد بيانات حالة"
                       onRetry={() => void statusQuery.refetch()}
                     >
-                      <ol className="relative flex flex-col gap-0 border-r-2 border-muted pr-6">
+                      <ol className="relative flex flex-col gap-0 border-s-2 border-border ps-6">
                         {timeline.map((step, index) => (
                           <li key={step.key} className="relative pb-6 last:pb-0">
                             <span
                               className={cn(
-                                'absolute -right-[calc(0.5rem+1px)] top-1 size-3 rounded-full ring-2 ring-background',
+                                'absolute -start-[calc(0.5rem+1px)] top-1 size-3 rounded-full',
                                 step.failed
-                                  ? 'bg-destructive'
+                                  ? 'bg-destructive ring-4 ring-destructive/15'
                                   : step.active
-                                    ? 'bg-primary'
-                                    : 'bg-muted',
+                                    ? 'bg-primary ring-4 ring-primary/15'
+                                    : 'bg-muted-foreground/30 ring-2 ring-background',
                               )}
                             />
                             <div className="flex flex-col gap-0.5">

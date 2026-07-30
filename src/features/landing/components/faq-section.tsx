@@ -12,7 +12,7 @@ export function FaqSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id={FAQ_SECTION.id} className="scroll-mt-24 bg-muted/40 py-20 sm:py-28">
+    <section id={FAQ_SECTION.id} className="scroll-mt-24 bg-muted/40 py-20 sm:py-24">
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <SectionHeading eyebrow={FAQ_SECTION.eyebrow} title={FAQ_SECTION.title} />
 

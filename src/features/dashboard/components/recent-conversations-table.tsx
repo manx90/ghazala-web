@@ -4,6 +4,7 @@ import Link from 'next/link';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { buttonVariants } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { QueryState } from '@/components/shared/query-state';
 import { StatusBadge } from '@/components/shared/status-badge';
 import {
@@ -28,10 +29,10 @@ export function RecentConversationsTable({ conversations, orgSlug }: RecentConve
   const items = conversations.data?.items ?? [];
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
-        <div>
-          <CardTitle>أحدث المحادثات</CardTitle>
+        <div className="flex flex-col gap-1">
+          <CardTitle className="tracking-tight">أحدث المحادثات</CardTitle>
           <CardDescription>آخر 5 محادثات نشطة</CardDescription>
         </div>
         <Link href={ROUTES.app.inbox(orgSlug)} className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>
@@ -48,28 +49,39 @@ export function RecentConversationsTable({ conversations, orgSlug }: RecentConve
           emptyDescription="ستظهر المحادثات هنا عند استقبال رسائل جديدة."
           onRetry={() => void conversations.refetch()}
         >
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>رقم العميل</TableHead>
-                <TableHead>الحالة</TableHead>
-                <TableHead>آخر رسالة</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {items.map((conversation) => (
-                <TableRow key={conversation.id}>
-                  <TableCell className="font-medium">{conversation.customerPhone}</TableCell>
-                  <TableCell>
-                    <StatusBadge status={conversation.status} />
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatRelativeTime(conversation.lastMessageAt)}
-                  </TableCell>
+          <div className="overflow-hidden rounded-xl border border-border/60">
+            <Table>
+              <TableHeader className="bg-muted/50">
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="px-3">رقم العميل</TableHead>
+                  <TableHead className="px-3">الحالة</TableHead>
+                  <TableHead className="px-3">آخر رسالة</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {items.map((conversation) => (
+                  <TableRow key={conversation.id}>
+                    <TableCell className="px-3 py-2.5 font-medium">
+                      <div className="flex items-center gap-2.5">
+                        <Avatar size="sm">
+                          <AvatarFallback className="bg-gradient-brand text-[10px] font-semibold text-primary-foreground">
+                            {conversation.customerPhone.slice(-2)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span dir="ltr">{conversation.customerPhone}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5">
+                      <StatusBadge status={conversation.status} />
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 text-muted-foreground">
+                      {formatRelativeTime(conversation.lastMessageAt)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </QueryState>
       </CardContent>
     </Card>

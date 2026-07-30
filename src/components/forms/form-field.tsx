@@ -37,14 +37,18 @@ export function FormField<T extends FieldValues, K extends FieldPath<T>>({
         </Label>
       )}
       {children({ id, invalid })}
-      {description && !error && <p className="text-xs text-muted-foreground">{description}</p>}
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {description && !error && <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>}
+      {error && (
+        <p role="alert" className="animate-fade-in text-xs font-medium text-destructive">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
 
 export function FormLayout({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn('flex flex-col gap-4', className)}>{children}</div>;
+  return <div className={cn('flex flex-col gap-5', className)}>{children}</div>;
 }
 
 export function FormRow({ children, className }: { children: ReactNode; className?: string }) {

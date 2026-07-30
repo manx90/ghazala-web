@@ -3,6 +3,7 @@
 import { EyeIcon, GitMergeIcon, MoreHorizontalIcon, Trash2Icon } from 'lucide-react';
 import Link from 'next/link';
 import { StatusBadge } from '@/components/shared/status-badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -40,6 +41,17 @@ function getDisplayName(contact: Contact): string {
   );
 }
 
+// أحرف أولى للأفاتار عند غياب الصورة
+function getInitials(contact: Contact): string {
+  const name = getDisplayName(contact).trim();
+  if (!name || name === contact.phone) return contact.phone.slice(-2);
+  return name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0] ?? '')
+    .join('');
+}
+
 export function ContactTable({
   contacts,
   orgSlug,
@@ -65,83 +77,104 @@ export function ContactTable({
   const allSelected = contacts.length > 0 && selectedIds.length === contacts.length;
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          {onSelectionChange && (
-            <TableHead className="w-10">
-              <Checkbox
-                checked={allSelected}
-                onCheckedChange={(checked) => toggleAll(checked === true)}
-                aria-label="تحديد الكل"
-              />
-            </TableHead>
-          )}
-          <TableHead>الاسم</TableHead>
-          <TableHead>الهاتف</TableHead>
-          <TableHead>البريد</TableHead>
-          <TableHead>آخر رسالة</TableHead>
-          <TableHead>الحالة</TableHead>
-          <TableHead className="w-12" />
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {contacts.map((contact) => (
-          <TableRow key={contact.id}>
+    <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-muted/50 hover:bg-muted/50">
             {onSelectionChange && (
-              <TableCell>
+              <TableHead className="w-10">
                 <Checkbox
-                  checked={selectedIds.includes(contact.id)}
-                  onCheckedChange={(checked) => toggleSelection(contact.id, checked === true)}
-                  aria-label={`تحديد ${getDisplayName(contact)}`}
+                  checked={allSelected}
+                  onCheckedChange={(checked) => toggleAll(checked === true)}
+                  aria-label="تحديد الكل"
                 />
-              </TableCell>
+              </TableHead>
             )}
-            <TableCell className="font-medium">{getDisplayName(contact)}</TableCell>
-            <TableCell dir="ltr">{contact.phone}</TableCell>
-            <TableCell dir="ltr">{contact.email ?? '—'}</TableCell>
-            <TableCell title={formatDateTime(contact.lastMessageAt)}>
-              {contact.lastMessageAt ? formatRelativeTime(contact.lastMessageAt) : '—'}
-            </TableCell>
-            <TableCell>
-              {contact.isBlocked ? (
-                <StatusBadge status="DISABLED" />
-              ) : (
-                <StatusBadge status="ACTIVE" />
-              )}
-            </TableCell>
-            <TableCell>
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button variant="ghost" size="sm" aria-label="إجراءات">
-                      <MoreHorizontalIcon />
-                    </Button>
-                  }
-                />
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem render={<Link href={`/app/${orgSlug}/contacts/${contact.id}`} />}>
-                    <EyeIcon data-icon="inline-start" />
-                    عرض التفاصيل
-                  </DropdownMenuItem>
-                  {onMerge && (
-                    <DropdownMenuItem onClick={() => onMerge(contact)}>
-                      <GitMergeIcon data-icon="inline-start" />
-                      دمج
-                    </DropdownMenuItem>
-                  )}
-                  {onDelete && (
-                    <DropdownMenuItem variant="destructive" onClick={() => onDelete(contact)}>
-                      <Trash2Icon data-icon="inline-start" />
-                      حذف
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
+            <TableHead>الاسم</TableHead>
+            <TableHead>الهاتف</TableHead>
+            <TableHead>البريد</TableHead>
+            <TableHead>آخر رسالة</TableHead>
+            <TableHead>الحالة</TableHead>
+            <TableHead className="w-12" />
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {contacts.map((contact) => (
+            <TableRow key={contact.id}>
+              {onSelectionChange && (
+                <TableCell>
+                  <Checkbox
+                    checked={selectedIds.includes(contact.id)}
+                    onCheckedChange={(checked) => toggleSelection(contact.id, checked === true)}
+                    aria-label={`تحديد ${getDisplayName(contact)}`}
+                  />
+                </TableCell>
+              )}
+              <TableCell>
+                <div className="flex items-center gap-3">
+                  <Avatar size="default">
+                    {contact.profilePhotoUrl ? (
+                      <AvatarImage src={contact.profilePhotoUrl} alt={getDisplayName(contact)} />
+                    ) : null}
+                    <AvatarFallback className="bg-gradient-brand-soft font-semibold text-primary">
+                      {getInitials(contact)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="font-medium">{getDisplayName(contact)}</span>
+                </div>
+              </TableCell>
+              <TableCell dir="ltr" className="text-start font-mono text-xs">
+                {contact.phone}
+              </TableCell>
+              <TableCell dir="ltr" className="text-start text-muted-foreground">
+                {contact.email ?? '—'}
+              </TableCell>
+              <TableCell
+                title={formatDateTime(contact.lastMessageAt)}
+                className="text-muted-foreground"
+              >
+                {contact.lastMessageAt ? formatRelativeTime(contact.lastMessageAt) : '—'}
+              </TableCell>
+              <TableCell>
+                {contact.isBlocked ? (
+                  <StatusBadge status="DISABLED" />
+                ) : (
+                  <StatusBadge status="ACTIVE" />
+                )}
+              </TableCell>
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    render={
+                      <Button variant="ghost" size="sm" aria-label="إجراءات">
+                        <MoreHorizontalIcon />
+                      </Button>
+                    }
+                  />
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem render={<Link href={`/app/${orgSlug}/contacts/${contact.id}`} />}>
+                      <EyeIcon data-icon="inline-start" />
+                      عرض التفاصيل
+                    </DropdownMenuItem>
+                    {onMerge && (
+                      <DropdownMenuItem onClick={() => onMerge(contact)}>
+                        <GitMergeIcon data-icon="inline-start" />
+                        دمج
+                      </DropdownMenuItem>
+                    )}
+                    {onDelete && (
+                      <DropdownMenuItem variant="destructive" onClick={() => onDelete(contact)}>
+                        <Trash2Icon data-icon="inline-start" />
+                        حذف
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

@@ -3,10 +3,11 @@
 import { ArrowRightIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import type React from 'react';
 import { PermissionGuard } from '@/components/guards/permission-guard';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { TemplateForm } from '@/features/templates/components/template-form';
 import { useCreateTemplate } from '@/features/templates/hooks/use-templates';
 import type { CreateTemplatePayload } from '@/types/template.types';
@@ -37,9 +38,13 @@ export default function NewTemplatePage() {
           }
         />
 
-        <Card>
+        <Card
+          className="stagger-in"
+          style={{ '--stagger-delay': '120ms' } as React.CSSProperties}
+        >
           <CardHeader>
             <CardTitle>بيانات القالب</CardTitle>
+            <CardDescription>أدخل بيانات القالب ليتم إرساله إلى Meta للمراجعة</CardDescription>
           </CardHeader>
           <CardContent>
             <TemplateForm

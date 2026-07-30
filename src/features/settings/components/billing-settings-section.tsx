@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2Icon } from 'lucide-react';
+import { BadgeCheckIcon, CreditCardIcon, Loader2Icon, ReceiptTextIcon, SparklesIcon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -41,6 +42,7 @@ import { BillingCycle, SubscriptionStatus } from '@/types/billing.types';
 import type { Plan } from '@/types/billing.types';
 import { formatCurrency } from '@/utils/currency';
 import { formatDate } from '@/utils/date';
+import { cn } from '@/lib/utils';
 
 const BILLING_CYCLE_LABELS: Record<BillingCycle, string> = {
   [BillingCycle.MONTHLY]: 'شهري',
@@ -100,12 +102,17 @@ export function BillingSettingsSection() {
   const isPlanPending = subscribe.isPending || changePlan.isPending;
 
   return (
-    <div className="flex flex-col gap-8">
-      <Card>
+    <div className="flex flex-col gap-6">
+      <Card className="stagger-in bg-gradient-brand-soft ring-primary/10">
         <CardHeader className="flex flex-row items-start justify-between gap-4">
-          <div>
-            <CardTitle>الاشتراك الحالي</CardTitle>
-            <CardDescription>تفاصيل خطتك ودورة الفوترة</CardDescription>
+          <div className="flex items-start gap-3">
+            <span className="bg-gradient-brand flex size-10 shrink-0 items-center justify-center rounded-xl text-primary-foreground shadow-md">
+              <CreditCardIcon className="size-5" aria-hidden="true" />
+            </span>
+            <div>
+              <CardTitle>الاشتراك الحالي</CardTitle>
+              <CardDescription>تفاصيل خطتك ودورة الفوترة</CardDescription>
+            </div>
           </div>
           {hasSubscription && subscription.status === SubscriptionStatus.ACTIVE && (
             <Button variant="destructive" onClick={() => setCancelOpen(true)}>
@@ -126,7 +133,9 @@ export function BillingSettingsSection() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">الخطة</p>
-                  <p className="font-medium">{subscription.plan?.name ?? subscription.planId}</p>
+                  <p className="text-lg font-semibold tracking-tight">
+                    {subscription.plan?.name ?? subscription.planId}
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">الحالة</p>
@@ -134,11 +143,11 @@ export function BillingSettingsSection() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">دورة الفوترة</p>
-                  <p>{BILLING_CYCLE_LABELS[subscription.billingCycle]}</p>
+                  <p className="font-medium">{BILLING_CYCLE_LABELS[subscription.billingCycle]}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">تاريخ الانتهاء</p>
-                  <p>{formatDate(subscription.expiresAt)}</p>
+                  <p className="font-medium">{formatDate(subscription.expiresAt)}</p>
                 </div>
               </div>
             )}
@@ -146,10 +155,15 @@ export function BillingSettingsSection() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>الخطط المتاحة</CardTitle>
-          <CardDescription>اختر خطة أو غيّر خطتك الحالية</CardDescription>
+      <Card className="stagger-in" style={{ '--stagger-delay': '80ms' } as CSSProperties}>
+        <CardHeader className="flex flex-row items-start gap-3">
+          <span className="bg-gradient-brand-soft flex size-10 shrink-0 items-center justify-center rounded-xl text-primary ring-1 ring-primary/10">
+            <SparklesIcon className="size-5" aria-hidden="true" />
+          </span>
+          <div>
+            <CardTitle>الخطط المتاحة</CardTitle>
+            <CardDescription>اختر خطة أو غيّر خطتك الحالية</CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <QueryState
@@ -161,23 +175,39 @@ export function BillingSettingsSection() {
             onRetry={() => void plansQuery.refetch()}
           >
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {plansQuery.data?.items.map((plan) => {
+              {plansQuery.data?.items.map((plan, index) => {
                 const isCurrent = subscription?.planId === plan.id;
                 return (
-                  <Card key={plan.id} size="sm">
-                    <CardHeader>
-                      <CardTitle>{plan.name}</CardTitle>
-                      <CardDescription>{plan.description ?? plan.code}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-3">
+                  <Card
+                    key={plan.id}
+                    size="sm"
+                    className={cn(
+                      'card-interactive stagger-in transition-all hover:ring-primary/40',
+                      isCurrent && 'bg-gradient-brand-soft ring-2 ring-primary/60',
+                    )}
+                    style={{ '--stagger-delay': `${120 + index * 60}ms` } as CSSProperties}
+                  >
+                    <CardHeader className="flex flex-row items-start justify-between gap-2">
                       <div>
-                        <p className="text-2xl font-semibold">
+                        <CardTitle>{plan.name}</CardTitle>
+                        <CardDescription>{plan.description ?? plan.code}</CardDescription>
+                      </div>
+                      {isCurrent && (
+                        <Badge className="bg-gradient-brand shrink-0 gap-1 text-primary-foreground">
+                          <BadgeCheckIcon className="size-3.5" aria-hidden="true" />
+                          الحالية
+                        </Badge>
+                      )}
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-4">
+                      <div>
+                        <p className="text-3xl font-bold tracking-tight">
                           {formatCurrency(plan.monthlyPrice, plan.currency)}
                         </p>
-                        <p className="text-xs text-muted-foreground">شهرياً</p>
+                        <p className="mt-1 text-xs text-muted-foreground">شهرياً</p>
                       </div>
                       <Button
-                        variant={isCurrent ? 'secondary' : 'default'}
+                        variant={isCurrent ? 'secondary' : 'gradient'}
                         disabled={isCurrent || !plan.isActive}
                         onClick={() => openPlanDialog(plan)}
                       >
@@ -192,10 +222,15 @@ export function BillingSettingsSection() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>الفواتير</CardTitle>
-          <CardDescription>سجل الفواتير السابقة</CardDescription>
+      <Card className="stagger-in" style={{ '--stagger-delay': '160ms' } as CSSProperties}>
+        <CardHeader className="flex flex-row items-start gap-3">
+          <span className="bg-gradient-brand-soft flex size-10 shrink-0 items-center justify-center rounded-xl text-primary ring-1 ring-primary/10">
+            <ReceiptTextIcon className="size-5" aria-hidden="true" />
+          </span>
+          <div>
+            <CardTitle>الفواتير</CardTitle>
+            <CardDescription>سجل الفواتير السابقة</CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <QueryState
@@ -219,7 +254,7 @@ export function BillingSettingsSection() {
               <TableBody>
                 {invoicesQuery.data?.items.map((invoice) => (
                   <TableRow key={invoice.id}>
-                    <TableCell>{invoice.invoiceNumber}</TableCell>
+                    <TableCell className="font-medium" dir="ltr">{invoice.invoiceNumber}</TableCell>
                     <TableCell>
                       {formatCurrency(invoice.amount, invoice.currency)}
                     </TableCell>
@@ -246,7 +281,7 @@ export function BillingSettingsSection() {
             <Button variant="outline" onClick={() => setPlanDialogOpen(false)}>
               إلغاء
             </Button>
-            <Button onClick={() => void handlePlanSubmit()} disabled={isPlanPending}>
+            <Button variant="gradient" onClick={() => void handlePlanSubmit()} disabled={isPlanPending}>
               {isPlanPending && <Loader2Icon className="animate-spin" />}
               تأكيد
             </Button>

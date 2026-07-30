@@ -1,8 +1,17 @@
 'use client';
 
-import { ArrowRightIcon, Trash2Icon } from 'lucide-react';
+import {
+  ActivityIcon,
+  ArrowRightIcon,
+  CalendarIcon,
+  ClockIcon,
+  MessageSquareIcon,
+  StickyNoteIcon,
+  Trash2Icon,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import type React from 'react';
 import { useState } from 'react';
 import { DeleteDialog } from '@/components/global/delete-dialog';
 import { PermissionGuard } from '@/components/guards/permission-guard';
@@ -10,7 +19,7 @@ import { PageHeader } from '@/components/shared/page-header';
 import { QueryState } from '@/components/shared/query-state';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ContactForm } from '@/features/contacts/components/contact-form';
 import {
   useContact,
@@ -85,9 +94,13 @@ export default function ContactDetailPage() {
         >
           {contact && (
             <div className="grid gap-6 lg:grid-cols-3">
-              <Card className="lg:col-span-2">
+              <Card
+                className="stagger-in lg:col-span-2"
+                style={{ '--stagger-delay': '60ms' } as React.CSSProperties}
+              >
                 <CardHeader>
                   <CardTitle>تعديل البيانات</CardTitle>
+                  <CardDescription>تحديث معلومات جهة الاتصال وإعداداتها</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ContactForm
@@ -99,30 +112,45 @@ export default function ContactDetailPage() {
                 </CardContent>
               </Card>
 
-              <div className="flex flex-col gap-4">
+              <div
+                className="stagger-in flex flex-col gap-4"
+                style={{ '--stagger-delay': '120ms' } as React.CSSProperties}
+              >
                 <Card>
                   <CardHeader>
                     <CardTitle>معلومات</CardTitle>
                   </CardHeader>
-                  <CardContent className="flex flex-col gap-3 text-sm">
-                    <div className="flex justify-between gap-2">
-                      <span className="text-muted-foreground">الحالة</span>
+                  <CardContent className="flex flex-col gap-4 text-sm">
+                    <div className="flex items-center gap-3">
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                        <ActivityIcon className="size-4" aria-hidden="true" />
+                      </span>
+                      <span className="flex-1 text-muted-foreground">الحالة</span>
                       {contact.isBlocked ? (
                         <StatusBadge status="DISABLED" />
                       ) : (
                         <StatusBadge status="ACTIVE" />
                       )}
                     </div>
-                    <div className="flex justify-between gap-2">
-                      <span className="text-muted-foreground">آخر رسالة</span>
+                    <div className="flex items-center gap-3">
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                        <MessageSquareIcon className="size-4" aria-hidden="true" />
+                      </span>
+                      <span className="flex-1 text-muted-foreground">آخر رسالة</span>
                       <span>{formatDateTime(contact.lastMessageAt)}</span>
                     </div>
-                    <div className="flex justify-between gap-2">
-                      <span className="text-muted-foreground">تاريخ الإنشاء</span>
+                    <div className="flex items-center gap-3">
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                        <CalendarIcon className="size-4" aria-hidden="true" />
+                      </span>
+                      <span className="flex-1 text-muted-foreground">تاريخ الإنشاء</span>
                       <span>{formatDateTime(contact.createdAt)}</span>
                     </div>
-                    <div className="flex justify-between gap-2">
-                      <span className="text-muted-foreground">آخر تحديث</span>
+                    <div className="flex items-center gap-3">
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                        <ClockIcon className="size-4" aria-hidden="true" />
+                      </span>
+                      <span className="flex-1 text-muted-foreground">آخر تحديث</span>
                       <span>{formatDateTime(contact.updatedAt)}</span>
                     </div>
                   </CardContent>
@@ -130,10 +158,15 @@ export default function ContactDetailPage() {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>الملاحظات</CardTitle>
+                    <CardTitle className="flex items-center gap-2.5">
+                      <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                        <StickyNoteIcon className="size-4" aria-hidden="true" />
+                      </span>
+                      الملاحظات
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
                       {contact.notes?.trim() || 'لا توجد ملاحظات'}
                     </p>
                   </CardContent>

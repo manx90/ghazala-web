@@ -6,13 +6,16 @@ import {
   Loader2Icon,
   LockIcon,
   LockOpenIcon,
+  MessagesSquareIcon,
   PanelRightIcon,
+  SearchXIcon,
   UserIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { EmptyState } from '@/components/global/empty-state';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { StatusBadge } from '@/components/shared/status-badge';
@@ -31,6 +34,14 @@ import { cn } from '@/lib/utils';
 
 interface InboxLayoutProps {
   conversationId?: string;
+}
+
+function getInitials(name?: string | null, phone?: string): string {
+  if (name?.trim()) {
+    const parts = name.trim().split(/\s+/);
+    return parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? '').join('');
+  }
+  return phone?.slice(-2) ?? '؟';
 }
 
 export function InboxLayout({ conversationId }: InboxLayoutProps) {
@@ -138,19 +149,20 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
         )}
       >
         {!conversationId ? (
-          <div className="flex flex-1 items-center justify-center p-6">
+          <div className="flex flex-1 items-center justify-center bg-muted/30 p-6">
             <EmptyState
+              icon={<MessagesSquareIcon />}
               title="اختر محادثة"
               description="اختر محادثة من القائمة لعرض الرسائل والرد على العملاء"
             />
           </div>
         ) : conversationQuery.isLoading ? (
-          <div className="flex flex-1 items-center justify-center">
-            <Loader2Icon className="size-6 animate-spin text-muted-foreground" />
+          <div className="flex flex-1 items-center justify-center bg-muted/30">
+            <Loader2Icon className="size-6 animate-spin text-primary" />
           </div>
         ) : conversation ? (
           <>
-            <div className="flex items-center gap-2 border-b px-3 py-2">
+            <div className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border/60 bg-card px-3">
               <Button
                 type="button"
                 variant="ghost"
@@ -162,9 +174,18 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
                 <ArrowRightIcon />
               </Button>
 
+              <Avatar size="default" className="size-9 shadow-2xs">
+                {activeContact?.profilePhotoUrl ? (
+                  <AvatarImage src={activeContact.profilePhotoUrl} alt={displayTitle} />
+                ) : null}
+                <AvatarFallback className="bg-gradient-brand text-[11px] font-semibold text-white">
+                  {getInitials(displayTitle, conversation.customerPhone)}
+                </AvatarFallback>
+              </Avatar>
+
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{displayTitle}</p>
-                <p className="truncate text-xs text-muted-foreground" dir="ltr">
+                <p className="truncate text-sm font-semibold">{displayTitle}</p>
+                <p className="truncate text-[11px] text-muted-foreground" dir="ltr">
                   {formatPhoneDisplay(conversation.customerPhone)}
                 </p>
               </div>
@@ -226,8 +247,9 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
             <MessageComposer conversation={conversation} disabled={!canSendMessages} />
           </>
         ) : (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center">
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-muted/30 p-6 text-center">
             <EmptyState
+              icon={<SearchXIcon />}
               title="المحادثة غير موجودة"
               description="تعذّر العثور على هذه المحادثة"
               action={
@@ -240,14 +262,16 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
         )}
       </div>
 
-      <aside className="hidden w-72 shrink-0 border-s xl:block 2xl:w-80">
+      <aside className="hidden w-72 shrink-0 border-s border-border/60 xl:block 2xl:w-80">
         <CustomerPanel conversation={conversation} />
       </aside>
 
       {!conversationId && (
-        <div className="hidden flex-1 items-center justify-center border-s md:flex xl:hidden">
-          <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <PanelRightIcon className="size-8 opacity-50" />
+        <div className="hidden flex-1 items-center justify-center border-s border-border/60 bg-muted/30 md:flex xl:hidden">
+          <div className="flex flex-col items-center gap-3 text-muted-foreground">
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-gradient-brand-soft text-primary">
+              <PanelRightIcon className="size-5" />
+            </div>
             <p className="text-sm">اختر محادثة من القائمة</p>
           </div>
         </div>

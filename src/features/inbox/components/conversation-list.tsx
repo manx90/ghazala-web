@@ -1,6 +1,7 @@
 'use client';
 
 import { SearchIcon } from 'lucide-react';
+import type { CSSProperties } from 'react';
 import { QueryState } from '@/components/shared/query-state';
 import { PhoneNumberSelect } from '@/components/shared/phone-number-select';
 import { Input } from '@/components/ui/input';
@@ -43,8 +44,12 @@ export function ConversationList({
   onRetry,
 }: ConversationListProps) {
   return (
-    <div className="flex h-full min-h-0 flex-col border-e bg-background">
-      <div className="space-y-3 border-b p-3">
+    <div className="flex h-full min-h-0 flex-col border-e border-border/60 bg-card">
+      <div className="flex h-14 shrink-0 items-center border-b border-border/60 px-4">
+        <h2 className="text-sm font-semibold">الرسائل الواردة</h2>
+      </div>
+
+      <div className="space-y-2.5 border-b border-border/60 p-3">
         <Tabs
           value={filters.status}
           onValueChange={(value) => onFiltersChange({ status: value as InboxStatusFilter })}
@@ -59,12 +64,12 @@ export function ConversationList({
         </Tabs>
 
         <div className="relative">
-          <SearchIcon className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+          <SearchIcon className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground/70" />
           <Input
             value={filters.customerPhone ?? ''}
             onChange={(event) => onFiltersChange({ customerPhone: event.target.value })}
             placeholder="بحث برقم العميل..."
-            className="pr-9"
+            className="rounded-xl bg-muted/50 pr-9 shadow-none"
             dir="ltr"
           />
         </div>
@@ -87,17 +92,22 @@ export function ConversationList({
           onRetry={onRetry}
           skeletonRows={8}
         >
-          {conversations.map((conversation) => {
+          {conversations.map((conversation, index) => {
             const contact = contactsByPhone[conversation.customerPhone];
             return (
-              <ConversationItem
+              <div
                 key={conversation.id}
-                conversation={conversation}
-                contactName={contact?.fullName ?? contact?.profileName}
-                contactPhoto={contact?.profilePhotoUrl}
-                isActive={conversation.id === selectedId}
-                onSelect={onSelect}
-              />
+                className="stagger-in"
+                style={{ '--stagger-delay': `${Math.min(index * 40, 400)}ms` } as CSSProperties}
+              >
+                <ConversationItem
+                  conversation={conversation}
+                  contactName={contact?.fullName ?? contact?.profileName}
+                  contactPhoto={contact?.profilePhotoUrl}
+                  isActive={conversation.id === selectedId}
+                  onSelect={onSelect}
+                />
+              </div>
             );
           })}
         </QueryState>

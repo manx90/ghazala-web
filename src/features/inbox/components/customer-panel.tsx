@@ -38,8 +38,11 @@ export function CustomerPanel({ conversation }: CustomerPanelProps) {
 
   if (!conversation) {
     return (
-      <div className="flex h-full items-center justify-center p-6 text-center text-sm text-muted-foreground">
-        اختر محادثة لعرض بيانات العميل
+      <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+        <div className="flex size-12 items-center justify-center rounded-2xl bg-gradient-brand-soft text-primary">
+          <UserIcon className="size-5" />
+        </div>
+        <p className="text-sm text-muted-foreground">اختر محادثة لعرض بيانات العميل</p>
       </div>
     );
   }
@@ -51,21 +54,25 @@ export function CustomerPanel({ conversation }: CustomerPanelProps) {
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-background">
-      <div className="border-b p-4">
-        <h2 className="font-semibold">بيانات العميل</h2>
+      <div className="flex h-14 shrink-0 items-center border-b border-border/60 px-4">
+        <h2 className="text-sm font-semibold">بيانات العميل</h2>
       </div>
 
-      <div className="flex-1 space-y-6 overflow-y-auto p-4">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <Avatar size="lg">
-            {contact?.profilePhotoUrl ? (
-              <AvatarImage src={contact.profilePhotoUrl} alt={displayName} />
-            ) : null}
-            <AvatarFallback>{getInitials(displayName, conversation.customerPhone)}</AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="font-medium">{displayName}</p>
-            <p className="text-sm text-muted-foreground" dir="ltr">
+      <div className="flex-1 space-y-4 overflow-y-auto p-4">
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center shadow-2xs">
+          <div className="rounded-full bg-gradient-brand p-[3px] shadow-md">
+            <Avatar className="size-16 border-2 border-card">
+              {contact?.profilePhotoUrl ? (
+                <AvatarImage src={contact.profilePhotoUrl} alt={displayName} />
+              ) : null}
+              <AvatarFallback className="bg-muted text-lg font-semibold text-primary">
+                {getInitials(displayName, conversation.customerPhone)}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+          <div className="space-y-0.5">
+            <p className="text-sm font-semibold">{displayName}</p>
+            <p className="text-xs text-muted-foreground" dir="ltr">
               {formatPhoneDisplay(conversation.customerPhone)}
             </p>
           </div>
@@ -73,44 +80,56 @@ export function CustomerPanel({ conversation }: CustomerPanelProps) {
         </div>
 
         {contactQuery.isLoading ? (
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-3/4" />
+          <div className="space-y-2.5 rounded-2xl border border-border/60 bg-card p-4 shadow-2xs">
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-9 w-3/4" />
           </div>
         ) : (
-          <dl className="space-y-4 text-sm">
-            <div className="flex items-start gap-3">
-              <PhoneIcon className="mt-0.5 size-4 text-muted-foreground" />
-              <div>
-                <dt className="text-muted-foreground">الهاتف</dt>
-                <dd dir="ltr">{formatPhoneDisplay(conversation.customerPhone)}</dd>
+          <dl className="space-y-3 rounded-2xl border border-border/60 bg-card p-4 shadow-2xs">
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
+                <PhoneIcon className="size-4" />
+              </div>
+              <div className="min-w-0">
+                <dt className="text-xs text-muted-foreground">الهاتف</dt>
+                <dd className="truncate text-sm font-medium" dir="ltr">
+                  {formatPhoneDisplay(conversation.customerPhone)}
+                </dd>
               </div>
             </div>
 
             {contact?.email && (
-              <div className="flex items-start gap-3">
-                <MailIcon className="mt-0.5 size-4 text-muted-foreground" />
-                <div>
-                  <dt className="text-muted-foreground">البريد</dt>
-                  <dd dir="ltr">{contact.email}</dd>
+              <div className="flex items-center gap-3">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
+                  <MailIcon className="size-4" />
+                </div>
+                <div className="min-w-0">
+                  <dt className="text-xs text-muted-foreground">البريد</dt>
+                  <dd className="truncate text-sm font-medium" dir="ltr">{contact.email}</dd>
                 </div>
               </div>
             )}
 
             {(contact?.firstName || contact?.lastName) && (
-              <div className="flex items-start gap-3">
-                <UserIcon className="mt-0.5 size-4 text-muted-foreground" />
-                <div>
-                  <dt className="text-muted-foreground">الاسم</dt>
-                  <dd>{[contact.firstName, contact.lastName].filter(Boolean).join(' ')}</dd>
+              <div className="flex items-center gap-3">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
+                  <UserIcon className="size-4" />
+                </div>
+                <div className="min-w-0">
+                  <dt className="text-xs text-muted-foreground">الاسم</dt>
+                  <dd className="truncate text-sm font-medium">
+                    {[contact.firstName, contact.lastName].filter(Boolean).join(' ')}
+                  </dd>
                 </div>
               </div>
             )}
 
             {contact?.notes && (
               <div>
-                <dt className="mb-1 text-muted-foreground">ملاحظات</dt>
-                <dd className="rounded-lg bg-muted/50 p-3 text-sm">{contact.notes}</dd>
+                <dt className="mb-1.5 text-xs text-muted-foreground">ملاحظات</dt>
+                <dd className="rounded-xl bg-muted/60 p-3 text-sm leading-relaxed">
+                  {contact.notes}
+                </dd>
               </div>
             )}
 
@@ -122,13 +141,22 @@ export function CustomerPanel({ conversation }: CustomerPanelProps) {
           </dl>
         )}
 
-        <div className="space-y-2 border-t pt-4 text-xs text-muted-foreground">
-          <p>بدء المحادثة: {formatDateTime(conversation.startedAt)}</p>
-          <p>آخر رسالة: {formatDateTime(conversation.lastMessageAt)}</p>
+        <dl className="space-y-2.5 rounded-2xl border border-border/60 bg-card p-4 text-xs shadow-2xs">
+          <div className="flex items-center justify-between gap-2">
+            <dt className="text-muted-foreground">بدء المحادثة</dt>
+            <dd className="font-medium">{formatDateTime(conversation.startedAt)}</dd>
+          </div>
+          <div className="flex items-center justify-between gap-2">
+            <dt className="text-muted-foreground">آخر رسالة</dt>
+            <dd className="font-medium">{formatDateTime(conversation.lastMessageAt)}</dd>
+          </div>
           {conversation.closedAt && (
-            <p>تاريخ الإغلاق: {formatDateTime(conversation.closedAt)}</p>
+            <div className="flex items-center justify-between gap-2">
+              <dt className="text-muted-foreground">تاريخ الإغلاق</dt>
+              <dd className="font-medium">{formatDateTime(conversation.closedAt)}</dd>
+            </div>
           )}
-        </div>
+        </dl>
       </div>
     </div>
   );

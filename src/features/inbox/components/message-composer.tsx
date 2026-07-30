@@ -133,7 +133,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
 
   if (disabled) {
     return (
-      <div className="border-t bg-muted/40 px-4 py-3 text-center text-sm text-muted-foreground">
+      <div className="border-t border-border/60 bg-muted/40 px-4 py-3.5 text-center text-sm text-muted-foreground">
         ليس لديك صلاحية إرسال الرسائل
       </div>
     );
@@ -141,19 +141,25 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
 
   if (conversation.status !== ConversationStatus.OPEN) {
     return (
-      <div className="border-t bg-muted/40 px-4 py-3 text-center text-sm text-muted-foreground">
+      <div className="border-t border-border/60 bg-muted/40 px-4 py-3.5 text-center text-sm text-muted-foreground">
         المحادثة مغلقة — أعد فتحها لإرسال رسائل جديدة
       </div>
     );
   }
 
   return (
-    <div className="border-t bg-background p-3">
-      <div className="flex items-end gap-2">
+    <div className="border-t border-border/60 bg-background p-3">
+      <div className="flex items-end gap-1.5 rounded-2xl border border-border/60 bg-card p-2 shadow-xs transition-[border-color,box-shadow] duration-200 focus-within:border-primary/40 focus-within:ring-3 focus-within:ring-primary/15">
         <Popover>
           <PopoverTrigger
             render={
-              <Button type="button" variant="ghost" size="icon-sm" aria-label="إدراج إيموجي">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="rounded-full text-muted-foreground hover:text-foreground"
+                aria-label="إدراج إيموجي"
+              >
                 <SmileIcon />
               </Button>
             }
@@ -164,7 +170,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
                 <button
                   key={emoji}
                   type="button"
-                  className="rounded-md p-2 text-lg hover:bg-muted"
+                  className="rounded-lg p-2 text-lg transition-colors hover:bg-muted"
                   onClick={() => insertEmoji(emoji)}
                 >
                   {emoji}
@@ -177,7 +183,13 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button type="button" variant="ghost" size="icon-sm" aria-label="اختيار قالب">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="rounded-full text-muted-foreground hover:text-foreground"
+                aria-label="اختيار قالب"
+              >
                 <FileIcon />
               </Button>
             }
@@ -204,6 +216,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
           type="button"
           variant="ghost"
           size="icon-sm"
+          className="rounded-full text-muted-foreground hover:text-foreground"
           aria-label="إرفاق ملف برابط"
           onClick={() => setAttachmentOpen(true)}
         >
@@ -216,7 +229,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
           onChange={(event) => setBody(event.target.value)}
           placeholder="اكتب رسالتك..."
           rows={1}
-          className="min-h-9 max-h-32 flex-1 resize-none"
+          className="min-h-9 max-h-32 flex-1 resize-none border-0 bg-transparent px-2 shadow-none focus-visible:border-transparent focus-visible:ring-0"
           onKeyDown={(event) => {
             if (event.key === 'Enter' && !event.shiftKey) {
               event.preventDefault();
@@ -227,7 +240,9 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
 
         <Button
           type="button"
+          variant="gradient"
           size="icon-sm"
+          className="rounded-full transition-transform duration-200 hover:scale-105 active:scale-95"
           aria-label="إرسال"
           disabled={!body.trim() || isSending}
           onClick={() => void handleSendText()}
@@ -318,6 +333,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
             </Button>
             <Button
               type="button"
+              variant="gradient"
               disabled={!attachmentUrl.trim() || isSending}
               onClick={() => void handleSendAttachment()}
             >

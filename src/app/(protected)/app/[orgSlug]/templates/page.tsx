@@ -3,6 +3,7 @@
 import { PlusIcon, RefreshCwIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import type React from 'react';
 import { useMemo, useState } from 'react';
 import { PermissionGuard } from '@/components/guards/permission-guard';
 import { PageHeader } from '@/components/shared/page-header';
@@ -59,7 +60,7 @@ export default function TemplatesPage() {
                 <RefreshCwIcon data-icon="inline-start" className={syncMutation.isPending ? 'animate-spin' : ''} />
                 مزامنة
               </Button>
-              <Button render={<Link href={`/app/${orgSlug}/templates/new`} />}>
+              <Button variant="gradient" render={<Link href={`/app/${orgSlug}/templates/new`} />}>
                 <PlusIcon data-icon="inline-start" />
                 قالب جديد
               </Button>
@@ -67,7 +68,10 @@ export default function TemplatesPage() {
           }
         />
 
-        <div className="flex items-center gap-3">
+        <div
+          className="stagger-in flex flex-wrap items-center gap-3 rounded-xl border bg-card p-3 shadow-2xs"
+          style={{ '--stagger-delay': '120ms' } as React.CSSProperties}
+        >
           <span className="text-sm text-muted-foreground">تصفية حسب الحالة:</span>
           <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value ?? 'ALL')}>
             <SelectTrigger className="w-48">
@@ -102,7 +106,12 @@ export default function TemplatesPage() {
           }
           onRetry={() => refetch()}
         >
-          <TemplateTable templates={filteredTemplates} orgSlug={orgSlug} />
+          <div
+            className="stagger-in"
+            style={{ '--stagger-delay': '180ms' } as React.CSSProperties}
+          >
+            <TemplateTable templates={filteredTemplates} orgSlug={orgSlug} />
+          </div>
         </QueryState>
       </div>
     </PermissionGuard>

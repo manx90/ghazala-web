@@ -1,17 +1,79 @@
 'use client';
 
-import { RefreshCwIcon, ServerIcon, DatabaseIcon, HardDriveIcon, CpuIcon } from 'lucide-react';
+import type { CSSProperties } from 'react';
+import {
+  CpuIcon,
+  DatabaseIcon,
+  HardDriveIcon,
+  RefreshCwIcon,
+  ServerIcon,
+  type LucideIcon,
+} from 'lucide-react';
 import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
-import { StatusCard } from '@/components/cards';
-import { StatsGrid } from '@/components/cards';
+import { StatsGrid, StatusCard } from '@/components/cards';
 import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSystemHealth } from '@/features/admin/hooks/use-system-health';
+import { cn } from '@/lib/utils';
+
+type ServiceState = 'ok' | 'unknown' | 'error';
+
+interface ServiceRowProps {
+  name: string;
+  endpoint: string;
+  state: ServiceState;
+  stateLabel: string;
+  icon: LucideIcon;
+}
+
+function ServiceRow({ name, endpoint, state, stateLabel, icon: Icon }: ServiceRowProps) {
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-xl px-4 py-3 ring-1 ring-border/60 transition-colors hover:bg-muted/50">
+      <div className="flex min-w-0 items-center gap-3">
+        <span className="relative flex size-2.5 shrink-0">
+          {state === 'ok' && (
+            <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-60" />
+          )}
+          <span
+            className={cn(
+              'relative inline-flex size-2.5 rounded-full',
+              state === 'ok' && 'bg-emerald-500',
+              state === 'unknown' && 'bg-muted-foreground/40',
+              state === 'error' && 'bg-destructive',
+            )}
+          />
+        </span>
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+          <Icon className="size-4" aria-hidden="true" />
+        </span>
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span className="truncate text-sm font-medium">{name}</span>
+          <span className="font-mono text-xs text-muted-foreground" dir="ltr">
+            {endpoint}
+          </span>
+        </div>
+      </div>
+      <span
+        className={cn(
+          'shrink-0 text-xs font-medium',
+          state === 'ok' && 'text-emerald-600',
+          state === 'unknown' && 'text-muted-foreground',
+          state === 'error' && 'text-destructive',
+        )}
+      >
+        {stateLabel}
+      </span>
+    </div>
+  );
+}
 
 export default function AdminSystemHealthPage() {
   const { data, isLoading, isError, refetch, isFetching } = useSystemHealth();
+
+  const apiState: ServiceState = isLoading ? 'unknown' : isError ? 'error' : data?.status === 'ok' ? 'ok' : 'unknown';
+  const apiLabel = isLoading ? 'جاري الفحص' : isError ? 'خطأ' : data?.status === 'ok' ? 'سليم' : 'غير متاح';
 
   return (
     <PageContainer>
@@ -28,46 +90,48 @@ export default function AdminSystemHealthPage() {
         />
 
         <StatsGrid className="sm:grid-cols-2 xl:grid-cols-4">
-          <StatusCard
-            title="API"
-            status={isLoading ? 'loading' : isError ? 'error' : data?.status ?? 'unknown'}
-            statusLabel={isLoading ? 'جاري الفحص' : isError ? 'خطأ' : data?.status === 'ok' ? 'سليم' : 'غير متاح'}
-            description="GET /health"
-            icon={ServerIcon}
-          />
-          <StatusCard
-            title="قاعدة البيانات"
-            status="unknown"
-            statusLabel="غير متاح"
-            description="يتطلب endpoint"
-            icon={DatabaseIcon}
-          />
-          <StatusCard
-            title="Redis"
-            status="unknown"
-            statusLabel="غير متاح"
-            description="يتطلب endpoint"
-            icon={CpuIcon}
-          />
-          <StatusCard
-            title="التخزين"
-            status="unknown"
-            statusLabel="غير متاح"
-            description="يتطلب endpoint"
-            icon={HardDriveIcon}
-          />
+          {(
+            [
+              {
+                title: 'API',
+                status: isLoading ? 'loading' : isError ? 'error' : data?.status ?? 'unknown',
+                statusLabel: apiLabel,
+                description: 'GET /health',
+                icon: ServerIcon,
+              },
+              { title: 'قاعدة البيانات', status: 'unknown', statusLabel: 'غير متاح', description: 'يتطلب endpoint', icon: DatabaseIcon },
+              { title: 'Redis', status: 'unknown', statusLabel: 'غير متاح', description: 'يتطلب endpoint', icon: CpuIcon },
+              { title: 'التخزين', status: 'unknown', statusLabel: 'غير متاح', description: 'يتطلب endpoint', icon: HardDriveIcon },
+            ] as const
+          ).map((service, index) => (
+            // دخول متتابع للبطاقات
+            <div
+              key={service.title}
+              className="stagger-in"
+              style={{ '--stagger-delay': `${index * 80}ms` } as CSSProperties}
+            >
+              <StatusCard
+                title={service.title}
+                status={service.status}
+                statusLabel={service.statusLabel}
+                description={service.description}
+                icon={service.icon}
+                className="card-interactive h-full"
+              />
+            </div>
+          ))}
         </StatsGrid>
 
-        <Card>
+        <Card className="stagger-in" style={{ '--stagger-delay': '320ms' } as CSSProperties}>
           <CardHeader>
-            <CardTitle className="text-base">تفاصيل الفحص</CardTitle>
+            <CardTitle className="text-base">الخدمات الأساسية</CardTitle>
+            <CardDescription>الفحص يتكرر تلقائياً كل 30 ثانية</CardDescription>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            {isError
-              ? 'تعذر الوصول إلى نقطة الفحص'
-              : data?.status === 'ok'
-                ? 'الـ API يستجيب بشكل طبيعي. الفحص يتكرر كل 30 ثانية.'
-                : '—'}
+          <CardContent className="flex flex-col gap-2">
+            <ServiceRow name="خادم API" endpoint="GET /health" state={apiState} stateLabel={apiLabel} icon={ServerIcon} />
+            <ServiceRow name="قاعدة البيانات" endpoint="GET /admin/health/database" state="unknown" stateLabel="غير متاح" icon={DatabaseIcon} />
+            <ServiceRow name="Redis" endpoint="GET /admin/health/redis" state="unknown" stateLabel="غير متاح" icon={CpuIcon} />
+            <ServiceRow name="التخزين" endpoint="GET /admin/health/storage" state="unknown" stateLabel="غير متاح" icon={HardDriveIcon} />
           </CardContent>
         </Card>
 

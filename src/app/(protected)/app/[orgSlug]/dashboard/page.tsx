@@ -1,5 +1,6 @@
 'use client';
 
+import type React from 'react';
 import { useParams } from 'next/navigation';
 import { RefreshCwIcon } from 'lucide-react';
 import { PageContainer } from '@/components/global/page-container';
@@ -13,6 +14,26 @@ import { QuickActionsCard } from '@/features/dashboard/components/quick-actions-
 import { RecentConversationsTable } from '@/features/dashboard/components/recent-conversations-table';
 import { TemplateSummaryCard } from '@/features/dashboard/components/template-summary-card';
 import { useDashboard } from '@/features/dashboard/hooks/use-dashboard';
+
+// تأخير دخول متتابع لأقسام الصفحة بعد الـ KPIs والرسوم
+function StaggerSection({
+  delay,
+  className,
+  children,
+}: {
+  delay: number;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={className ? `stagger-in ${className}` : 'stagger-in'}
+      style={{ '--stagger-delay': `${delay}ms` } as React.CSSProperties}
+    >
+      {children}
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   const params = useParams<{ orgSlug: string }>();
@@ -37,17 +58,25 @@ export default function DashboardPage() {
 
         <ConversationChartsLazy stats={stats} />
 
-        <div className="grid gap-4 lg:grid-cols-3">
-          <div className="lg:col-span-2">
+        <div className="grid gap-6 lg:grid-cols-3">
+          <StaggerSection delay={360} className="lg:col-span-2">
             <RecentConversationsTable conversations={recentConversations} orgSlug={orgSlug} />
-          </div>
-          <QuickActionsCard orgSlug={orgSlug} />
+          </StaggerSection>
+          <StaggerSection delay={440}>
+            <QuickActionsCard orgSlug={orgSlug} />
+          </StaggerSection>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <PhoneHealthCard phones={phones} />
-          <TemplateSummaryCard templates={templates} />
-          <MetaConnectionCard meta={meta} orgSlug={orgSlug} />
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <StaggerSection delay={480}>
+            <PhoneHealthCard phones={phones} />
+          </StaggerSection>
+          <StaggerSection delay={560}>
+            <TemplateSummaryCard templates={templates} />
+          </StaggerSection>
+          <StaggerSection delay={640}>
+            <MetaConnectionCard meta={meta} orgSlug={orgSlug} />
+          </StaggerSection>
         </div>
       </div>
     </PageContainer>

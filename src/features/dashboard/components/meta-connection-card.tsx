@@ -19,12 +19,16 @@ interface MetaConnectionCardProps {
 
 export function MetaConnectionCard({ meta, orgSlug }: MetaConnectionCardProps) {
   const integration = meta.data?.integration;
+  const status = integration?.status ?? (meta.data?.isConnected ? 'CONNECTED' : 'DISCONNECTED');
+  const isConnected = status === 'CONNECTED';
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Link2Icon className="size-4 text-muted-foreground" />
+        <CardTitle className="flex items-center gap-2.5 tracking-tight">
+          <span className="flex size-8 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+            <Link2Icon className="size-4" aria-hidden="true" />
+          </span>
           اتصال Meta
         </CardTitle>
         <CardDescription>حالة ربط حساب Meta Business</CardDescription>
@@ -40,39 +44,43 @@ export function MetaConnectionCard({ meta, orgSlug }: MetaConnectionCardProps) {
           onRetry={() => void meta.refetch()}
         >
           <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2.5">
               <span className="text-sm text-muted-foreground">الحالة</span>
-              {integration ? (
-                <StatusBadge status={integration.status} />
-              ) : (
-                <StatusBadge status={meta.data?.isConnected ? 'CONNECTED' : 'DISCONNECTED'} />
-              )}
+              <span className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    'size-1.5 rounded-full',
+                    isConnected ? 'bg-emerald-500 animate-glow-pulse' : 'bg-red-500',
+                  )}
+                />
+                <StatusBadge status={status} />
+              </span>
             </div>
 
             {integration && (
-              <>
-                <div className="flex items-center justify-between gap-2 text-sm">
+              <div className="divide-y divide-border/60 rounded-lg border border-border/60">
+                <div className="flex items-center justify-between gap-2 px-3 py-2.5 text-sm">
                   <span className="text-muted-foreground">WABA ID</span>
-                  <span className="font-mono text-xs">{integration.wabaId}</span>
+                  <span className="font-mono text-xs" dir="ltr">{integration.wabaId}</span>
                 </div>
                 {integration.connectedAt && (
-                  <div className="flex items-center justify-between gap-2 text-sm">
+                  <div className="flex items-center justify-between gap-2 px-3 py-2.5 text-sm">
                     <span className="text-muted-foreground">تاريخ الربط</span>
                     <span>{formatDateTime(integration.connectedAt)}</span>
                   </div>
                 )}
                 {integration.lastSyncAt && (
-                  <div className="flex items-center justify-between gap-2 text-sm">
+                  <div className="flex items-center justify-between gap-2 px-3 py-2.5 text-sm">
                     <span className="text-muted-foreground">آخر مزامنة</span>
                     <span>{formatDateTime(integration.lastSyncAt)}</span>
                   </div>
                 )}
-              </>
+              </div>
             )}
 
             <Link
               href={ROUTES.app.settings.meta(orgSlug)}
-              className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'w-full')}
+              className={cn(buttonVariants({ variant: 'gradient', size: 'sm' }), 'w-full')}
             >
               إدارة الاتصال
             </Link>

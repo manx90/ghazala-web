@@ -14,6 +14,7 @@ import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -45,6 +46,12 @@ const PAGE_LIMIT = 20;
 
 function getFullName(user: User): string {
   return [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email;
+}
+
+function getInitials(user: User): string {
+  const parts = [user.firstName, user.lastName].filter(Boolean);
+  if (parts.length === 0) return user.email.charAt(0).toUpperCase();
+  return parts.map((p) => p.trim().charAt(0)).join('').toUpperCase();
 }
 
 export default function AdminUsersPage() {
@@ -81,12 +88,23 @@ export default function AdminUsersPage() {
       {
         id: 'name',
         header: 'الاسم',
-        cell: ({ row }) => <span className="font-medium">{getFullName(row.original)}</span>,
+        cell: ({ row }) => (
+          <div className="flex items-center gap-3">
+            <Avatar size="sm">
+              <AvatarFallback>{getInitials(row.original)}</AvatarFallback>
+            </Avatar>
+            <span className="font-medium">{getFullName(row.original)}</span>
+          </div>
+        ),
       },
       {
         id: 'email',
         header: 'البريد',
-        cell: ({ row }) => row.original.email,
+        cell: ({ row }) => (
+          <span className="font-mono text-xs text-muted-foreground" dir="ltr">
+            {row.original.email}
+          </span>
+        ),
       },
       {
         id: 'role',
@@ -102,7 +120,7 @@ export default function AdminUsersPage() {
         id: 'lastLoginAt',
         header: 'آخر دخول',
         cell: ({ row }) => (
-          <span className="text-muted-foreground">
+          <span className="text-xs text-muted-foreground">
             {row.original.lastLoginAt ? formatDateTime(row.original.lastLoginAt) : '—'}
           </span>
         ),

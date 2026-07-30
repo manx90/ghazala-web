@@ -32,7 +32,7 @@ export function PaginationControls({ page, limit, total, onPageChange }: Paginat
           <ChevronRightIcon data-icon="inline-start" />
           السابق
         </Button>
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm font-medium tabular-nums text-muted-foreground">
           {page} / {meta.totalPages}
         </span>
         <Button

@@ -49,7 +49,7 @@ export function LandingNav() {
           className="relative z-10 flex items-center gap-2 text-lg font-bold tracking-tight"
           aria-label="غزالة - الصفحة الرئيسية"
         >
-          <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-md">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-brand text-primary-foreground shadow-md">
             <MessageCircleIcon className="size-5" />
           </span>
           غزالة
@@ -72,7 +72,7 @@ export function LandingNav() {
           <Button variant="ghost" render={<Link href={ROUTES.auth.login} />}>
             تسجيل الدخول
           </Button>
-          <Button render={<Link href={ROUTES.auth.register} />} className="shadow-md">
+          <Button variant="gradient" render={<Link href={ROUTES.auth.register} />}>
             ابدأ مجاناً
           </Button>
         </div>
@@ -116,7 +116,7 @@ export function LandingNav() {
                 <Button variant="outline" render={<Link href={ROUTES.auth.login} />}>
                   تسجيل الدخول
                 </Button>
-                <Button render={<Link href={ROUTES.auth.register} />}>ابدأ مجاناً</Button>
+                <Button variant="gradient" render={<Link href={ROUTES.auth.register} />}>ابدأ مجاناً</Button>
               </div>
             </div>
           </motion.nav>

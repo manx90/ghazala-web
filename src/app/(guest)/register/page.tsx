@@ -1,5 +1,10 @@
 import { RegisterForm } from '@/features/auth/components/register-form';
+import { arabicFont } from '@/lib/fonts';
 
 export default function RegisterPage() {
-  return <RegisterForm />;
+  return (
+    <div className={arabicFont.className}>
+      <RegisterForm />
+    </div>
+  );
 }

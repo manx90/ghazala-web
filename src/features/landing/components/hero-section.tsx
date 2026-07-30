@@ -38,7 +38,7 @@ export function HeroSection() {
       <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-2 lg:gap-10">
         <div className="text-center lg:text-start">
           <motion.div {...fadeUp(0)}>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/60 px-4 py-1.5 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur-md">
+            <span className="glass inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium text-muted-foreground shadow-sm">
               <SparklesIcon className="size-3.5 text-secondary" />
               {HERO_CONTENT.badge}
             </span>
@@ -49,9 +49,7 @@ export function HeroSection() {
             className="mt-6 text-4xl leading-[1.2] font-bold tracking-tight sm:text-5xl lg:text-[3.4rem]"
           >
             {HERO_CONTENT.title.split('واتساب')[0]}
-            <span className="bg-gradient-to-l from-primary via-secondary to-success bg-clip-text text-transparent">
-              واتساب
-            </span>
+            <span className="text-gradient">واتساب</span>
             {HERO_CONTENT.title.split('واتساب')[1]}
           </motion.h1>
 
@@ -66,7 +64,7 @@ export function HeroSection() {
             <motion.div whileHover={reduceMotion ? undefined : { scale: 1.03 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href={HERO_CONTENT.primaryCta.href}
-                className="inline-flex h-12 items-center gap-2 rounded-xl bg-gradient-to-l from-primary to-secondary px-7 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-shadow hover:shadow-xl hover:shadow-primary/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                className="inline-flex h-12 items-center gap-2 rounded-xl bg-gradient-brand px-7 text-sm font-semibold text-primary-foreground shadow-lg glow-brand transition-shadow hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 {HERO_CONTENT.primaryCta.label}
                 <ArrowLeftIcon className="size-4" aria-hidden />
@@ -75,7 +73,7 @@ export function HeroSection() {
             <motion.div whileHover={reduceMotion ? undefined : { scale: 1.03 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href={HERO_CONTENT.secondaryCta.href}
-                className="inline-flex h-12 items-center rounded-xl border border-border/70 bg-card/60 px-7 text-sm font-semibold backdrop-blur-md transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                className="glass inline-flex h-12 items-center rounded-xl px-7 text-sm font-semibold transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 {HERO_CONTENT.secondaryCta.label}
               </Link>
@@ -86,7 +84,7 @@ export function HeroSection() {
             {HERO_CONTENT.stats.map((stat) => (
               <div key={stat.label}>
                 <dt className="order-2 mt-1 text-xs text-muted-foreground sm:text-sm">{stat.label}</dt>
-                <dd className="bg-gradient-to-l from-primary to-secondary bg-clip-text text-2xl font-bold text-transparent sm:text-3xl">
+                <dd className="text-gradient text-2xl font-bold sm:text-3xl">
                   {stat.value}
                 </dd>
               </div>

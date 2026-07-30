@@ -41,23 +41,34 @@ export function ForgotPasswordForm() {
       title="نسيت كلمة المرور"
       description="أدخل بريدك الإلكتروني لإرسال رمز إعادة التعيين"
       footer={
-        <Link href={ROUTES.auth.login} className="font-medium text-primary hover:underline">
+        <Link
+          href={ROUTES.auth.login}
+          className="font-semibold text-primary underline-offset-4 transition-colors hover:text-secondary hover:underline"
+        >
           العودة لتسجيل الدخول
         </Link>
       }
     >
-      <form onSubmit={onSubmit} className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-5">
         <FormField id="email" label="البريد الإلكتروني" error={errors.email?.message}>
           <Input
             id="email"
             type="email"
             autoComplete="email"
+            dir="ltr"
+            placeholder="name@company.com"
             aria-invalid={Boolean(errors.email)}
+            className="h-11"
             {...register('email')}
           />
         </FormField>
 
-        <Button type="submit" className="w-full" disabled={forgotPassword.isPending}>
+        <Button
+          type="submit"
+          variant="gradient"
+          className="h-11 w-full text-sm font-semibold"
+          disabled={forgotPassword.isPending}
+        >
           {forgotPassword.isPending ? (
             <>
               <Loader2Icon className="animate-spin" />

@@ -1,5 +1,6 @@
 'use client';
 
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { useSession } from '@/features/auth/hooks/use-session';
@@ -20,10 +21,20 @@ export function ProfileSettingsSection() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>الملف الشخصي</CardTitle>
-          <CardDescription>معلومات حسابك (للقراءة فقط)</CardDescription>
+      <Card className="stagger-in">
+        <CardHeader className="flex flex-row items-center gap-4">
+          <Avatar size="lg" className="size-14 text-lg">
+            <AvatarFallback>
+              {user.firstName?.[0] ?? ''}
+              {user.lastName?.[0] ?? ''}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <CardTitle>
+              {user.firstName} {user.lastName}
+            </CardTitle>
+            <CardDescription>{user.email}</CardDescription>
+          </div>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1">
@@ -36,7 +47,7 @@ export function ProfileSettingsSection() {
           </div>
           <div className="space-y-1">
             <p className="text-sm text-muted-foreground">البريد الإلكتروني</p>
-            <p>{user.email}</p>
+            <p dir="ltr">{user.email}</p>
           </div>
           <div className="space-y-1">
             <p className="text-sm text-muted-foreground">الحالة</p>

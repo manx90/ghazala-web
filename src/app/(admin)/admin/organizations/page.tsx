@@ -14,6 +14,7 @@ import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -77,12 +78,23 @@ export default function AdminOrganizationsPage() {
       {
         id: 'name',
         header: 'الاسم',
-        cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
+        cell: ({ row }) => (
+          <div className="flex items-center gap-3">
+            <Avatar size="sm">
+              <AvatarFallback>{row.original.name.trim().charAt(0) || '—'}</AvatarFallback>
+            </Avatar>
+            <span className="font-medium">{row.original.name}</span>
+          </div>
+        ),
       },
       {
         id: 'slug',
         header: 'المعرّف',
-        cell: ({ row }) => <span className="font-mono text-xs text-muted-foreground">{row.original.slug}</span>,
+        cell: ({ row }) => (
+          <span className="font-mono text-xs text-muted-foreground" dir="ltr">
+            {row.original.slug}
+          </span>
+        ),
       },
       {
         id: 'country',
@@ -97,7 +109,9 @@ export default function AdminOrganizationsPage() {
       {
         id: 'createdAt',
         header: 'تاريخ الإنشاء',
-        cell: ({ row }) => <span className="text-muted-foreground">{formatDateTime(row.original.createdAt)}</span>,
+        cell: ({ row }) => (
+          <span className="text-xs text-muted-foreground">{formatDateTime(row.original.createdAt)}</span>
+        ),
       },
       {
         id: 'actions',

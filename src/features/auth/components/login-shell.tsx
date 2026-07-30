@@ -24,7 +24,7 @@ function VisualPanel() {
         };
 
   return (
-    <div className="relative hidden overflow-hidden bg-gradient-to-br from-primary via-primary to-secondary lg:flex lg:w-[52%] lg:flex-col lg:justify-between lg:p-12">
+    <div className="relative hidden overflow-hidden bg-gradient-brand lg:flex lg:w-[52%] lg:flex-col lg:justify-between lg:p-12">
       {/* شبكة وتوهجات */}
       <div
         aria-hidden
@@ -48,7 +48,7 @@ function VisualPanel() {
         className="relative flex items-center gap-2 text-lg font-bold text-white"
         aria-label="غزالة - الصفحة الرئيسية"
       >
-        <span className="flex size-9 items-center justify-center rounded-xl bg-white/15 backdrop-blur-md">
+        <span className="flex size-9 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/25 backdrop-blur-md">
           <MessageCircleIcon className="size-5" aria-hidden />
         </span>
         غزالة
@@ -112,6 +112,10 @@ export function LoginShell({ children }: { children: ReactNode }) {
       <VisualPanel />
       <div className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12 sm:px-8">
         {/* خلفية جانب النموذج */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-grid-pattern [mask-image:radial-gradient(ellipse_80%_70%_at_50%_45%,black,transparent)]"
+        />
         <div aria-hidden className="absolute inset-0 lg:hidden">
           <div className="absolute -top-24 start-1/4 size-72 animate-pulse rounded-full bg-primary/15 blur-[100px]" />
           <div className="absolute bottom-0 end-0 size-64 animate-pulse rounded-full bg-secondary/15 blur-[90px] [animation-delay:2s]" />

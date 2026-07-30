@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Loader2Icon } from 'lucide-react';
+import { Loader2Icon, MessageCircleIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PageContainer } from '@/components/global/page-container';
 import {
@@ -23,6 +23,12 @@ import {
   useWhatsappPhoneNumbers,
 } from '@/features/onboarding/hooks/use-meta-onboarding';
 import { ROUTES } from '@/config/routes';
+
+const CONNECTION_STEPS = [
+  'اضغط Connect with WhatsApp للانتقال إلى Meta',
+  'سجّل الدخول واختر أو أنشئ حساب WhatsApp Business',
+  'بعد الموافقة، سيتم ربط حسابك تلقائياً دون إدخال أي رموز',
+];
 
 export function ConnectWhatsappForm() {
   const metaStatus = useMetaStatus();
@@ -55,15 +61,18 @@ export function ConnectWhatsappForm() {
   };
 
   return (
-    <PageContainer size="sm" className="space-y-6 py-12">
-      <Card>
-        <CardHeader>
-          <CardTitle>ربط WhatsApp Business</CardTitle>
+    <PageContainer size="sm" className="max-w-lg py-10">
+      <Card className="glass-strong animate-fade-in-up shadow-xl">
+        <CardHeader className="flex flex-col items-center gap-3 pt-8 text-center">
+          <span className="bg-gradient-brand glow-brand flex size-14 items-center justify-center rounded-2xl text-primary-foreground shadow-lg">
+            <MessageCircleIcon className="size-7" aria-hidden="true" />
+          </span>
+          <CardTitle className="text-xl">ربط WhatsApp Business</CardTitle>
           <CardDescription>
             اربط حساب WhatsApp Business عبر Meta Embedded Signup للبدء في إرسال الرسائل
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pb-8">
           <QueryState
             isLoading={metaStatus.isLoading}
             isError={metaStatus.isError}
@@ -101,6 +110,8 @@ export function ConnectWhatsappForm() {
                 </QueryState>
 
                 <Button
+                  variant="gradient"
+                  size="lg"
                   className="mt-6 w-full"
                   render={<Link href={ROUTES.onboarding.selectPlan} />}
                 >
@@ -108,14 +119,19 @@ export function ConnectWhatsappForm() {
                 </Button>
               </>
             ) : (
-              <div className="space-y-6">
-                <div className="rounded-lg border bg-muted/30 p-4 text-sm text-muted-foreground">
-                  <p className="font-medium text-foreground">كيف يعمل الربط؟</p>
-                  <ul className="mt-2 list-inside list-disc space-y-1">
-                    <li>اضغط Connect with WhatsApp للانتقال إلى Meta</li>
-                    <li>سجّل الدخول واختر أو أنشئ حساب WhatsApp Business</li>
-                    <li>بعد الموافقة، سيتم ربط حسابك تلقائياً دون إدخال أي رموز</li>
-                  </ul>
+              <div className="flex flex-col gap-6">
+                <div className="bg-gradient-brand-soft rounded-xl p-4 ring-1 ring-primary/10">
+                  <p className="text-sm font-medium">كيف يعمل الربط؟</p>
+                  <ol className="mt-3 flex flex-col gap-2.5">
+                    {CONNECTION_STEPS.map((step, index) => (
+                      <li key={step} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                        <span className="bg-gradient-brand mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-[0.65rem] font-semibold text-primary-foreground">
+                          {index + 1}
+                        </span>
+                        {step}
+                      </li>
+                    ))}
+                  </ol>
                 </div>
 
                 {embeddedSession ? (

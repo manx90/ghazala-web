@@ -45,22 +45,43 @@ export default function AdminPlansPage() {
       {
         id: 'name',
         header: 'الاسم',
-        cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
+        cell: ({ row }) => (
+          <div className="flex items-center gap-3">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-xs font-bold text-primary ring-1 ring-primary/10">
+              {row.original.name.trim().charAt(0) || '—'}
+            </span>
+            <span className="font-medium">{row.original.name}</span>
+          </div>
+        ),
       },
       {
         id: 'code',
         header: 'الرمز',
-        cell: ({ row }) => <span className="font-mono text-xs">{row.original.code}</span>,
+        cell: ({ row }) => (
+          <span className="font-mono text-xs text-muted-foreground" dir="ltr">
+            {row.original.code}
+          </span>
+        ),
       },
       {
         id: 'monthly',
         header: 'شهري',
-        cell: ({ row }) => `${row.original.monthlyPrice} ${row.original.currency}`,
+        cell: ({ row }) => (
+          <span>
+            <span className="font-medium tabular-nums">{row.original.monthlyPrice}</span>{' '}
+            <span className="text-xs text-muted-foreground">{row.original.currency}</span>
+          </span>
+        ),
       },
       {
         id: 'yearly',
         header: 'سنوي',
-        cell: ({ row }) => `${row.original.yearlyPrice} ${row.original.currency}`,
+        cell: ({ row }) => (
+          <span>
+            <span className="font-medium tabular-nums">{row.original.yearlyPrice}</span>{' '}
+            <span className="text-xs text-muted-foreground">{row.original.currency}</span>
+          </span>
+        ),
       },
       {
         id: 'status',
@@ -70,7 +91,9 @@ export default function AdminPlansPage() {
       {
         id: 'createdAt',
         header: 'تاريخ الإنشاء',
-        cell: ({ row }) => <span className="text-muted-foreground">{formatDateTime(row.original.createdAt)}</span>,
+        cell: ({ row }) => (
+          <span className="text-xs text-muted-foreground">{formatDateTime(row.original.createdAt)}</span>
+        ),
       },
       {
         id: 'actions',

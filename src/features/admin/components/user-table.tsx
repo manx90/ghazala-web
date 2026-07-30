@@ -3,6 +3,7 @@
 import { EyeIcon, MoreHorizontalIcon, ShieldOffIcon, ShieldCheckIcon, Trash2Icon } from 'lucide-react';
 import Link from 'next/link';
 import { StatusBadge } from '@/components/shared/status-badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -36,6 +37,12 @@ interface UserTableProps {
 
 function getFullName(user: User): string {
   return [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email;
+}
+
+function getInitials(user: User): string {
+  const parts = [user.firstName, user.lastName].filter(Boolean);
+  if (parts.length === 0) return user.email.charAt(0).toUpperCase();
+  return parts.map((p) => p.trim().charAt(0)).join('').toUpperCase();
 }
 
 export function UserTable({
@@ -95,15 +102,24 @@ export function UserTable({
                   />
                 </TableCell>
               )}
-              <TableCell className="font-medium">{getFullName(user)}</TableCell>
-              <TableCell>{user.email}</TableCell>
+              <TableCell>
+                <div className="flex items-center gap-3">
+                  <Avatar size="sm">
+                    <AvatarFallback>{getInitials(user)}</AvatarFallback>
+                  </Avatar>
+                  <span className="font-medium">{getFullName(user)}</span>
+                </div>
+              </TableCell>
+              <TableCell className="font-mono text-xs text-muted-foreground" dir="ltr">
+                {user.email}
+              </TableCell>
               <TableCell>
                 <StatusBadge status={user.role} />
               </TableCell>
               <TableCell>
                 <StatusBadge status={user.status} />
               </TableCell>
-              <TableCell className="text-muted-foreground">
+              <TableCell className="text-xs text-muted-foreground">
                 {user.lastLoginAt ? formatDateTime(user.lastLoginAt) : '—'}
               </TableCell>
             <TableCell>

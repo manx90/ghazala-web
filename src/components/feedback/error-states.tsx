@@ -34,9 +34,14 @@ function ErrorLayout({
   variant = 'destructive',
 }: ErrorStateProps & { icon: ReactNode; variant?: 'default' | 'destructive' }) {
   return (
-    <div className={cn('flex flex-col items-center justify-center gap-4 py-12 text-center', className)} role="alert">
-      <div className="text-muted-foreground">{icon}</div>
-      <Alert variant={variant} className="max-w-md">
+    <div
+      className={cn('animate-fade-in-up flex flex-col items-center justify-center gap-5 py-12 text-center', className)}
+      role="alert"
+    >
+      <div className="flex size-14 items-center justify-center rounded-2xl bg-destructive/10 text-destructive ring-1 ring-destructive/20 [&_svg]:size-6">
+        {icon}
+      </div>
+      <Alert variant={variant} className="max-w-md rounded-xl shadow-xs">
         <AlertTriangleIcon />
         <AlertTitle>{title}</AlertTitle>
         <AlertDescription>{message}</AlertDescription>

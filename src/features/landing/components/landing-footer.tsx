@@ -10,7 +10,7 @@ export function LandingFooter() {
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             <Link href={ROUTES.home} className="flex items-center gap-2 text-lg font-bold">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-primary-foreground">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-brand text-primary-foreground">
                 <MessageCircleIcon className="size-5" aria-hidden />
               </span>
               {FOOTER_CONTENT.brand.name}

@@ -1,17 +1,13 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { CheckIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { ConfirmDialog } from '@/components/global/confirm-dialog';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 import {
   mergeContactsSchema,
   type MergeContactsFormValues,
@@ -33,6 +29,58 @@ function getDisplayName(contact: Contact): string {
     [contact.firstName, contact.lastName].filter(Boolean).join(' ') ||
     contact.profileName ||
     contact.phone
+  );
+}
+
+function getInitials(contact: Contact): string {
+  const name = getDisplayName(contact).trim();
+  if (!name || name === contact.phone) return contact.phone.slice(-2);
+  return name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0] ?? '')
+    .join('');
+}
+
+interface ContactPickListProps {
+  contacts: Contact[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+}
+
+// قائمة اختيار مرئية لجهة اتصال واحدة
+function ContactPickList({ contacts, selectedId, onSelect }: ContactPickListProps) {
+  return (
+    <div className="max-h-44 divide-y overflow-y-auto rounded-xl border bg-card">
+      {contacts.map((contact) => {
+        const selected = contact.id === selectedId;
+        return (
+          <button
+            key={contact.id}
+            type="button"
+            onClick={() => onSelect(contact.id)}
+            aria-pressed={selected}
+            className={cn(
+              'flex w-full items-center gap-3 px-3 py-2.5 text-start transition-colors hover:bg-muted/60',
+              selected && 'bg-primary/5 ring-2 ring-inset ring-primary',
+            )}
+          >
+            <Avatar size="default">
+              <AvatarFallback className="bg-gradient-brand-soft font-semibold text-primary">
+                {getInitials(contact)}
+              </AvatarFallback>
+            </Avatar>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-medium">{getDisplayName(contact)}</span>
+              <span dir="ltr" className="block text-start font-mono text-xs text-muted-foreground">
+                {contact.phone}
+              </span>
+            </span>
+            {selected && <CheckIcon className="size-4 shrink-0 text-primary" aria-hidden="true" />}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -83,24 +131,14 @@ export function MergeContactsDialog({
       onConfirm={handleSubmit(onConfirm)}
       isLoading={isLoading}
     >
-      <div className="flex flex-col gap-4 py-2">
+      <div className="flex flex-col gap-5 py-2">
         <div className="flex flex-col gap-1.5">
           <Label>جهة الاتصال الأساسية (المحتفظ بها)</Label>
-          <Select
-            value={primaryContactId}
-            onValueChange={(value) => setValue('primaryContactId', value ?? '')}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="اختر جهة الاتصال الأساسية" />
-            </SelectTrigger>
-            <SelectContent>
-              {availablePrimaries.map((contact) => (
-                <SelectItem key={contact.id} value={contact.id}>
-                  {getDisplayName(contact)} — {contact.phone}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <ContactPickList
+            contacts={availablePrimaries}
+            selectedId={primaryContactId}
+            onSelect={(id) => setValue('primaryContactId', id, { shouldValidate: true })}
+          />
           {errors.primaryContactId && (
             <p className="text-xs text-destructive">{errors.primaryContactId.message}</p>
           )}
@@ -108,21 +146,11 @@ export function MergeContactsDialog({
 
         <div className="flex flex-col gap-1.5">
           <Label>جهة الاتصال المكررة (سيتم حذفها)</Label>
-          <Select
-            value={duplicateContactId}
-            onValueChange={(value) => setValue('duplicateContactId', value ?? '')}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="اختر جهة الاتصال المكررة" />
-            </SelectTrigger>
-            <SelectContent>
-              {availableDuplicates.map((contact) => (
-                <SelectItem key={contact.id} value={contact.id}>
-                  {getDisplayName(contact)} — {contact.phone}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <ContactPickList
+            contacts={availableDuplicates}
+            selectedId={duplicateContactId}
+            onSelect={(id) => setValue('duplicateContactId', id, { shouldValidate: true })}
+          />
           {errors.duplicateContactId && (
             <p className="text-xs text-destructive">{errors.duplicateContactId.message}</p>
           )}

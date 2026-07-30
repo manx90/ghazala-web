@@ -30,16 +30,25 @@ export function MetricCard({ title, value, description, icon: Icon, trend, loadi
     );
   }
   return (
-    <Card className={className}>
+    <Card className={cn('card-interactive animate-fade-in-up', className)}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-        {Icon && <Icon className="size-4 text-muted-foreground" aria-hidden="true" />}
+        {Icon && (
+          <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+            <Icon className="size-4" aria-hidden="true" />
+          </span>
+        )}
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        {description && <p className="text-xs text-muted-foreground">{description}</p>}
+        <div className="text-2xl font-bold tracking-tight">{value}</div>
+        {description && <p className="mt-1 text-xs text-muted-foreground">{description}</p>}
         {trend && (
-          <p className={cn('mt-1 text-xs', trend.value >= 0 ? 'text-emerald-600' : 'text-destructive')}>
+          <p
+            className={cn(
+              'mt-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium',
+              trend.value >= 0 ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive',
+            )}
+          >
             {trend.value >= 0 ? '↑' : '↓'} {Math.abs(trend.value)}% {trend.label ?? ''}
           </p>
         )}
@@ -79,8 +88,8 @@ export function StatusCard({ title, status, statusLabel, description, icon: Icon
         {Icon && <Icon className="size-4 text-muted-foreground" aria-hidden="true" />}
       </CardHeader>
       <CardContent>
-        <div className={cn('inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-sm font-medium', isOk ? 'bg-emerald-500/10 text-emerald-600' : 'bg-destructive/10 text-destructive')}>
-          <span className={cn('size-1.5 rounded-full', isOk ? 'bg-emerald-500' : 'bg-destructive')} />
+        <div className={cn('inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-sm font-medium', isOk ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive')}>
+          <span className={cn('size-1.5 rounded-full animate-glow-pulse', isOk ? 'bg-success' : 'bg-destructive')} />
           {statusLabel ?? status}
         </div>
         {description && <p className="mt-2 text-xs text-muted-foreground">{description}</p>}
@@ -109,7 +118,11 @@ export function ActivityCard({ title, items, emptyMessage = 'لا يوجد نش�
           <ol className="flex flex-col gap-3">
             {items.map((item) => (
               <li key={item.id} className="flex items-start gap-3">
-                {item.icon && <span className="mt-0.5 text-muted-foreground">{item.icon}</span>}
+                {item.icon && (
+                  <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground [&_svg]:size-4">
+                    {item.icon}
+                  </span>
+                )}
                 <div className="flex flex-1 flex-col">
                   <span className="text-sm font-medium">{item.primary}</span>
                   {item.secondary && <span className="text-xs text-muted-foreground">{item.secondary}</span>}
@@ -141,7 +154,7 @@ export function InformationCard({ title, description, rows, className }: Informa
       <CardContent className="grid gap-3 text-sm sm:grid-cols-2">
         {rows.map((row) => (
           <div key={row.label} className="flex flex-col gap-0.5">
-            <span className="text-muted-foreground">{row.label}</span>
+            <span className="text-xs text-muted-foreground">{row.label}</span>
             <span className="font-medium">{row.value}</span>
           </div>
         ))}

@@ -10,7 +10,7 @@ type SplitSectionData = (typeof SPLIT_SECTIONS)[number];
 
 export function SplitFeatures() {
   return (
-    <div className="flex flex-col gap-20 py-20 sm:gap-28 sm:py-28">
+    <div className="flex flex-col gap-20 py-20 sm:gap-24 sm:py-24">
       {SPLIT_SECTIONS.map((section, index) => (
         <SplitFeatureSection key={section.id} section={section} reversed={index % 2 === 1} />
       ))}

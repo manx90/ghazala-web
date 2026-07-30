@@ -72,7 +72,7 @@ interface BulkActionsBarProps {
 export function BulkActionsBar({ selectedCount, onClear, children, className }: BulkActionsBarProps) {
   if (selectedCount === 0) return null;
   return (
-    <div className={cn('flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-muted/50 px-3 py-2', className)}>
+    <div className={cn('animate-fade-in-down flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary/20 bg-gradient-brand-soft px-3 py-2 shadow-2xs', className)}>
       <div className="flex items-center gap-2 text-sm font-medium">
         <span>{selectedCount} محدد</span>
         {onClear && (

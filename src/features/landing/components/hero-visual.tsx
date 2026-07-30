@@ -99,7 +99,7 @@ export function HeroVisual() {
       >
         {/* ترويسة المحادثة */}
         <div className="flex items-center gap-3 border-b border-border/60 pb-3">
-          <div className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-secondary to-primary text-primary-foreground">
+          <div className="flex size-10 items-center justify-center rounded-full bg-gradient-brand text-primary-foreground">
             <BotIcon className="size-5" />
           </div>
           <div className="flex-1">
@@ -128,7 +128,7 @@ export function HeroVisual() {
                   className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm shadow-sm ${
                     incoming
                       ? 'rounded-ss-sm bg-muted text-foreground'
-                      : 'rounded-se-sm bg-gradient-to-br from-secondary/90 to-primary/90 text-primary-foreground'
+                      : 'rounded-se-sm bg-gradient-brand text-primary-foreground'
                   }`}
                 >
                   {!incoming ? (

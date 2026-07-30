@@ -65,7 +65,7 @@ function SidebarNavGroupComponent({ group, collapsed, onNavigate }: SidebarNavGr
             >
               <CollapsibleTrigger
                 className={cn(
-                  'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-all duration-200',
                   'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                   collapsed && 'justify-center px-2',

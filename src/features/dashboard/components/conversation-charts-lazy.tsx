@@ -7,7 +7,7 @@ import type { ConversationStatistics } from '@/types/conversation.types';
 
 function ChartsLoading() {
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="grid gap-6 lg:grid-cols-2">
       <ChartSkeleton />
       <ChartSkeleton />
     </div>

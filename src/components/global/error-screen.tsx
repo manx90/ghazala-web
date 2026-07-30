@@ -36,9 +36,11 @@ export function ErrorScreen({
       )}
       role="alert"
     >
-      <PageContainer size="sm" className="flex flex-col items-center gap-6 py-12">
-        <Alert variant="destructive" className="w-full">
-          <AlertTriangleIcon />
+      <PageContainer size="sm" className="animate-fade-in-up flex flex-col items-center gap-6 py-12">
+        <div className="flex size-14 items-center justify-center rounded-2xl bg-destructive/10 text-destructive ring-1 ring-destructive/20">
+          <AlertTriangleIcon className="size-6" aria-hidden="true" />
+        </div>
+        <Alert variant="destructive" className="w-full rounded-xl shadow-xs">
           <AlertTitle>{title}</AlertTitle>
           <AlertDescription>{resolvedMessage}</AlertDescription>
         </Alert>

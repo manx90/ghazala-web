@@ -29,14 +29,18 @@ export function StatsCard({ title, value, description, icon: Icon, className, lo
   }
 
   return (
-    <Card className={className}>
+    <Card className={cn('card-interactive animate-fade-in-up', className)}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-        {Icon && <Icon className="size-4 text-muted-foreground" aria-hidden="true" />}
+        {Icon && (
+          <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+            <Icon className="size-4" aria-hidden="true" />
+          </span>
+        )}
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        {description && <p className="text-xs text-muted-foreground">{description}</p>}
+        <div className="text-2xl font-bold tracking-tight">{value}</div>
+        {description && <p className="mt-1 text-xs text-muted-foreground">{description}</p>}
       </CardContent>
     </Card>
   );

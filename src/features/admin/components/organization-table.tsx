@@ -3,6 +3,7 @@
 import { EyeIcon, MoreHorizontalIcon, PauseIcon, PlayIcon, Trash2Icon } from 'lucide-react';
 import Link from 'next/link';
 import { StatusBadge } from '@/components/shared/status-badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -87,13 +88,20 @@ export function OrganizationTable({
                 />
               </TableCell>
             )}
-            <TableCell className="font-medium">{org.name}</TableCell>
-            <TableCell className="font-mono text-xs text-muted-foreground">{org.slug}</TableCell>
+            <TableCell>
+              <div className="flex items-center gap-3">
+                <Avatar size="sm">
+                  <AvatarFallback>{org.name.trim().charAt(0) || '—'}</AvatarFallback>
+                </Avatar>
+                <span className="font-medium">{org.name}</span>
+              </div>
+            </TableCell>
+            <TableCell className="font-mono text-xs text-muted-foreground" dir="ltr">{org.slug}</TableCell>
             <TableCell>{org.country}</TableCell>
             <TableCell>
               <StatusBadge status={org.status} />
             </TableCell>
-            <TableCell className="text-muted-foreground">{formatDateTime(org.createdAt)}</TableCell>
+            <TableCell className="text-xs text-muted-foreground">{formatDateTime(org.createdAt)}</TableCell>
             <TableCell>
               <DropdownMenu>
                 <DropdownMenuTrigger
