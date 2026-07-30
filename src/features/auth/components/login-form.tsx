@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2Icon } from 'lucide-react';
+import { Loader2Icon, MessageCircleIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ROUTES } from '@/config/routes';
@@ -17,7 +17,6 @@ import { UserRole } from '@/types/auth.types';
 import { resolveOnboardingPath } from '@/utils/onboarding';
 import { getPostLoginRedirect, sanitizeRedirectPath } from '@/utils/route';
 import { organizationStorage } from '@/utils/storage';
-import { AuthCardLayout } from './auth-card-layout';
 import { FormField } from './form-field';
 
 export function LoginForm() {
@@ -67,59 +66,86 @@ export function LoginForm() {
   });
 
   return (
-    <AuthCardLayout
-      title="تسجيل الدخول"
-      description="أدخل بيانات حسابك للمتابعة"
-      footer={
-        <>
-          ليس لديك حساب؟{' '}
-          <Link href={ROUTES.auth.register} className="font-medium text-primary hover:underline">
-            إنشاء حساب
-          </Link>
-        </>
-      }
-    >
-      <form onSubmit={onSubmit} className="space-y-4">
-        <FormField id="email" label="البريد الإلكتروني" error={errors.email?.message}>
-          <Input
-            id="email"
-            type="email"
-            autoComplete="email"
-            aria-invalid={Boolean(errors.email)}
-            {...register('email')}
-          />
-        </FormField>
+    <div>
+      <Link
+        href={ROUTES.home}
+        className="mb-8 flex items-center justify-center gap-2 text-lg font-bold lg:hidden"
+        aria-label="غزالة - الصفحة الرئيسية"
+      >
+        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-md">
+          <MessageCircleIcon className="size-5" aria-hidden />
+        </span>
+        غزالة
+      </Link>
 
-        <FormField id="password" label="كلمة المرور" error={errors.password?.message}>
-          <Input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            aria-invalid={Boolean(errors.password)}
-            {...register('password')}
-          />
-        </FormField>
-
-        <div className="flex justify-end">
-          <Link
-            href={ROUTES.auth.forgotPassword}
-            className="text-sm text-primary hover:underline"
-          >
-            نسيت كلمة المرور؟
-          </Link>
+      <div className="rounded-3xl border border-border/60 bg-card/80 p-7 shadow-xl backdrop-blur-xl sm:p-9">
+        <div className="mb-7 text-center">
+          <h1 className="text-2xl font-bold tracking-tight">مرحباً بعودتك</h1>
+          <p className="mt-2 text-sm text-muted-foreground">أدخل بيانات حسابك للمتابعة إلى لوحة التحكم</p>
         </div>
 
-        <Button type="submit" className="w-full" disabled={login.isPending}>
-          {login.isPending ? (
-            <>
-              <Loader2Icon className="animate-spin" />
-              جاري تسجيل الدخول...
-            </>
-          ) : (
-            'تسجيل الدخول'
-          )}
-        </Button>
-      </form>
-    </AuthCardLayout>
+        <form onSubmit={onSubmit} className="space-y-5" noValidate>
+          <FormField id="email" label="البريد الإلكتروني" error={errors.email?.message}>
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              dir="ltr"
+              placeholder="name@company.com"
+              aria-invalid={Boolean(errors.email)}
+              className="h-11 transition-shadow focus-visible:shadow-md"
+              {...register('email')}
+            />
+          </FormField>
+
+          <FormField id="password" label="كلمة المرور" error={errors.password?.message}>
+            <Input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              dir="ltr"
+              placeholder="••••••••"
+              aria-invalid={Boolean(errors.password)}
+              className="h-11 transition-shadow focus-visible:shadow-md"
+              {...register('password')}
+            />
+          </FormField>
+
+          <div className="flex justify-end">
+            <Link
+              href={ROUTES.auth.forgotPassword}
+              className="text-sm font-medium text-primary transition-colors hover:text-secondary hover:underline"
+            >
+              نسيت كلمة المرور؟
+            </Link>
+          </div>
+
+          <Button
+            type="submit"
+            className="h-11 w-full bg-gradient-to-l from-primary to-secondary text-sm font-semibold shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30"
+            disabled={login.isPending}
+          >
+            {login.isPending ? (
+              <>
+                <Loader2Icon className="animate-spin" aria-hidden />
+                جاري تسجيل الدخول...
+              </>
+            ) : (
+              'تسجيل الدخول'
+            )}
+          </Button>
+        </form>
+      </div>
+
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        ليس لديك حساب؟{' '}
+        <Link
+          href={ROUTES.auth.register}
+          className="font-semibold text-primary transition-colors hover:text-secondary hover:underline"
+        >
+          إنشاء حساب جديد
+        </Link>
+      </p>
+    </div>
   );
 }

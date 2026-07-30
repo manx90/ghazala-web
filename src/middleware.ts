@@ -28,8 +28,10 @@ export function middleware(request: NextRequest) {
   const isAuthenticated = request.cookies.get(AUTH_COOKIE_NAME)?.value === '1';
 
   if (pathname === ROUTES.home) {
-    const target = isAuthenticated ? ROUTES.app.root : ROUTES.auth.login;
-    return NextResponse.redirect(new URL(target, request.url));
+    if (isAuthenticated) {
+      return NextResponse.redirect(new URL(ROUTES.app.root, request.url));
+    }
+    return NextResponse.next();
   }
 
   if (isGuestRoute(pathname) && isAuthenticated) {
