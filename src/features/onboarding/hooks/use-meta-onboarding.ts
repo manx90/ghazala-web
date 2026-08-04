@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { metaApi } from '@/features/meta/api/meta.api';
 import { whatsappApi } from '@/features/whatsapp/api/whatsapp.api';
 import { queryKeys } from '@/config/query-keys';
+import { invalidateOnboardingState } from '@/features/onboarding/utils/invalidate-onboarding';
 import { getErrorMessage } from '@/utils/error';
 import { toastError, toastSuccess } from '@/components/global/toast-helpers';
 import type { ConnectMetaPayload } from '@/types/meta.types';
@@ -26,6 +27,7 @@ export function useConnectMeta() {
         queryClient.invalidateQueries({ queryKey: queryKeys.meta.status }),
         queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.businessAccounts }),
         queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.phoneNumbers }),
+        invalidateOnboardingState(queryClient),
       ]);
       toastSuccess('تم ربط WhatsApp Business بنجاح');
     },
@@ -45,6 +47,7 @@ export function useDisconnectMeta() {
         queryClient.invalidateQueries({ queryKey: queryKeys.meta.status }),
         queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.businessAccounts }),
         queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.phoneNumbers }),
+        invalidateOnboardingState(queryClient),
       ]);
       toastSuccess('تم فصل WhatsApp Business');
     },
@@ -58,7 +61,11 @@ export function useSyncMeta() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => metaApi.sync(),
+    mutationFn: async () => {
+      const metaResponse = await metaApi.sync();
+      await whatsappApi.syncBusinessAccounts();
+      return metaResponse;
+    },
     onSuccess: async (response) => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.meta.status }),

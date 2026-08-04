@@ -3,8 +3,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { organizationApi } from '@/features/auth/api/organization.api';
-import { queryKeys } from '@/config/query';
+import { queryKeys } from '@/config/query-keys';
 import { ROUTES } from '@/config/routes';
+import { invalidateOnboardingState } from '@/features/onboarding/utils/invalidate-onboarding';
 import { useOrganizationStore } from '@/store/organization.store';
 import { getErrorMessage } from '@/utils/error';
 import { toastError, toastSuccess } from '@/components/global/toast-helpers';
@@ -24,11 +25,14 @@ export function useCreateOrganization() {
         timezone: values.timezone,
         country: values.country,
       } as Parameters<typeof organizationApi.create>[0] & { slug: string }),
-    onSuccess: (organization) => {
+    onSuccess: async (organization) => {
       organizationApi.selectOrganization(organization);
       setCurrentOrganization(organization);
       setOrganizations([organization]);
-      queryClient.invalidateQueries({ queryKey: queryKeys.organizations.all });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.organizations.all }),
+        invalidateOnboardingState(queryClient),
+      ]);
       toastSuccess('تم إنشاء المنظمة بنجاح');
       router.push(ROUTES.onboarding.connectWhatsapp);
     },

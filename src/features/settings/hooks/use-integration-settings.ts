@@ -45,7 +45,11 @@ export function useSyncMeta() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => metaApi.sync(),
+    mutationFn: async () => {
+      const metaResponse = await metaApi.sync();
+      await whatsappApi.syncBusinessAccounts();
+      return metaResponse;
+    },
     onSuccess: (response) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.meta.status });
       void queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.businessAccounts });

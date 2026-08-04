@@ -1,6 +1,5 @@
 import { billingApi } from '@/features/billing/api/billing.api';
 import { metaApi } from '@/features/meta/api/meta.api';
-import { ApiError } from '@/types/api.types';
 import type { OnboardingState } from '@/utils/onboarding';
 
 export async function fetchOnboardingState(orgSlug: string | null): Promise<OnboardingState> {
@@ -21,8 +20,8 @@ export async function fetchOnboardingState(orgSlug: string | null): Promise<Onbo
   try {
     await billingApi.getSubscription();
     hasSubscription = true;
-  } catch (error) {
-    hasSubscription = !(error instanceof ApiError && error.statusCode === 404);
+  } catch {
+    hasSubscription = false;
   }
 
   return { orgSlug, isMetaConnected, hasSubscription };

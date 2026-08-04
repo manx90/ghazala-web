@@ -33,6 +33,10 @@ export const queryKeys = {
   meta: {
     status: ['meta', 'status'] as const,
   },
+  onboarding: {
+    all: ['onboarding'] as const,
+    state: (orgSlug?: string | null) => ['onboarding', 'state', orgSlug ?? 'none'] as const,
+  },
   billing: {
     plans: ['billing', 'plans'] as const,
     subscription: ['billing', 'subscription'] as const,
