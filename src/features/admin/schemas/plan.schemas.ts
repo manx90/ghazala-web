@@ -24,7 +24,8 @@ export const planFormSchema = z.object({
   whopPlanIdYearly: z.string().max(100).optional().nullable(),
 });
 
-export type PlanFormValues = z.infer<typeof planFormSchema>;
+export type PlanFormInputValues = z.input<typeof planFormSchema>;
+export type PlanFormValues = z.output<typeof planFormSchema>;
 
 export const updatePlanFormSchema = planFormSchema
   .omit({ code: true })
@@ -35,4 +36,5 @@ export const updatePlanFormSchema = planFormSchema
     yearlyPrice: z.coerce.number().min(0).optional(),
   });
 
-export type UpdatePlanFormValues = z.infer<typeof updatePlanFormSchema>;
+export type UpdatePlanFormInputValues = z.input<typeof updatePlanFormSchema>;
+export type UpdatePlanFormValues = z.output<typeof updatePlanFormSchema>;

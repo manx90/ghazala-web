@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { FormField } from '@/components/forms/form-field';
 import {
   planFormSchema,
+  type PlanFormInputValues,
   type PlanFormValues,
 } from '@/features/admin/schemas/plan.schemas';
 import type { Plan } from '@/types/billing.types';
@@ -26,7 +27,7 @@ interface PlanFormProps {
 export function PlanForm({ mode, defaultValues, onSubmit, isLoading }: PlanFormProps) {
   const isEdit = mode === 'edit';
 
-  const methods = useForm<PlanFormValues>({
+  const methods = useForm<PlanFormInputValues, unknown, PlanFormValues>({
     resolver: zodResolver(planFormSchema),
     defaultValues: isEdit
       ? {
