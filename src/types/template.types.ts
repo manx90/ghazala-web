@@ -117,6 +117,14 @@ export interface LibraryTemplateButtonInput {
   url?: { base_url: string; url_suffix_example?: string };
 }
 
+export interface LibraryTemplateBodyInputs {
+  add_contact_number?: boolean;
+  add_learn_more_link?: boolean;
+  add_security_recommendation?: boolean;
+  add_track_package_link?: boolean;
+  code_expiration_minutes?: number;
+}
+
 export interface CreateFromLibraryPayload {
   wabaId?: string;
   name: string;
@@ -124,7 +132,7 @@ export interface CreateFromLibraryPayload {
   language: string;
   category?: TemplateCategory;
   libraryTemplateButtonInputs?: LibraryTemplateButtonInput[];
-  libraryTemplateBodyInputs?: Record<string, unknown>[];
+  libraryTemplateBodyInputs?: LibraryTemplateBodyInputs;
 }
 
 export interface TemplateLanguagesResponse {

@@ -14,10 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCreateFromLibrary } from '@/features/templates/hooks/use-templates';
-import {
-  buildLibraryBodyInputs,
-  resolveLibraryCategory,
-} from '@/features/templates/utils/library-template';
+import { buildCreateFromLibraryPayload } from '@/features/templates/utils/library-template';
 import type { TemplateLibraryItem } from '@/types/template.types';
 
 interface AddLibraryTemplateDialogProps {
@@ -58,34 +55,13 @@ export function AddLibraryTemplateDialog({
   const handleSubmit = () => {
     if (!item || !name.trim()) return;
 
-    const buttonInputs = [];
-
-    if (urlButton) {
-      buttonInputs.push({
-        type: 'URL',
-        url: {
-          base_url: urlBase.trim(),
-          url_suffix_example: urlBase.trim().replace('{{1}}', 'demo'),
-        },
-      });
-    }
-
-    if (phoneButton && phoneNumber.trim()) {
-      buttonInputs.push({
-        type: 'PHONE_NUMBER',
-        phone_number: phoneNumber.trim(),
-      });
-    }
-
     createMutation.mutate(
-      {
+      buildCreateFromLibraryPayload({
         name: name.trim(),
-        libraryTemplateName: item.name,
-        language: item.language,
-        category: resolveLibraryCategory(item.category),
-        libraryTemplateBodyInputs: buildLibraryBodyInputs(item.bodyParams),
-        ...(buttonInputs.length ? { libraryTemplateButtonInputs: buttonInputs } : {}),
-      },
+        item,
+        urlBase,
+        phoneNumber,
+      }),
       {
         onSuccess: () => {
           onOpenChange(false);
