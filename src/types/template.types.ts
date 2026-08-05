@@ -98,6 +98,7 @@ export interface TemplateLibraryItem {
 export interface TemplateLibraryListResponse {
   items: TemplateLibraryItem[];
   total: number;
+  hasMore?: boolean;
 }
 
 export interface ListTemplateLibraryParams {
@@ -107,6 +108,7 @@ export interface ListTemplateLibraryParams {
   topic?: string;
   usecase?: string;
   industry?: string;
+  limit?: number;
 }
 
 export interface LibraryTemplateButtonInput {

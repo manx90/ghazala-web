@@ -4,7 +4,7 @@ import { ArrowRightIcon, SearchIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import type React from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PermissionGuard } from '@/components/guards/permission-guard';
 import { PageHeader } from '@/components/shared/page-header';
 import { QueryState } from '@/components/shared/query-state';
@@ -34,13 +34,19 @@ export default function TemplateMetaLibraryPage() {
   const params = useParams<{ orgSlug: string }>();
   const orgSlug = params.orgSlug;
 
+  const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
-  const [language, setLanguage] = useState('ALL');
+  const [language, setLanguage] = useState('ar');
   const [topic, setTopic] = useState('ALL');
   const [usecase, setUsecase] = useState('ALL');
   const [industry, setIndustry] = useState('ALL');
   const [selectedItem, setSelectedItem] = useState<TemplateLibraryItem | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSearch(searchInput.trim()), 400);
+    return () => window.clearTimeout(timer);
+  }, [searchInput]);
 
   const { data: metaStatus } = useMetaStatus();
   const isMetaConnected = metaStatus?.isConnected ?? false;
@@ -98,8 +104,8 @@ export default function TemplateMetaLibraryPage() {
           <div className="relative md:col-span-2 xl:col-span-3">
             <SearchIcon className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              value={searchInput}
+              onChange={(event) => setSearchInput(event.target.value)}
               placeholder="ابحث: order, payment, delivery..."
               className="ps-9"
               disabled={!isMetaConnected}
@@ -170,9 +176,14 @@ export default function TemplateMetaLibraryPage() {
           onRetry={() => refetch()}
         >
           <div
-            className="stagger-in"
+            className="stagger-in flex flex-col gap-3"
             style={{ '--stagger-delay': '180ms' } as React.CSSProperties}
           >
+            {data?.hasMore ? (
+              <p className="text-sm text-muted-foreground">
+                يُعرض أول 50 نتيجة — استخدم فلاتر اللغة أو البحث لتضييق النتائج.
+              </p>
+            ) : null}
             <TemplateLibraryTable items={items} onAdd={handleAdd} />
           </div>
         </QueryState>

@@ -32,6 +32,8 @@ export function useTemplateLibrary(params?: ListTemplateLibraryParams, enabled =
     queryKey: queryKeys.templates.library(params as Record<string, unknown> | undefined),
     queryFn: () => templatesApi.listLibrary(params),
     enabled,
+    staleTime: 60_000,
+    placeholderData: (previous) => previous,
   });
 }
 

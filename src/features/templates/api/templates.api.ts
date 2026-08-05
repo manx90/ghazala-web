@@ -17,6 +17,7 @@ import { toQueryString } from '@/utils/query';
 
 const BASE = '/templates';
 const LIBRARY_BASE = '/template-library';
+const LIBRARY_REQUEST_TIMEOUT_MS = 60_000;
 
 export const templatesApi = {
   list(params?: ListTemplatesParams): Promise<TemplateListResponse> {
@@ -28,7 +29,11 @@ export const templatesApi = {
   },
 
   listLibrary(params?: ListTemplateLibraryParams): Promise<TemplateLibraryListResponse> {
-    return apiClient.get<TemplateLibraryListResponse>(`${LIBRARY_BASE}${toQueryString(params)}`);
+    return apiClient.get<TemplateLibraryListResponse>(
+      `${LIBRARY_BASE}${toQueryString({ limit: 50, ...params })}`,
+      undefined,
+      { timeout: LIBRARY_REQUEST_TIMEOUT_MS },
+    );
   },
 
   createFromLibrary(payload: CreateFromLibraryPayload): Promise<Template> {
