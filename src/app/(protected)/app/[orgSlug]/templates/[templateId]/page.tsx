@@ -4,13 +4,15 @@ import { ArchiveIcon, ArrowRightIcon, RefreshCwIcon, Trash2Icon } from 'lucide-r
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import type React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ConfirmDialog } from '@/components/global/confirm-dialog';
 import { DeleteDialog } from '@/components/global/delete-dialog';
 import { PermissionGuard } from '@/components/guards/permission-guard';
 import { PageHeader } from '@/components/shared/page-header';
 import { QueryState } from '@/components/shared/query-state';
 import { Button } from '@/components/ui/button';
+import { ROUTES } from '@/config/routes';
+import { isReservedTemplateSlug } from '@/features/templates/constants/template-routes';
 import { TemplatePreview } from '@/features/templates/components/template-preview';
 import {
   useArchiveTemplate,
@@ -25,11 +27,31 @@ export default function TemplateDetailPage() {
   const { orgSlug, templateId } = params;
   const router = useRouter();
 
+  useEffect(() => {
+    if (!templateId) return;
+
+    if (templateId === 'library') {
+      router.replace(ROUTES.app.templateLibrary(orgSlug));
+      return;
+    }
+
+    if (templateId === 'new') {
+      router.replace(`/app/${orgSlug}/templates/new`);
+      return;
+    }
+
+    if (isReservedTemplateSlug(templateId)) {
+      router.replace(ROUTES.app.templates(orgSlug));
+    }
+  }, [orgSlug, templateId, router]);
+
+  const isReserved = isReservedTemplateSlug(templateId);
+
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [resubmitOpen, setResubmitOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const { data: template, isLoading, isError, error, refetch } = useTemplate(templateId);
+  const { data: template, isLoading, isError, error, refetch } = useTemplate(templateId, !isReserved);
   const archiveMutation = useArchiveTemplate(templateId);
   const resubmitMutation = useResubmitTemplate(templateId);
   const deleteMutation = useDeleteTemplate();
@@ -51,6 +73,10 @@ export default function TemplateDetailPage() {
       onSuccess: () => router.push(`/app/${orgSlug}/templates`),
     });
   };
+
+  if (isReserved) {
+    return null;
+  }
 
   return (
     <PermissionGuard permission="templates.read">

@@ -16,6 +16,7 @@ import type {
 import { toQueryString } from '@/utils/query';
 
 const BASE = '/templates';
+const LIBRARY_BASE = '/template-library';
 
 export const templatesApi = {
   list(params?: ListTemplatesParams): Promise<TemplateListResponse> {
@@ -23,15 +24,15 @@ export const templatesApi = {
   },
 
   getLanguages(): Promise<TemplateLanguagesResponse> {
-    return apiClient.get<TemplateLanguagesResponse>(`${BASE}/languages`);
+    return apiClient.get<TemplateLanguagesResponse>(`${LIBRARY_BASE}/languages`);
   },
 
   listLibrary(params?: ListTemplateLibraryParams): Promise<TemplateLibraryListResponse> {
-    return apiClient.get<TemplateLibraryListResponse>(`${BASE}/library${toQueryString(params)}`);
+    return apiClient.get<TemplateLibraryListResponse>(`${LIBRARY_BASE}${toQueryString(params)}`);
   },
 
   createFromLibrary(payload: CreateFromLibraryPayload): Promise<Template> {
-    return apiClient.post<Template>(`${BASE}/from-library`, payload);
+    return apiClient.post<Template>(LIBRARY_BASE, payload);
   },
 
   getById(id: string): Promise<Template> {
