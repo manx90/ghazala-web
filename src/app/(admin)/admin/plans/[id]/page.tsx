@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { PlanForm } from '@/features/admin/components/plan-form';
 import { useAdminPlans, useUpdatePlan } from '@/features/admin/hooks/use-admin-plans';
 import type { PlanFormValues } from '@/features/admin/schemas/plan.schemas';
+import { planFormToUpdatePayload } from '@/features/admin/utils/plan-form-payload';
 import { ROUTES } from '@/config/routes';
 
 export default function AdminPlanEditPage() {
@@ -22,14 +23,7 @@ export default function AdminPlanEditPage() {
   const plan = data?.items.find((p) => p.id === planId);
 
   const handleSubmit = (values: PlanFormValues) => {
-    updateMutation.mutate({
-      name: values.name,
-      description: values.description || null,
-      monthlyPrice: values.monthlyPrice,
-      yearlyPrice: values.yearlyPrice,
-      currency: values.currency,
-      isActive: values.isActive,
-    });
+    updateMutation.mutate(planFormToUpdatePayload(values));
   };
 
   return (

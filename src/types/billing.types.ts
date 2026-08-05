@@ -1,4 +1,5 @@
 export enum SubscriptionStatus {
+  PENDING_PAYMENT = 'PENDING_PAYMENT',
   ACTIVE = 'ACTIVE',
   TRIAL = 'TRIAL',
   PAST_DUE = 'PAST_DUE',
@@ -28,6 +29,13 @@ export interface Plan {
   yearlyPrice: string;
   currency: string;
   isActive: boolean;
+  maxMessagesMonthly: number | null;
+  maxContacts: number | null;
+  maxTeamMembers: number | null;
+  maxPhoneNumbers: number | null;
+  whopPlanIdMonthly: string | null;
+  whopPlanIdYearly: string | null;
+  whopProductId?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -77,4 +85,27 @@ export interface SubscribePayload {
 export interface ChangePlanPayload {
   planId: string;
   billingCycle: BillingCycle;
+}
+
+export interface CheckoutSessionResponse {
+  subscription: Subscription;
+  checkoutUrl: string | null;
+  requiresPayment: boolean;
+  invoiceId: string;
+}
+
+export interface UsageMetric {
+  used: number;
+  limit: number | null;
+  percentUsed: number;
+}
+
+export interface OrganizationUsage {
+  period: string;
+  planCode: string;
+  planName: string;
+  messages: UsageMetric;
+  contacts: UsageMetric;
+  teamMembers: UsageMetric;
+  phoneNumbers: UsageMetric;
 }

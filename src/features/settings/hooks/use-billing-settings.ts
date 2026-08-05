@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toastApiError, toastSuccess } from '@/components/global/toast-helpers';
 import { queryKeys } from '@/config/query-keys';
 import { billingApi } from '@/features/billing/api/billing.api';
+import { redirectToCheckoutOrComplete } from '@/features/billing/utils/checkout';
 import type { ChangePlanPayload, SubscribePayload } from '@/types/billing.types';
 
 export function useBillingPlans() {
@@ -27,14 +28,24 @@ export function useInvoices() {
   });
 }
 
+export function useUsage(enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.billing.usage,
+    queryFn: () => billingApi.getUsage(),
+    enabled,
+  });
+}
+
 export function useSubscribe() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: SubscribePayload) => billingApi.subscribe(payload),
-    onSuccess: () => {
+    onSuccess: (session) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.billing.subscription });
-      toastSuccess('تم الاشتراك بنجاح');
+      redirectToCheckoutOrComplete(session, () => {
+        toastSuccess('تم الاشتراك بنجاح');
+      });
     },
     onError: toastApiError,
   });
@@ -45,9 +56,11 @@ export function useChangePlan() {
 
   return useMutation({
     mutationFn: (payload: ChangePlanPayload) => billingApi.changePlan(payload),
-    onSuccess: () => {
+    onSuccess: (session) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.billing.subscription });
-      toastSuccess('تم تغيير الخطة');
+      redirectToCheckoutOrComplete(session, () => {
+        toastSuccess('تم تغيير الخطة');
+      });
     },
     onError: toastApiError,
   });

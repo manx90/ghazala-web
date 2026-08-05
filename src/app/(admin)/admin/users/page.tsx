@@ -1,7 +1,13 @@
 'use client';
 
 import { type ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontalIcon, ShieldCheckIcon, ShieldOffIcon, Trash2Icon } from 'lucide-react';
+import {
+  Building2Icon,
+  MoreHorizontalIcon,
+  ShieldCheckIcon,
+  ShieldOffIcon,
+  Trash2Icon,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -13,7 +19,6 @@ import { NoDataEmpty } from '@/components/feedback/empty-presets';
 import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
 import { StatusBadge } from '@/components/shared/status-badge';
-import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -32,23 +37,24 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ROUTES } from '@/config/routes';
+import { AdminUserOrganizationsDialog } from '@/features/admin/components/admin-user-organizations-dialog';
 import {
   useAdminUsers,
   useDeleteUser,
   useDisableUser,
   useEnableUser,
 } from '@/features/admin/hooks/use-admin-users';
+import type { AdminUserListItem } from '@/types/admin.types';
 import { UserRole, UserStatus } from '@/types/auth.types';
-import type { User } from '@/types/auth.types';
 import { formatDateTime } from '@/utils/date';
 
 const PAGE_LIMIT = 20;
 
-function getFullName(user: User): string {
+function getFullName(user: AdminUserListItem): string {
   return [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email;
 }
 
-function getInitials(user: User): string {
+function getInitials(user: AdminUserListItem): string {
   const parts = [user.firstName, user.lastName].filter(Boolean);
   if (parts.length === 0) return user.email.charAt(0).toUpperCase();
   return parts.map((p) => p.trim().charAt(0)).join('').toUpperCase();
@@ -61,29 +67,28 @@ export default function AdminUsersPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [selectedIds, setSelectedIds] = useState<Record<string, boolean>>({});
-  const [enableTarget, setEnableTarget] = useState<User | null>(null);
-  const [disableTarget, setDisableTarget] = useState<User | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
+  const [enableTarget, setEnableTarget] = useState<AdminUserListItem | null>(null);
+  const [disableTarget, setDisableTarget] = useState<AdminUserListItem | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<AdminUserListItem | null>(null);
+  const [organizationsTarget, setOrganizationsTarget] = useState<AdminUserListItem | null>(null);
 
-  const { data, isLoading, isError, error, refetch } = useAdminUsers({ page, limit: PAGE_LIMIT });
+  const listParams = useMemo(
+    () => ({
+      page,
+      limit: PAGE_LIMIT,
+      ...(searchInput.trim() ? { search: searchInput.trim() } : {}),
+      ...(statusFilter !== 'all' ? { status: statusFilter as UserStatus } : {}),
+      ...(roleFilter !== 'all' ? { role: roleFilter as UserRole } : {}),
+    }),
+    [page, searchInput, statusFilter, roleFilter],
+  );
+
+  const { data, isLoading, isError, error, refetch } = useAdminUsers(listParams);
   const enableMutation = useEnableUser();
   const disableMutation = useDisableUser();
   const deleteMutation = useDeleteUser();
 
-  const filteredItems = useMemo(() => {
-    let items = data?.items ?? [];
-    const q = searchInput.trim().toLowerCase();
-    if (q) {
-      items = items.filter(
-        (u) => u.email.toLowerCase().includes(q) || u.firstName.toLowerCase().includes(q) || u.lastName.toLowerCase().includes(q),
-      );
-    }
-    if (statusFilter !== 'all') items = items.filter((u) => u.status === statusFilter);
-    if (roleFilter !== 'all') items = items.filter((u) => u.role === roleFilter);
-    return items;
-  }, [data?.items, searchInput, statusFilter, roleFilter]);
-
-  const columns = useMemo<ColumnDef<User, unknown>[]>(
+  const columns = useMemo<ColumnDef<AdminUserListItem, unknown>[]>(
     () => [
       {
         id: 'name',
@@ -104,6 +109,21 @@ export default function AdminUsersPage() {
           <span className="font-mono text-xs text-muted-foreground" dir="ltr">
             {row.original.email}
           </span>
+        ),
+      },
+      {
+        id: 'organizations',
+        header: 'المنظمات',
+        cell: ({ row }) => (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-1.5 px-2"
+            onClick={() => setOrganizationsTarget(row.original)}
+          >
+            <Building2Icon className="size-4" />
+            <span className="tabular-nums">{row.original.organizationsCount}</span>
+          </Button>
         ),
       },
       {
@@ -145,6 +165,10 @@ export default function AdminUsersPage() {
                 <DropdownMenuItem render={<Link href={ROUTES.admin.user(user.id)} />}>
                   التفاصيل
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setOrganizationsTarget(user)}>
+                  <Building2Icon data-icon="inline-start" />
+                  المنظمات
+                </DropdownMenuItem>
                 {!isSuperAdmin && user.status !== UserStatus.ACTIVE && (
                   <DropdownMenuItem onClick={() => setEnableTarget(user)}>
                     <ShieldCheckIcon data-icon="inline-start" />
@@ -180,22 +204,10 @@ export default function AdminUsersPage() {
       <div className="flex flex-col gap-6">
         <PageHeader title="المستخدمون" description="إدارة مستخدمي المنصة" />
 
-        <UnavailableFeatureAlert
-          title="عمليات غير مدعومة"
-          description="البحث والتصفية على الصفحة الحالية فقط."
-          requiredEndpoints={[
-            'GET /admin/users?search=&status=&role=',
-            'PATCH /admin/users/:id/assign-organization',
-            'PATCH /admin/users/:id/assign-role',
-            'POST /admin/users/:id/reset-password',
-            'POST /admin/users/bulk',
-          ]}
-        />
-
         <Card>
           <CardContent className="pt-6">
             <DataTable
-              data={filteredItems}
+              data={data?.items ?? []}
               columns={columns}
               isLoading={isLoading}
               isError={isError}
@@ -214,11 +226,22 @@ export default function AdminUsersPage() {
                 <FilterBar>
                   <SearchBar
                     value={searchInput}
-                    onChange={setSearchInput}
-                    placeholder="بحث في الصفحة الحالية..."
+                    onChange={(value) => {
+                      setSearchInput(value);
+                      setPage(1);
+                    }}
+                    placeholder="بحث بالاسم أو البريد..."
                     className="flex-1"
                   />
-                  <Select value={statusFilter} onValueChange={(v) => v && setStatusFilter(v)}>
+                  <Select
+                    value={statusFilter}
+                    onValueChange={(value) => {
+                      if (value) {
+                        setStatusFilter(value);
+                        setPage(1);
+                      }
+                    }}
+                  >
                     <SelectTrigger className="w-full sm:w-36">
                       <SelectValue placeholder="الحالة" />
                     </SelectTrigger>
@@ -229,7 +252,15 @@ export default function AdminUsersPage() {
                       <SelectItem value={UserStatus.PENDING_VERIFICATION}>بانتظار التحقق</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={roleFilter} onValueChange={(v) => v && setRoleFilter(v)}>
+                  <Select
+                    value={roleFilter}
+                    onValueChange={(value) => {
+                      if (value) {
+                        setRoleFilter(value);
+                        setPage(1);
+                      }
+                    }}
+                  >
                     <SelectTrigger className="w-full sm:w-36">
                       <SelectValue placeholder="الدور" />
                     </SelectTrigger>
@@ -247,10 +278,13 @@ export default function AdminUsersPage() {
                     size="xs"
                     variant="destructive"
                     onClick={() => {
-                      void Promise.all(ids.map((id) => deleteMutation.mutateAsync(id))).then(() => {
+                      void (async () => {
+                        for (const id of ids) {
+                          await deleteMutation.mutateAsync(id);
+                        }
                         setSelectedIds({});
                         router.refresh();
-                      });
+                      })();
                     }}
                     disabled={deleteMutation.isPending}
                   >
@@ -263,6 +297,13 @@ export default function AdminUsersPage() {
           </CardContent>
         </Card>
       </div>
+
+      <AdminUserOrganizationsDialog
+        userId={organizationsTarget?.id ?? null}
+        userName={organizationsTarget ? getFullName(organizationsTarget) : undefined}
+        open={!!organizationsTarget}
+        onOpenChange={(open) => !open && setOrganizationsTarget(null)}
+      />
 
       <ConfirmDialog
         open={!!enableTarget}

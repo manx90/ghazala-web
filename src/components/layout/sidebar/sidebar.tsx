@@ -23,7 +23,6 @@ function SidebarComponent({ variant, navigation, className }: SidebarProps) {
   const isCollapsed = useUiStore((state) => state.isSidebarCollapsed);
   const toggleSidebar = useUiStore((state) => state.toggleSidebar);
 
-  const homeHref = variant === 'admin' ? ROUTES.admin.dashboard : ROUTES.app.root;
   const portalLabel = variant === 'admin' ? 'لوحة الإدارة' : 'بوابة العملاء';
 
   return (
@@ -43,7 +42,7 @@ function SidebarComponent({ variant, navigation, className }: SidebarProps) {
       >
         {!isCollapsed && (
           <Link
-            href={homeHref}
+            href={ROUTES.home}
             className="flex items-center gap-2.5 truncate rounded-md px-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-brand text-sm font-bold text-white shadow-sm">

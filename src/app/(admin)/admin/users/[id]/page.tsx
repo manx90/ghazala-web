@@ -3,6 +3,7 @@
 import {
   ArrowRightIcon,
   BadgeCheckIcon,
+  Building2Icon,
   CalendarPlusIcon,
   LogInIcon,
   MailIcon,
@@ -18,14 +19,25 @@ import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
 import { QueryState } from '@/components/shared/query-state';
 import { StatusBadge } from '@/components/shared/status-badge';
-import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { AdminDetailHero, AdminInfoGrid } from '@/features/admin/components/admin-detail-ui';
+import { AdminUserOrganizationsDialog } from '@/features/admin/components/admin-user-organizations-dialog';
 import {
   useAdminUser,
+  useAdminUserOrganizations,
   useDeleteUser,
   useDisableUser,
   useEnableUser,
+  useSendUserVerification,
 } from '@/features/admin/hooks/use-admin-users';
 import { ROUTES } from '@/config/routes';
 import { UserRole, UserStatus } from '@/types/auth.types';
@@ -37,10 +49,14 @@ export default function AdminUserDetailPage() {
   const userId = params.id;
 
   const { data: user, isLoading, isError, error, refetch } = useAdminUser(userId);
+  const organizationsQuery = useAdminUserOrganizations(userId);
   const enableMutation = useEnableUser();
   const disableMutation = useDisableUser();
   const deleteMutation = useDeleteUser();
+  const sendVerification = useSendUserVerification();
+
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [organizationsOpen, setOrganizationsOpen] = useState(false);
 
   const isSuperAdmin = user?.role === UserRole.SUPER_ADMIN;
   const fullName = user ? [user.firstName, user.lastName].filter(Boolean).join(' ') : '';
@@ -86,6 +102,17 @@ export default function AdminUserDetailPage() {
                 actions={
                   !isSuperAdmin ? (
                     <>
+                      {!user.emailVerified && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => sendVerification.mutate(user.id)}
+                          disabled={sendVerification.isPending}
+                        >
+                          <MailIcon data-icon="inline-start" />
+                          إرسال التحقق
+                        </Button>
+                      )}
                       {user.status !== UserStatus.ACTIVE && (
                         <Button
                           size="sm"
@@ -135,19 +162,68 @@ export default function AdminUserDetailPage() {
                 ]}
               />
 
-              <UnavailableFeatureAlert
-                title="عمليات غير متوفرة"
-                requiredEndpoints={[
-                  'PATCH /admin/users/:id/assign-organization',
-                  'PATCH /admin/users/:id/assign-role',
-                  'POST /admin/users/:id/reset-password',
-                ]}
-                description="تعيين المنظمة والدور وإعادة تعيين كلمة المرور تتطلب backend."
-              />
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between gap-4">
+                  <CardTitle className="text-base">المنظمات</CardTitle>
+                  <Button size="sm" variant="outline" onClick={() => setOrganizationsOpen(true)}>
+                    <Building2Icon data-icon="inline-start" />
+                    عرض الكل
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  <QueryState
+                    isLoading={organizationsQuery.isLoading}
+                    isError={organizationsQuery.isError}
+                    error={organizationsQuery.error}
+                    isEmpty={!organizationsQuery.data?.items.length}
+                    emptyTitle="لا ينتمي لأي منظمة"
+                    onRetry={() => organizationsQuery.refetch()}
+                  >
+                    {organizationsQuery.data?.items.length ? (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>المنظمة</TableHead>
+                            <TableHead>الدور</TableHead>
+                            <TableHead>تاريخ الانضمام</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {organizationsQuery.data.items.slice(0, 5).map((item) => (
+                            <TableRow key={item.organization.id}>
+                              <TableCell>
+                                <Link
+                                  href={ROUTES.admin.organization(item.organization.id)}
+                                  className="font-medium hover:underline"
+                                >
+                                  {item.organization.name}
+                                </Link>
+                              </TableCell>
+                              <TableCell>
+                                <StatusBadge status={item.role} />
+                              </TableCell>
+                              <TableCell className="text-xs text-muted-foreground">
+                                {formatDateTime(item.joinedAt)}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    ) : null}
+                  </QueryState>
+                </CardContent>
+              </Card>
             </>
           )}
         </QueryState>
       </div>
+
+      <AdminUserOrganizationsDialog
+        userId={userId}
+        userName={fullName || user?.email}
+        open={organizationsOpen}
+        onOpenChange={setOrganizationsOpen}
+      />
 
       <DeleteDialog
         open={deleteOpen}

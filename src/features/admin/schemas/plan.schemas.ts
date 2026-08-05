@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+const optionalLimit = z
+  .union([z.coerce.number().int().min(0), z.literal(''), z.null(), z.undefined()])
+  .transform((value) => (value === '' || value === undefined ? null : value));
+
 export const planFormSchema = z.object({
   name: z.string().min(1, 'الاسم مطلوب').max(100),
   code: z
@@ -12,6 +16,12 @@ export const planFormSchema = z.object({
   yearlyPrice: z.coerce.number().min(0, 'السعر يجب أن يكون موجباً'),
   currency: z.string().length(3).optional(),
   isActive: z.boolean().optional(),
+  maxMessagesMonthly: optionalLimit,
+  maxContacts: optionalLimit,
+  maxTeamMembers: optionalLimit,
+  maxPhoneNumbers: optionalLimit,
+  whopPlanIdMonthly: z.string().max(100).optional().nullable(),
+  whopPlanIdYearly: z.string().max(100).optional().nullable(),
 });
 
 export type PlanFormValues = z.infer<typeof planFormSchema>;

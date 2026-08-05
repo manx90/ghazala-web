@@ -17,6 +17,7 @@ import {
   UsersIcon,
   ActivityIcon,
   WebhookIcon,
+  WalletIcon,
 } from 'lucide-react';
 import { ROUTES } from '@/config/routes';
 import type { NavGroup, SearchCategoryConfig } from '@/types/navigation.types';
@@ -165,6 +166,13 @@ export const ADMIN_NAVIGATION: NavGroup[] = [
         permission: 'platform.admin',
       },
       {
+        id: 'admin-whop',
+        label: 'Whop',
+        href: ROUTES.admin.whop,
+        icon: WalletIcon,
+        permission: 'platform.admin',
+      },
+      {
         id: 'admin-subscriptions',
         label: 'الاشتراكات',
         href: ROUTES.admin.subscriptions,
@@ -290,6 +298,7 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   organizations: 'المنظمات',
   users: 'المستخدمون',
   plans: 'الخطط',
+  whop: 'Whop',
   subscriptions: 'الاشتراكات',
   system: 'النظام',
   health: 'صحة النظام',

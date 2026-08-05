@@ -1,6 +1,7 @@
 'use client';
 
 import { RefreshCwIcon } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
@@ -9,13 +10,16 @@ import { useAdminDashboard } from '@/features/admin/hooks/use-admin-dashboard';
 import { useSystemHealth } from '@/features/admin/hooks/use-system-health';
 
 export default function AdminDashboardPage() {
-  const { refetch: refetchDashboard, isFetching: dashboardFetching } = useAdminDashboard();
+  const queryClient = useQueryClient();
+  const { isFetching: dashboardFetching } = useAdminDashboard();
   const { refetch: refetchHealth, isFetching: healthFetching } = useSystemHealth();
 
   const refetchAll = () => {
-    void refetchDashboard();
+    void queryClient.invalidateQueries({ queryKey: ['admin'] });
     void refetchHealth();
   };
+
+  const isRefreshing = dashboardFetching || healthFetching;
 
   return (
     <PageContainer>
@@ -24,7 +28,7 @@ export default function AdminDashboardPage() {
           title="لوحة Super Admin"
           description="نظرة تنفيذية على المنصة والمستخدمين والمنظمات"
           actions={
-            <Button variant="outline" size="sm" onClick={refetchAll} disabled={dashboardFetching || healthFetching}>
+            <Button variant="outline" size="sm" onClick={refetchAll} disabled={isRefreshing}>
               <RefreshCwIcon data-icon="inline-start" />
               تحديث
             </Button>

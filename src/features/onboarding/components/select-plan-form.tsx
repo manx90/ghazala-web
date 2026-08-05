@@ -18,7 +18,35 @@ import {
   useSubscribePlan,
 } from '@/features/onboarding/hooks/use-select-plan';
 import { BillingCycle } from '@/types/billing.types';
+import type { Plan } from '@/types/billing.types';
 import { cn } from '@/lib/utils';
+
+function formatPlanLimit(value: number | null): string {
+  return value === null ? 'غير محدود' : value.toLocaleString();
+}
+
+function PlanLimitsList({ plan }: { plan: Plan }) {
+  return (
+    <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
+      <li className="flex items-start gap-2">
+        <CheckCircle2Icon className="mt-0.5 size-4 shrink-0 text-secondary" aria-hidden="true" />
+        {formatPlanLimit(plan.maxMessagesMonthly)} رسالة / شهر
+      </li>
+      <li className="flex items-start gap-2">
+        <CheckCircle2Icon className="mt-0.5 size-4 shrink-0 text-secondary" aria-hidden="true" />
+        {formatPlanLimit(plan.maxContacts)} جهة اتصال
+      </li>
+      <li className="flex items-start gap-2">
+        <CheckCircle2Icon className="mt-0.5 size-4 shrink-0 text-secondary" aria-hidden="true" />
+        {formatPlanLimit(plan.maxTeamMembers)} عضو فريق
+      </li>
+      <li className="flex items-start gap-2">
+        <CheckCircle2Icon className="mt-0.5 size-4 shrink-0 text-secondary" aria-hidden="true" />
+        {formatPlanLimit(plan.maxPhoneNumbers)} رقم هاتف
+      </li>
+    </ul>
+  );
+}
 
 export function SelectPlanForm() {
   const plansQuery = useBillingPlans();
@@ -108,14 +136,7 @@ export function SelectPlanForm() {
                       {billingCycle === BillingCycle.MONTHLY ? 'شهرياً' : 'سنوياً'}
                     </p>
                   </div>
-                  {plan.description ? (
-                    <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
-                      <li className="flex items-start gap-2">
-                        <CheckCircle2Icon className="mt-0.5 size-4 shrink-0 text-secondary" aria-hidden="true" />
-                        {plan.description}
-                      </li>
-                    </ul>
-                  ) : null}
+                  <PlanLimitsList plan={plan} />
                 </CardContent>
                 <CardFooter className="bg-transparent">
                   <Button

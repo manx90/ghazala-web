@@ -13,7 +13,6 @@ import { NoOrganizationsEmpty } from '@/components/feedback/empty-presets';
 import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
 import { StatusBadge } from '@/components/shared/status-badge';
-import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -35,11 +34,13 @@ import { ROUTES } from '@/config/routes';
 import {
   useActivateOrganization,
   useAdminOrganizations,
+  useBulkOrganizations,
   useDeleteOrganization,
   useSuspendOrganization,
 } from '@/features/admin/hooks/use-admin-organizations';
+import { AdminOrganizationBulkAction } from '@/types/admin.types';
+import type { AdminOrganizationListItem } from '@/types/admin.types';
 import { OrganizationStatus } from '@/types/organization.types';
-import type { Organization } from '@/types/organization.types';
 import { formatDateTime } from '@/utils/date';
 
 const PAGE_LIMIT = 20;
@@ -50,30 +51,27 @@ export default function AdminOrganizationsPage() {
   const [searchInput, setSearchInput] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedIds, setSelectedIds] = useState<Record<string, boolean>>({});
-  const [suspendTarget, setSuspendTarget] = useState<Organization | null>(null);
-  const [activateTarget, setActivateTarget] = useState<Organization | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<Organization | null>(null);
+  const [suspendTarget, setSuspendTarget] = useState<AdminOrganizationListItem | null>(null);
+  const [activateTarget, setActivateTarget] = useState<AdminOrganizationListItem | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<AdminOrganizationListItem | null>(null);
 
-  const { data, isLoading, isError, error, refetch } = useAdminOrganizations({ page, limit: PAGE_LIMIT });
+  const listParams = useMemo(
+    () => ({
+      page,
+      limit: PAGE_LIMIT,
+      ...(searchInput.trim() ? { search: searchInput.trim() } : {}),
+      ...(statusFilter !== 'all' ? { status: statusFilter as OrganizationStatus } : {}),
+    }),
+    [page, searchInput, statusFilter],
+  );
+
+  const { data, isLoading, isError, error, refetch } = useAdminOrganizations(listParams);
   const activateMutation = useActivateOrganization();
   const suspendMutation = useSuspendOrganization();
   const deleteMutation = useDeleteOrganization();
+  const bulkMutation = useBulkOrganizations();
 
-  const filteredItems = useMemo(() => {
-    let items = data?.items ?? [];
-    const q = searchInput.trim().toLowerCase();
-    if (q) {
-      items = items.filter(
-        (o) => o.name.toLowerCase().includes(q) || o.slug.toLowerCase().includes(q) || o.country.toLowerCase().includes(q),
-      );
-    }
-    if (statusFilter !== 'all') {
-      items = items.filter((o) => o.status === statusFilter);
-    }
-    return items;
-  }, [data?.items, searchInput, statusFilter]);
-
-  const columns = useMemo<ColumnDef<Organization, unknown>[]>(
+  const columns = useMemo<ColumnDef<AdminOrganizationListItem, unknown>[]>(
     () => [
       {
         id: 'name',
@@ -95,6 +93,22 @@ export default function AdminOrganizationsPage() {
             {row.original.slug}
           </span>
         ),
+      },
+      {
+        id: 'plan',
+        header: 'الخطة',
+        cell: ({ row }) => {
+          const plan = row.original.plan;
+          if (!plan?.planName) return <span className="text-muted-foreground">—</span>;
+          return (
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm">{plan.planName}</span>
+              {plan.subscriptionStatus && (
+                <StatusBadge status={plan.subscriptionStatus} className="w-fit" />
+              )}
+            </div>
+          );
+        },
       },
       {
         id: 'country',
@@ -163,25 +177,10 @@ export default function AdminOrganizationsPage() {
       <div className="flex flex-col gap-6">
         <PageHeader title="المنظمات" description="إدارة منظمات المنصة — تفعيل، تعليق، وحذف" />
 
-        <UnavailableFeatureAlert
-          title="عمليات غير مدعومة"
-          description="البحث والتصفية يعملان على الصفحة الحالية فقط. العمليات التالية تتطلب backend."
-          requiredEndpoints={[
-            'GET /admin/organizations?search=&status=',
-            'POST /admin/organizations',
-            'PATCH /admin/organizations/:id',
-            'GET /admin/organizations/:id/usage',
-            'GET /admin/organizations/:id/subscription',
-            'GET /admin/organizations/:id/members',
-            'GET /admin/organizations/:id/phone-numbers',
-            'POST /admin/organizations/bulk',
-          ]}
-        />
-
         <Card>
           <CardContent className="pt-6">
             <DataTable
-              data={filteredItems}
+              data={data?.items ?? []}
               columns={columns}
               isLoading={isLoading}
               isError={isError}
@@ -199,11 +198,22 @@ export default function AdminOrganizationsPage() {
                 <FilterBar>
                   <SearchBar
                     value={searchInput}
-                    onChange={setSearchInput}
-                    placeholder="بحث في الصفحة الحالية..."
+                    onChange={(value) => {
+                      setSearchInput(value);
+                      setPage(1);
+                    }}
+                    placeholder="بحث بالاسم أو slug أو البلد..."
                     className="flex-1"
                   />
-                  <Select value={statusFilter} onValueChange={(v) => v && setStatusFilter(v)}>
+                  <Select
+                    value={statusFilter}
+                    onValueChange={(v) => {
+                      if (v) {
+                        setStatusFilter(v);
+                        setPage(1);
+                      }
+                    }}
+                  >
                     <SelectTrigger className="w-full sm:w-40">
                       <SelectValue placeholder="الحالة" />
                     </SelectTrigger>
@@ -220,12 +230,42 @@ export default function AdminOrganizationsPage() {
                 <BulkActionsBar selectedCount={ids.length} onClear={() => setSelectedIds({})}>
                   <Button
                     size="xs"
+                    onClick={() =>
+                      bulkMutation.mutate(
+                        { action: AdminOrganizationBulkAction.ACTIVATE, ids },
+                        { onSuccess: () => setSelectedIds({}) },
+                      )
+                    }
+                    disabled={bulkMutation.isPending}
+                  >
+                    <PlayIcon data-icon="inline-start" />
+                    تفعيل المحدد
+                  </Button>
+                  <Button
+                    size="xs"
+                    variant="outline"
+                    onClick={() =>
+                      bulkMutation.mutate(
+                        { action: AdminOrganizationBulkAction.SUSPEND, ids },
+                        { onSuccess: () => setSelectedIds({}) },
+                      )
+                    }
+                    disabled={bulkMutation.isPending}
+                  >
+                    <PauseIcon data-icon="inline-start" />
+                    تعليق المحدد
+                  </Button>
+                  <Button
+                    size="xs"
                     variant="destructive"
                     onClick={() => {
-                      void Promise.all(ids.map((id) => deleteMutation.mutateAsync(id))).then(() => {
+                      void (async () => {
+                        for (const id of ids) {
+                          await deleteMutation.mutateAsync(id);
+                        }
                         setSelectedIds({});
                         router.refresh();
-                      });
+                      })();
                     }}
                     disabled={deleteMutation.isPending}
                   >

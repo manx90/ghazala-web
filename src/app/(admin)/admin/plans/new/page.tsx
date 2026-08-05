@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { PlanForm } from '@/features/admin/components/plan-form';
 import { useCreatePlan } from '@/features/admin/hooks/use-admin-plans';
 import type { PlanFormValues } from '@/features/admin/schemas/plan.schemas';
+import { planFormToCreatePayload } from '@/features/admin/utils/plan-form-payload';
 import { ROUTES } from '@/config/routes';
 
 export default function AdminPlanNewPage() {
@@ -16,20 +17,9 @@ export default function AdminPlanNewPage() {
   const createMutation = useCreatePlan();
 
   const handleSubmit = (values: PlanFormValues) => {
-    createMutation.mutate(
-      {
-        name: values.name,
-        code: values.code,
-        description: values.description,
-        monthlyPrice: values.monthlyPrice,
-        yearlyPrice: values.yearlyPrice,
-        currency: values.currency,
-        isActive: values.isActive,
-      },
-      {
-        onSuccess: () => router.push(ROUTES.admin.plans),
-      },
-    );
+    createMutation.mutate(planFormToCreatePayload(values), {
+      onSuccess: () => router.push(ROUTES.admin.plans),
+    });
   };
 
   return (

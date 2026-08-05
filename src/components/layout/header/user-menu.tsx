@@ -48,7 +48,7 @@ function UserMenuComponent({ variant, orgSlug }: UserMenuProps) {
 
   const handleLogout = async () => {
     await logout.mutateAsync();
-    router.replace(ROUTES.auth.login);
+    router.replace(ROUTES.home);
   };
 
   return (

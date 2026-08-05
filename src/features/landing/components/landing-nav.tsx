@@ -2,13 +2,78 @@
 
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
-import { MenuIcon, MessageCircleIcon, XIcon } from 'lucide-react';
+import { LayoutDashboardIcon, MenuIcon, MessageCircleIcon, ShieldIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ThemeSwitcher } from '@/components/layout/header/theme-switcher';
 import { ROUTES } from '@/config/routes';
+import { useLandingAuth } from '@/features/landing/hooks/use-landing-auth';
 import { cn } from '@/lib/utils';
 import { LANDING_NAV_LINKS } from '../data/landing-content';
+
+function AuthActions({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
+  const { isAuthenticated, isSessionLoading, isSuperAdmin, workspaceHref, adminHref, loginHref, registerHref } =
+    useLandingAuth();
+
+  if (isSessionLoading) {
+    return mobile ? null : <div className="h-9 w-24 animate-pulse rounded-lg bg-muted" />;
+  }
+
+  if (isAuthenticated) {
+    return (
+      <>
+        {isSuperAdmin ? (
+          <>
+            <Button
+              variant={mobile ? 'outline' : 'ghost'}
+              className={mobile ? 'w-full' : undefined}
+              render={<Link href={adminHref} onClick={onNavigate} />}
+            >
+              <ShieldIcon data-icon="inline-start" />
+              لوحة الإدارة
+            </Button>
+            <Button
+              variant="gradient"
+              className={mobile ? 'w-full' : undefined}
+              render={<Link href={workspaceHref} onClick={onNavigate} />}
+            >
+              <LayoutDashboardIcon data-icon="inline-start" />
+              بوابة العملاء
+            </Button>
+          </>
+        ) : (
+          <Button
+            variant="gradient"
+            className={mobile ? 'w-full' : undefined}
+            render={<Link href={workspaceHref} onClick={onNavigate} />}
+          >
+            <LayoutDashboardIcon data-icon="inline-start" />
+            لوحة التحكم
+          </Button>
+        )}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Button
+        variant={mobile ? 'outline' : 'ghost'}
+        className={mobile ? 'w-full' : undefined}
+        render={<Link href={loginHref} onClick={onNavigate} />}
+      >
+        تسجيل الدخول
+      </Button>
+      <Button
+        variant="gradient"
+        className={mobile ? 'w-full' : undefined}
+        render={<Link href={registerHref} onClick={onNavigate} />}
+      >
+        ابدأ مجاناً
+      </Button>
+    </>
+  );
+}
 
 export function LandingNav() {
   const [scrolled, setScrolled] = useState(false);
@@ -31,7 +96,7 @@ export function LandingNav() {
       <div
         className={cn(
           'mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 transition-all duration-500 sm:px-6',
-          scrolled ? 'py-3' : 'py-5'
+          scrolled ? 'py-3' : 'py-5',
         )}
       >
         <div
@@ -39,7 +104,7 @@ export function LandingNav() {
             'pointer-events-none absolute inset-0 border-b transition-all duration-500',
             scrolled
               ? 'border-border/60 bg-background/70 backdrop-blur-xl'
-              : 'border-transparent bg-transparent'
+              : 'border-transparent bg-transparent',
           )}
           aria-hidden
         />
@@ -69,12 +134,7 @@ export function LandingNav() {
 
         <div className="relative z-10 hidden items-center gap-2 lg:flex">
           <ThemeSwitcher />
-          <Button variant="ghost" render={<Link href={ROUTES.auth.login} />}>
-            تسجيل الدخول
-          </Button>
-          <Button variant="gradient" render={<Link href={ROUTES.auth.register} />}>
-            ابدأ مجاناً
-          </Button>
+          <AuthActions />
         </div>
 
         <div className="relative z-10 flex items-center gap-1 lg:hidden">
@@ -113,10 +173,7 @@ export function LandingNav() {
                 </a>
               ))}
               <div className="mt-3 flex flex-col gap-2 border-t border-border/60 pt-4">
-                <Button variant="outline" render={<Link href={ROUTES.auth.login} />}>
-                  تسجيل الدخول
-                </Button>
-                <Button variant="gradient" render={<Link href={ROUTES.auth.register} />}>ابدأ مجاناً</Button>
+                <AuthActions mobile onNavigate={() => setMobileOpen(false)} />
               </div>
             </div>
           </motion.nav>

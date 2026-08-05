@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { arabicFont } from '@/lib/fonts';
 import { LandingNav } from '@/features/landing/components/landing-nav';
 import { HeroSection } from '@/features/landing/components/hero-section';
 import { TrustedBy } from '@/features/landing/components/trusted-by';
@@ -18,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <div className={`${arabicFont.className} relative flex min-h-svh flex-col bg-background`}>
+    <div className="relative flex min-h-svh flex-col bg-background">
       <LandingNav />
       <main id="main-content" className="flex-1">
         <HeroSection />

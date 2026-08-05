@@ -187,6 +187,11 @@ function createAxiosInstance(): AxiosInstance {
         try {
           await getRefreshPromise();
           config.metadata = { ...config.metadata, skipRefresh: true };
+          config.headers = AxiosHeaders.from(config.headers);
+          const accessToken = tokenStorage.getAccessToken();
+          if (accessToken) {
+            config.headers.set('Authorization', `Bearer ${accessToken}`);
+          }
           return instance.request(config);
         } catch (refreshError) {
           tokenStorage.clearTokens();

@@ -32,6 +32,10 @@ export const ROUTES = {
     },
   },
 
+  billing: {
+    callback: '/billing/callback',
+  },
+
   onboarding: {
     createOrganization: '/onboarding/create-organization',
     connectWhatsapp: '/onboarding/connect-whatsapp',
@@ -57,6 +61,7 @@ export const ROUTES = {
     featureFlags: '/admin/feature-flags',
     announcements: '/admin/announcements',
     metaConfig: '/admin/meta-config',
+    whop: '/admin/whop',
     settings: '/admin/settings',
   },
 
@@ -65,6 +70,8 @@ export const ROUTES = {
     notFound: '/404',
   },
 } as const;
+
+export const BILLING_ROUTE_PREFIX = '/billing';
 
 export const PUBLIC_ROUTES = [ROUTES.errors.forbidden] as const;
 

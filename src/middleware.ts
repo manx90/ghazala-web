@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import {
   ADMIN_ROUTE_PREFIX,
   AUTH_COOKIE_NAME,
+  BILLING_ROUTE_PREFIX,
   GUEST_ROUTES,
   ONBOARDING_ROUTE_PREFIX,
   PROTECTED_ROUTE_PREFIX,
@@ -15,7 +16,8 @@ function isGuestRoute(pathname: string): boolean {
 function isProtectedRoute(pathname: string): boolean {
   return (
     pathname.startsWith(PROTECTED_ROUTE_PREFIX) ||
-    pathname.startsWith(ONBOARDING_ROUTE_PREFIX)
+    pathname.startsWith(ONBOARDING_ROUTE_PREFIX) ||
+    pathname.startsWith(BILLING_ROUTE_PREFIX)
   );
 }
 
@@ -26,13 +28,6 @@ function isAdminRoute(pathname: string): boolean {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAuthenticated = request.cookies.get(AUTH_COOKIE_NAME)?.value === '1';
-
-  if (pathname === ROUTES.home) {
-    if (isAuthenticated) {
-      return NextResponse.redirect(new URL(ROUTES.app.root, request.url));
-    }
-    return NextResponse.next();
-  }
 
   if (isGuestRoute(pathname) && isAuthenticated) {
     return NextResponse.redirect(new URL(ROUTES.app.root, request.url));

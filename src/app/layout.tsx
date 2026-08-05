@@ -49,7 +49,7 @@ export default function RootLayout({
       lang="ar"
       dir="rtl"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${arabicFont.variable} h-full antialiased`}
+      className={`${arabicFont.className} ${geistSans.variable} ${geistMono.variable} ${arabicFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <a

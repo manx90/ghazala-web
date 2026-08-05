@@ -1,7 +1,9 @@
+import { DEFAULT_CURRENCY, DEFAULT_CURRENCY_LOCALE } from '@/config/currency';
+
 export function formatCurrency(
   amount: number | string,
-  currency = 'SAR',
-  locale = 'ar-SA',
+  currency = DEFAULT_CURRENCY,
+  locale = DEFAULT_CURRENCY_LOCALE,
 ): string {
   const numericAmount = typeof amount === 'string' ? Number(amount) : amount;
 
@@ -17,11 +19,11 @@ export function formatCurrency(
   }).format(numericAmount);
 }
 
-export function formatNumber(value: number, locale = 'ar-SA'): string {
+export function formatNumber(value: number, locale = DEFAULT_CURRENCY_LOCALE): string {
   return new Intl.NumberFormat(locale).format(value);
 }
 
-export function formatCompactNumber(value: number, locale = 'ar-SA'): string {
+export function formatCompactNumber(value: number, locale = DEFAULT_CURRENCY_LOCALE): string {
   return new Intl.NumberFormat(locale, {
     notation: 'compact',
     compactDisplay: 'short',

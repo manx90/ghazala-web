@@ -4,10 +4,18 @@ import { motion, useReducedMotion } from 'motion/react';
 import Link from 'next/link';
 import { ArrowLeftIcon, CheckIcon } from 'lucide-react';
 import { PRICING_CTA } from '../data/landing-content';
+import { useLandingAuth } from '../hooks/use-landing-auth';
 import { Reveal } from './reveal';
 
 export function PricingCta() {
   const reduceMotion = useReducedMotion();
+  const { isAuthenticated, isSuperAdmin, workspaceHref, adminHref } = useLandingAuth();
+
+  const primaryCta = isAuthenticated
+    ? isSuperAdmin
+      ? { label: 'لوحة الإدارة', href: adminHref }
+      : { label: 'الذهاب للمنصة', href: workspaceHref }
+    : PRICING_CTA.primaryCta;
 
   return (
     <section className="py-20 sm:py-28">
@@ -39,10 +47,10 @@ export function PricingCta() {
               whileTap={{ scale: 0.97 }}
             >
               <Link
-                href={PRICING_CTA.primaryCta.href}
+                href={primaryCta.href}
                 className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-8 text-sm font-bold text-primary shadow-lg transition-shadow hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
-                {PRICING_CTA.primaryCta.label}
+                {primaryCta.label}
                 <ArrowLeftIcon className="size-4" aria-hidden />
               </Link>
             </motion.div>

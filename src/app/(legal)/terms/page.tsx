@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { arabicFont } from '@/lib/fonts';
 import { LegalPage } from '@/features/legal/components/legal-page';
 import { TERMS_CONTENT } from '@/features/legal/data/legal-content';
 
@@ -9,9 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function TermsPage() {
-  return (
-    <div className={arabicFont.className}>
-      <LegalPage document={TERMS_CONTENT} />
-    </div>
-  );
+  return <LegalPage document={TERMS_CONTENT} />;
 }

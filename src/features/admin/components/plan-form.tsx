@@ -14,6 +14,7 @@ import {
   type PlanFormValues,
 } from '@/features/admin/schemas/plan.schemas';
 import type { Plan } from '@/types/billing.types';
+import { DEFAULT_CURRENCY } from '@/config/currency';
 
 interface PlanFormProps {
   mode: 'create' | 'edit';
@@ -34,8 +35,14 @@ export function PlanForm({ mode, defaultValues, onSubmit, isLoading }: PlanFormP
           description: defaultValues?.description ?? '',
           monthlyPrice: defaultValues ? Number(defaultValues.monthlyPrice) : 0,
           yearlyPrice: defaultValues ? Number(defaultValues.yearlyPrice) : 0,
-          currency: defaultValues?.currency ?? 'SAR',
+          currency: defaultValues?.currency ?? DEFAULT_CURRENCY,
           isActive: defaultValues?.isActive ?? true,
+          maxMessagesMonthly: defaultValues?.maxMessagesMonthly ?? null,
+          maxContacts: defaultValues?.maxContacts ?? null,
+          maxTeamMembers: defaultValues?.maxTeamMembers ?? null,
+          maxPhoneNumbers: defaultValues?.maxPhoneNumbers ?? null,
+          whopPlanIdMonthly: defaultValues?.whopPlanIdMonthly ?? '',
+          whopPlanIdYearly: defaultValues?.whopPlanIdYearly ?? '',
         }
       : {
           name: '',
@@ -43,8 +50,14 @@ export function PlanForm({ mode, defaultValues, onSubmit, isLoading }: PlanFormP
           description: '',
           monthlyPrice: 0,
           yearlyPrice: 0,
-          currency: 'SAR',
+          currency: DEFAULT_CURRENCY,
           isActive: true,
+          maxMessagesMonthly: null,
+          maxContacts: null,
+          maxTeamMembers: null,
+          maxPhoneNumbers: null,
+          whopPlanIdMonthly: '',
+          whopPlanIdYearly: '',
         },
   });
 
@@ -97,6 +110,58 @@ export function PlanForm({ mode, defaultValues, onSubmit, isLoading }: PlanFormP
               </FormField>
               <FormField name="currency" label="العملة">
                 {({ id }) => <Input id={id} maxLength={3} dir="ltr" {...register('currency')} />}
+              </FormField>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">حدود الخطة</CardTitle>
+            <CardDescription>اترك الحقل فارغاً لجعله غير محدود</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <FormField name="maxMessagesMonthly" label="الرسائل الشهرية">
+                {({ id }) => (
+                  <Input id={id} type="number" min={0} dir="ltr" placeholder="غير محدود" {...register('maxMessagesMonthly')} />
+                )}
+              </FormField>
+              <FormField name="maxContacts" label="جهات الاتصال">
+                {({ id }) => (
+                  <Input id={id} type="number" min={0} dir="ltr" placeholder="غير محدود" {...register('maxContacts')} />
+                )}
+              </FormField>
+              <FormField name="maxTeamMembers" label="أعضاء الفريق">
+                {({ id }) => (
+                  <Input id={id} type="number" min={0} dir="ltr" placeholder="غير محدود" {...register('maxTeamMembers')} />
+                )}
+              </FormField>
+              <FormField name="maxPhoneNumbers" label="أرقام الهاتف">
+                {({ id }) => (
+                  <Input id={id} type="number" min={0} dir="ltr" placeholder="غير محدود" {...register('maxPhoneNumbers')} />
+                )}
+              </FormField>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Whop</CardTitle>
+            <CardDescription>معرفات خطط Whop للدفع الشهري والسنوي (plan_...)</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <FormField name="whopPlanIdMonthly" label="Whop شهري">
+                {({ id }) => (
+                  <Input id={id} dir="ltr" placeholder="plan_..." {...register('whopPlanIdMonthly')} />
+                )}
+              </FormField>
+              <FormField name="whopPlanIdYearly" label="Whop سنوي">
+                {({ id }) => (
+                  <Input id={id} dir="ltr" placeholder="plan_..." {...register('whopPlanIdYearly')} />
+                )}
               </FormField>
             </div>
           </CardContent>

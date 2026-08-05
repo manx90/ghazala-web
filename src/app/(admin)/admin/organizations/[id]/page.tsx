@@ -18,9 +18,13 @@ import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
 import { QueryState } from '@/components/shared/query-state';
 import { StatusBadge } from '@/components/shared/status-badge';
-import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 import { Button } from '@/components/ui/button';
 import { AdminDetailHero, AdminInfoGrid } from '@/features/admin/components/admin-detail-ui';
+import { AdminOrganizationEditForm } from '@/features/admin/components/admin-organization-edit-form';
+import { AdminOrganizationMembersCard } from '@/features/admin/components/admin-organization-members-card';
+import { AdminOrganizationPhoneNumbersCard } from '@/features/admin/components/admin-organization-phone-numbers-card';
+import { AdminOrganizationSubscriptionCard } from '@/features/admin/components/admin-organization-subscription-card';
+import { AdminOrganizationUsageCard } from '@/features/admin/components/admin-organization-usage-card';
 import {
   useActivateOrganization,
   useAdminOrganization,
@@ -118,17 +122,15 @@ export default function AdminOrganizationDetailPage() {
                 ]}
               />
 
-              <UnavailableFeatureAlert
-                title="تفاصيل إضافية غير متوفرة"
-                description="الأقسام التالية تتطلب endpoints admin إضافية."
-                requiredEndpoints={[
-                  'GET /admin/organizations/:id/usage',
-                  'GET /admin/organizations/:id/subscription',
-                  'GET /admin/organizations/:id/limits',
-                  'GET /admin/organizations/:id/members',
-                  'GET /admin/organizations/:id/phone-numbers',
-                ]}
-              />
+              <AdminOrganizationEditForm organization={org} />
+
+              <div className="grid gap-6 lg:grid-cols-2">
+                <AdminOrganizationSubscriptionCard organizationId={org.id} />
+                <AdminOrganizationUsageCard organizationId={org.id} />
+              </div>
+
+              <AdminOrganizationMembersCard organizationId={org.id} />
+              <AdminOrganizationPhoneNumbersCard organizationId={org.id} />
             </>
           )}
         </QueryState>

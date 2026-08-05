@@ -3,9 +3,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { billingApi } from '@/features/billing/api/billing.api';
+import { redirectToCheckoutOrComplete } from '@/features/billing/utils/checkout';
+import { invalidateOnboardingState } from '@/features/onboarding/utils/invalidate-onboarding';
 import { queryKeys } from '@/config/query-keys';
 import { ROUTES } from '@/config/routes';
-import { invalidateOnboardingState } from '@/features/onboarding/utils/invalidate-onboarding';
 import { useOrganizationStore } from '@/store/organization.store';
 import type { BillingCycle } from '@/types/billing.types';
 import { getErrorMessage } from '@/utils/error';
@@ -26,15 +27,18 @@ export function useSubscribePlan() {
   return useMutation({
     mutationFn: ({ planId, billingCycle }: { planId: string; billingCycle: BillingCycle }) =>
       billingApi.subscribe({ planId, billingCycle }),
-    onSuccess: async () => {
+    onSuccess: async (session) => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.billing.subscription }),
         invalidateOnboardingState(queryClient),
       ]);
-      toastSuccess('تم الاشتراك في الخطة بنجاح');
-      if (currentOrganization?.slug) {
-        router.push(ROUTES.app.dashboard(currentOrganization.slug));
-      }
+
+      redirectToCheckoutOrComplete(session, () => {
+        toastSuccess('تم الاشتراك في الخطة بنجاح');
+        if (currentOrganization?.slug) {
+          router.push(ROUTES.app.dashboard(currentOrganization.slug));
+        }
+      });
     },
     onError: (error) => {
       toastError(getErrorMessage(error));

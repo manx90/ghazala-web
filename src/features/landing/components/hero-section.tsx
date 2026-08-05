@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import Link from 'next/link';
 import { ArrowLeftIcon, SparklesIcon } from 'lucide-react';
 import { HERO_CONTENT, SECURITY_BADGES } from '../data/landing-content';
+import { useLandingAuth } from '../hooks/use-landing-auth';
 import { HeroVisual } from './hero-visual';
 
 function AnimatedBackground() {
@@ -21,6 +22,13 @@ function AnimatedBackground() {
 
 export function HeroSection() {
   const reduceMotion = useReducedMotion();
+  const { isAuthenticated, isSuperAdmin, workspaceHref, adminHref } = useLandingAuth();
+
+  const primaryCta = isAuthenticated
+    ? isSuperAdmin
+      ? { label: 'لوحة الإدارة', href: adminHref }
+      : { label: 'لوحة التحكم', href: workspaceHref }
+    : HERO_CONTENT.primaryCta;
 
   const fadeUp = (delay: number) =>
     reduceMotion
@@ -63,10 +71,10 @@ export function HeroSection() {
           <motion.div {...fadeUp(0.3)} className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start sm:justify-center">
             <motion.div whileHover={reduceMotion ? undefined : { scale: 1.03 }} whileTap={{ scale: 0.98 }}>
               <Link
-                href={HERO_CONTENT.primaryCta.href}
+                href={primaryCta.href}
                 className="inline-flex h-12 items-center gap-2 rounded-xl bg-gradient-brand px-7 text-sm font-semibold text-primary-foreground shadow-lg glow-brand transition-shadow hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
-                {HERO_CONTENT.primaryCta.label}
+                {primaryCta.label}
                 <ArrowLeftIcon className="size-4" aria-hidden />
               </Link>
             </motion.div>

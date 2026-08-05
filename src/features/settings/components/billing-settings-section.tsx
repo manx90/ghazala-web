@@ -43,6 +43,7 @@ import type { Plan } from '@/types/billing.types';
 import { formatCurrency } from '@/utils/currency';
 import { formatDate } from '@/utils/date';
 import { cn } from '@/lib/utils';
+import { UsageLimitsCard } from '@/features/settings/components/usage-limits-card';
 
 const BILLING_CYCLE_LABELS: Record<BillingCycle, string> = {
   [BillingCycle.MONTHLY]: 'شهري',
@@ -154,6 +155,8 @@ export function BillingSettingsSection() {
           </QueryState>
         </CardContent>
       </Card>
+
+      {hasSubscription ? <UsageLimitsCard /> : null}
 
       <Card className="stagger-in" style={{ '--stagger-delay': '80ms' } as CSSProperties}>
         <CardHeader className="flex flex-row items-start gap-3">

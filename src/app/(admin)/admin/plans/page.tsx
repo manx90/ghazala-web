@@ -10,7 +10,6 @@ import { SearchBar } from '@/components/feedback/bars';
 import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
 import { StatusBadge } from '@/components/shared/status-badge';
-import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -84,6 +83,15 @@ export default function AdminPlansPage() {
         ),
       },
       {
+        id: 'limits',
+        header: 'الرسائل/شهر',
+        cell: ({ row }) => (
+          <span className="text-sm tabular-nums">
+            {row.original.maxMessagesMonthly?.toLocaleString() ?? '∞'}
+          </span>
+        ),
+      },
+      {
         id: 'status',
         header: 'الحالة',
         cell: ({ row }) => <StatusBadge status={row.original.isActive ? 'ACTIVE' : 'DISABLED'} />,
@@ -145,16 +153,6 @@ export default function AdminPlansPage() {
               خطة جديدة
             </Button>
           }
-        />
-
-        <UnavailableFeatureAlert
-          title="حدود وميزات الخطط"
-          description="الـ backend الحالي يدعم الاسم والأسعار والحالة فقط."
-          requiredEndpoints={[
-            'PATCH /billing/plans/:id/limits',
-            'PATCH /billing/plans/:id/features',
-            'PATCH /billing/plans/:id/quotas',
-          ]}
         />
 
         <Card>

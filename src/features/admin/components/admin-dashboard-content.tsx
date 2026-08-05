@@ -1,21 +1,41 @@
 'use client';
 
 import type { CSSProperties } from 'react';
+import { useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import {
   ActivityIcon,
   Building2Icon,
+  CreditCardIcon,
+  DatabaseIcon,
+  HardDriveIcon,
   MessageSquareIcon,
+  PhoneIcon,
   ServerIcon,
   UsersIcon,
+  WorkflowIcon,
   type LucideIcon,
 } from 'lucide-react';
 import { StatsGrid } from '@/components/cards';
-import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { useAdminDashboard } from '@/features/admin/hooks/use-admin-dashboard';
+import {
+  useAdminActivityTimeline,
+  useAdminDatabaseHealth,
+  useAdminMessageStats,
+  useAdminPhoneNumberStats,
+  useAdminQueueStatus,
+  useAdminRedisHealth,
+  useAdminRevenueStats,
+  useAdminStorageHealth,
+  useAdminSubscriptionSummary,
+  useAdminWabaStats,
+  useAdminWorkersStatus,
+} from '@/features/admin/hooks/use-admin-dashboard-metrics';
 import { useSystemHealth } from '@/features/admin/hooks/use-system-health';
+import type { AdminHealthStatus, AdminMessageStatsPeriod } from '@/types/admin.types';
 import { formatDateTime } from '@/utils/date';
 import { cn } from '@/lib/utils';
 
@@ -61,42 +81,74 @@ function KpiCard({ title, value, description, icon: Icon, loading, delay = 0 }: 
   );
 }
 
-function HealthPulseCard({ status, loading, delay }: { status?: string; loading: boolean; delay: number }) {
-  const isOk = status === 'ok';
+function healthLabel(status?: AdminHealthStatus): string {
+  switch (status) {
+    case 'ok':
+      return 'سليم';
+    case 'degraded':
+      return 'متدهور';
+    case 'down':
+      return 'متوقف';
+    case 'not_configured':
+      return 'غير مفعّل';
+    default:
+      return 'غير معروف';
+  }
+}
+
+function healthColor(status?: AdminHealthStatus): string {
+  switch (status) {
+    case 'ok':
+      return 'text-emerald-600';
+    case 'degraded':
+      return 'text-amber-600';
+    case 'down':
+      return 'text-destructive';
+    default:
+      return 'text-muted-foreground';
+  }
+}
+
+function formatBytes(bytes?: number): string {
+  if (!bytes) return '—';
+  const gb = bytes / (1024 * 1024 * 1024);
+  return `${gb.toFixed(1)} GB`;
+}
+
+function HealthMetricCard({
+  title,
+  status,
+  loading,
+  detail,
+  icon: Icon,
+  delay,
+}: {
+  title: string;
+  status?: AdminHealthStatus;
+  loading: boolean;
+  detail?: string;
+  icon: LucideIcon;
+  delay: number;
+}) {
   return (
     <Card className="stagger-in card-interactive" style={{ '--stagger-delay': `${delay}ms` } as CSSProperties}>
       <CardContent className="flex items-center gap-4 pt-6">
         <span
           className={cn(
             'flex size-11 shrink-0 items-center justify-center rounded-xl shadow-md',
-            isOk ? 'bg-gradient-brand text-primary-foreground' : 'bg-destructive/10 text-destructive',
+            status === 'ok' ? 'bg-gradient-brand text-primary-foreground' : 'bg-muted text-muted-foreground',
           )}
         >
-          <ServerIcon className="size-5" aria-hidden="true" />
+          <Icon className="size-5" />
         </span>
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="text-xs font-medium text-muted-foreground">صحة API</span>
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span className="text-xs font-medium text-muted-foreground">{title}</span>
           {loading ? (
-            <Skeleton className="h-6 w-20" />
+            <Skeleton className="h-6 w-16" />
           ) : (
-            <span className="inline-flex items-center gap-2 text-sm font-semibold">
-              <span className="relative flex size-2.5">
-                {isOk && (
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-60" />
-                )}
-                <span
-                  className={cn(
-                    'relative inline-flex size-2.5 rounded-full',
-                    isOk ? 'bg-emerald-500' : 'bg-destructive',
-                  )}
-                />
-              </span>
-              {isOk ? 'سليم' : 'غير متاح'}
-            </span>
+            <span className={cn('text-sm font-semibold', healthColor(status))}>{healthLabel(status)}</span>
           )}
-          <span className="font-mono text-xs text-muted-foreground" dir="ltr">
-            GET /health
-          </span>
+          {detail && <span className="truncate text-xs text-muted-foreground">{detail}</span>}
         </div>
       </CardContent>
     </Card>
@@ -104,8 +156,21 @@ function HealthPulseCard({ status, loading, delay }: { status?: string; loading:
 }
 
 export function AdminDashboardContent() {
+  const [messagePeriod, setMessagePeriod] = useState<AdminMessageStatsPeriod>('month');
+
   const { data: dashboard, isLoading: dashboardLoading } = useAdminDashboard();
   const { data: health, isLoading: healthLoading } = useSystemHealth();
+  const { data: waba, isLoading: wabaLoading } = useAdminWabaStats();
+  const { data: phones, isLoading: phonesLoading } = useAdminPhoneNumberStats();
+  const { data: messages, isLoading: messagesLoading } = useAdminMessageStats(messagePeriod);
+  const { data: revenue, isLoading: revenueLoading } = useAdminRevenueStats();
+  const { data: subsSummary, isLoading: subsLoading } = useAdminSubscriptionSummary();
+  const { data: queue, isLoading: queueLoading } = useAdminQueueStatus();
+  const { data: workers, isLoading: workersLoading } = useAdminWorkersStatus();
+  const { data: activity, isLoading: activityLoading } = useAdminActivityTimeline();
+  const { data: dbHealth, isLoading: dbLoading } = useAdminDatabaseHealth();
+  const { data: redisHealth, isLoading: redisLoading } = useAdminRedisHealth();
+  const { data: storageHealth, isLoading: storageLoading } = useAdminStorageHealth();
 
   const chartData = dashboard
     ? [
@@ -128,54 +193,247 @@ export function AdminDashboardContent() {
           delay={0}
         />
         <KpiCard
-          title="المنظمات النشطة"
-          value={dashboard?.organizations.active ?? 0}
-          icon={Building2Icon}
-          loading={dashboardLoading}
-          delay={70}
-        />
-        <KpiCard
           title="إجمالي المستخدمين"
           value={dashboard?.users.total ?? 0}
           description={`${dashboard?.users.active ?? 0} نشط · ${dashboard?.users.disabled ?? 0} معطل`}
           icon={UsersIcon}
           loading={dashboardLoading}
+          delay={70}
+        />
+        <KpiCard
+          title="MRR"
+          value={revenue ? `${revenue.mrr} ${revenue.currency}` : '—'}
+          description={subsSummary ? `${subsSummary.active} اشتراك نشط` : undefined}
+          icon={CreditCardIcon}
+          loading={revenueLoading || subsLoading}
           delay={140}
         />
         <KpiCard
-          title="المستخدمون النشطون"
-          value={dashboard?.users.active ?? 0}
-          icon={UsersIcon}
-          loading={dashboardLoading}
+          title="إيرادات الشهر"
+          value={revenue ? `${revenue.revenueThisMonth} ${revenue.currency}` : '—'}
+          description={revenue ? `${revenue.paidInvoices} فاتورة مدفوعة` : undefined}
+          icon={CreditCardIcon}
+          loading={revenueLoading}
           delay={210}
         />
       </StatsGrid>
 
-      <StatsGrid className="xl:grid-cols-3">
+      <StatsGrid className="xl:grid-cols-4">
         <KpiCard
-          title="إجمالي الرسائل (منصة)"
+          title="إجمالي الرسائل"
           value={dashboard?.platform.totalMessages ?? 0}
-          description="جميع رسائل المنصة"
+          description="كل رسائل المنصة"
           icon={MessageSquareIcon}
           loading={dashboardLoading}
           delay={280}
         />
         <KpiCard
-          title="طلبات API (منصة)"
+          title="نشاط الشهر"
           value={dashboard?.platform.totalApiRequests ?? 0}
-          description="جميع الطلبات المسجلة"
+          description="رسائل هذا الشهر"
           icon={ActivityIcon}
           loading={dashboardLoading}
           delay={350}
         />
-        <HealthPulseCard status={health?.status} loading={healthLoading} delay={420} />
+        <KpiCard
+          title="حسابات WABA"
+          value={waba?.total ?? 0}
+          description={waba ? `${waba.connected} متصل · ${waba.organizationsWithWaba} منظمة` : undefined}
+          icon={Building2Icon}
+          loading={wabaLoading}
+          delay={420}
+        />
+        <KpiCard
+          title="أرقام WhatsApp"
+          value={phones?.total ?? 0}
+          description={phones ? `${phones.connected} متصل · ${phones.disconnected} مفصول` : undefined}
+          icon={PhoneIcon}
+          loading={phonesLoading}
+          delay={490}
+        />
       </StatsGrid>
 
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className="stagger-in" style={{ '--stagger-delay': '560ms' } as CSSProperties}>
+          <CardHeader className="flex flex-row items-center justify-between gap-4">
+            <div>
+              <CardTitle className="text-base">إحصائيات الرسائل</CardTitle>
+              <CardDescription>حسب الفترة المحددة</CardDescription>
+            </div>
+            <div className="flex gap-1">
+              <Button
+                size="xs"
+                variant={messagePeriod === 'today' ? 'default' : 'outline'}
+                onClick={() => setMessagePeriod('today')}
+              >
+                اليوم
+              </Button>
+              <Button
+                size="xs"
+                variant={messagePeriod === 'month' ? 'default' : 'outline'}
+                onClick={() => setMessagePeriod('month')}
+              >
+                الشهر
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-2">
+            {messagesLoading ? (
+              Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 rounded-xl" />)
+            ) : (
+              <>
+                <div className="rounded-xl bg-muted/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">الإجمالي</p>
+                  <p className="text-xl font-bold tabular-nums">{messages?.total ?? 0}</p>
+                </div>
+                <div className="rounded-xl bg-muted/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">صادرة</p>
+                  <p className="text-xl font-bold tabular-nums">{messages?.outbound ?? 0}</p>
+                </div>
+                <div className="rounded-xl bg-muted/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">واردة</p>
+                  <p className="text-xl font-bold tabular-nums">{messages?.inbound ?? 0}</p>
+                </div>
+                <div className="rounded-xl bg-muted/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">فاشلة / بالانتظار</p>
+                  <p className="text-xl font-bold tabular-nums">
+                    {messages?.failed ?? 0} / {messages?.queued ?? 0}
+                  </p>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="stagger-in" style={{ '--stagger-delay': '630ms' } as CSSProperties}>
+          <CardHeader>
+            <CardTitle className="text-base">ملخص الاشتراكات</CardTitle>
+            <CardDescription>حالة كل الاشتراكات على المنصة</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-2">
+            {subsLoading ? (
+              Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 rounded-xl" />)
+            ) : (
+              <>
+                <div className="rounded-xl bg-muted/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">الإجمالي</p>
+                  <p className="text-xl font-bold tabular-nums">{subsSummary?.total ?? 0}</p>
+                </div>
+                <div className="rounded-xl bg-muted/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">نشط / تجريبي</p>
+                  <p className="text-xl font-bold tabular-nums">
+                    {subsSummary?.active ?? 0} / {subsSummary?.trial ?? 0}
+                  </p>
+                </div>
+                <div className="rounded-xl bg-muted/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">بانتظار الدفع</p>
+                  <p className="text-xl font-bold tabular-nums">{subsSummary?.pendingPayment ?? 0}</p>
+                </div>
+                <div className="rounded-xl bg-muted/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">ملغي / منتهي</p>
+                  <p className="text-xl font-bold tabular-nums">
+                    {subsSummary?.cancelled ?? 0} / {subsSummary?.expired ?? 0}
+                  </p>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <StatsGrid className="xl:grid-cols-3">
+        <HealthMetricCard
+          title="قاعدة البيانات"
+          status={dbHealth?.status}
+          loading={dbLoading}
+          detail={dbHealth?.latencyMs !== undefined ? `${dbHealth.latencyMs}ms` : undefined}
+          icon={DatabaseIcon}
+          delay={700}
+        />
+        <HealthMetricCard
+          title="Redis"
+          status={redisHealth?.status}
+          loading={redisLoading}
+          detail={redisHealth?.message}
+          icon={ServerIcon}
+          delay={770}
+        />
+        <HealthMetricCard
+          title="التخزين / الذاكرة"
+          status={storageHealth?.status}
+          loading={storageLoading}
+          detail={
+            storageHealth
+              ? `متاح: ${formatBytes(storageHealth.freeMemoryBytes)}`
+              : undefined
+          }
+          icon={HardDriveIcon}
+          delay={840}
+        />
+      </StatsGrid>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className="stagger-in" style={{ '--stagger-delay': '910ms' } as CSSProperties}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <WorkflowIcon className="size-4" />
+              طابور الرسائل
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-2">
+            {queueLoading ? (
+              Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 rounded-xl" />)
+            ) : (
+              <>
+                <div className="rounded-xl bg-muted/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">بالانتظار</p>
+                  <p className="text-xl font-bold tabular-nums">{queue?.waiting ?? 0}</p>
+                </div>
+                <div className="rounded-xl bg-muted/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">قيد الإرسال</p>
+                  <p className="text-xl font-bold tabular-nums">{queue?.active ?? 0}</p>
+                </div>
+                <div className="rounded-xl bg-muted/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">فاشلة</p>
+                  <p className="text-xl font-bold tabular-nums">{queue?.failed ?? 0}</p>
+                </div>
+                <div className="rounded-xl bg-muted/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">مكتملة اليوم</p>
+                  <p className="text-xl font-bold tabular-nums">{queue?.completedToday ?? 0}</p>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="stagger-in" style={{ '--stagger-delay': '980ms' } as CSSProperties}>
+          <CardHeader>
+            <CardTitle className="text-base">Workers</CardTitle>
+            <CardDescription>{workers?.message ?? 'حالة المعالجة الخلفية'}</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-2">
+            {workersLoading ? (
+              <Skeleton className="col-span-2 h-20 rounded-xl" />
+            ) : (
+              <>
+                <div className="rounded-xl bg-muted/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">الوضع</p>
+                  <p className="text-sm font-semibold">{workers?.mode === 'in_process' ? 'داخل API' : 'موزّع'}</p>
+                </div>
+                <div className="rounded-xl bg-muted/50 px-4 py-3">
+                  <p className="text-xs text-muted-foreground">الحالة</p>
+                  <p className={cn('text-sm font-semibold', workers?.status === 'running' ? 'text-emerald-600' : '')}>
+                    {workers?.status === 'running' ? 'يعمل' : workers?.status ?? '—'}
+                  </p>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
       <div className="grid gap-4 lg:grid-cols-5">
-        <Card
-          className="stagger-in lg:col-span-3"
-          style={{ '--stagger-delay': '490ms' } as CSSProperties}
-        >
+        <Card className="stagger-in lg:col-span-3" style={{ '--stagger-delay': '1050ms' } as CSSProperties}>
           <CardHeader>
             <CardTitle className="text-base">المنظمات والمستخدمون</CardTitle>
             <CardDescription>مقارنة الحالات على مستوى المنصة</CardDescription>
@@ -212,10 +470,7 @@ export function AdminDashboardContent() {
           </CardContent>
         </Card>
 
-        <Card
-          className="stagger-in lg:col-span-2"
-          style={{ '--stagger-delay': '560ms' } as CSSProperties}
-        >
+        <Card className="stagger-in lg:col-span-2" style={{ '--stagger-delay': '1120ms' } as CSSProperties}>
           <CardHeader>
             <CardTitle className="text-base">حالة النظام</CardTitle>
             <CardDescription>فحص مباشر يتجدد تلقائياً</CardDescription>
@@ -252,32 +507,51 @@ export function AdminDashboardContent() {
               </span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">نقطة الفحص</span>
+              <span className="text-muted-foreground">إجمالي الإيرادات</span>
               <span className="font-mono text-xs font-medium" dir="ltr">
-                GET /health
+                {revenue ? `${revenue.totalRevenue} ${revenue.currency}` : '—'}
               </span>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <UnavailableFeatureAlert
-        title="مقاييس غير متوفرة بعد"
-        description="البيانات التالية تتطلب endpoints إضافية في الـ backend."
-        requiredEndpoints={[
-          'GET /admin/stats/waba',
-          'GET /admin/stats/phone-numbers',
-          'GET /admin/stats/messages?period=today|month',
-          'GET /admin/queue/status',
-          'GET /admin/workers/status',
-          'GET /admin/stats/revenue',
-          'GET /admin/subscriptions/summary',
-          'GET /admin/activity/timeline',
-          'GET /admin/health/database',
-          'GET /admin/health/redis',
-          'GET /admin/health/storage',
-        ]}
-      />
+      <Card className="stagger-in" style={{ '--stagger-delay': '1190ms' } as CSSProperties}>
+        <CardHeader>
+          <CardTitle className="text-base">آخر النشاطات</CardTitle>
+          <CardDescription>منظمات، مستخدمون، اشتراكات، وفواتير</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {activityLoading ? (
+            <div className="flex flex-col gap-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className="h-12 rounded-xl" />
+              ))}
+            </div>
+          ) : activity?.items.length ? (
+            <div className="flex flex-col gap-2">
+              {activity.items.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between gap-4 rounded-xl border border-border/60 px-4 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{item.title}</p>
+                    {item.description && (
+                      <p className="truncate text-xs text-muted-foreground">{item.description}</p>
+                    )}
+                  </div>
+                  <span className="shrink-0 font-mono text-xs text-muted-foreground" dir="ltr">
+                    {formatDateTime(item.occurredAt)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">لا توجد نشاطات بعد</p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -5,10 +5,14 @@ import { toastSuccess, toastApiError } from '@/components/global/toast-helpers';
 import { queryConfig } from '@/config/query';
 import { queryKeys } from '@/config/query-keys';
 import { adminApi } from '@/features/admin/api/admin.api';
-import type { AdminPaginationParams } from '@/types/admin.types';
+import type {
+  AdminOrganizationListParams,
+  BulkAdminOrganizationPayload,
+  UpdateAdminOrganizationPayload,
+} from '@/types/admin.types';
 import { OrganizationStatus } from '@/types/organization.types';
 
-export function useAdminOrganizations(params?: AdminPaginationParams) {
+export function useAdminOrganizations(params?: AdminOrganizationListParams) {
   return useQuery({
     queryKey: queryKeys.admin.organizations.list(params as Record<string, unknown> | undefined),
     queryFn: () => adminApi.listOrganizations(params),
@@ -22,6 +26,71 @@ export function useAdminOrganization(id: string, enabled = true) {
     queryFn: () => adminApi.getOrganization(id),
     enabled: enabled && !!id,
     ...queryConfig.admin,
+  });
+}
+
+export function useAdminOrganizationUsage(id: string, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.admin.organizations.usage(id),
+    queryFn: () => adminApi.getOrganizationUsage(id),
+    enabled: enabled && !!id,
+    ...queryConfig.admin,
+  });
+}
+
+export function useAdminOrganizationSubscription(id: string, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.admin.organizations.subscription(id),
+    queryFn: () => adminApi.getOrganizationSubscription(id),
+    enabled: enabled && !!id,
+    ...queryConfig.admin,
+  });
+}
+
+export function useAdminOrganizationMembers(id: string, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.admin.organizations.members(id),
+    queryFn: () => adminApi.getOrganizationMembers(id),
+    enabled: enabled && !!id,
+    ...queryConfig.admin,
+  });
+}
+
+export function useAdminOrganizationPhoneNumbers(id: string, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.admin.organizations.phoneNumbers(id),
+    queryFn: () => adminApi.getOrganizationPhoneNumbers(id),
+    enabled: enabled && !!id,
+    ...queryConfig.admin,
+  });
+}
+
+export function useUpdateOrganization() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateAdminOrganizationPayload }) =>
+      adminApi.updateOrganization(id, payload),
+    onSuccess: (org) => {
+      queryClient.setQueryData(queryKeys.admin.organizations.detail(org.id), org);
+      void queryClient.invalidateQueries({ queryKey: queryKeys.admin.organizations.all });
+      toastSuccess('تم تحديث المنظمة بنجاح');
+    },
+    onError: toastApiError,
+  });
+}
+
+export function useBulkOrganizations() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: BulkAdminOrganizationPayload) => adminApi.bulkOrganizations(payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.admin.organizations.all });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.admin.dashboard });
+      toastSuccess('تم تنفيذ العملية الجماعية بنجاح');
+    },
+    onError: toastApiError,
   });
 }
 

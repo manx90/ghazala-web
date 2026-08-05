@@ -7,6 +7,8 @@ import type {
   PlanListResponse,
   SubscribePayload,
   Subscription,
+  OrganizationUsage,
+  CheckoutSessionResponse,
 } from '@/types/billing.types';
 
 export const billingApi = {
@@ -18,12 +20,12 @@ export const billingApi = {
     return apiClient.get<Subscription>('/billing/subscription');
   },
 
-  subscribe(payload: SubscribePayload): Promise<Subscription> {
-    return apiClient.post<Subscription>('/billing/subscription', payload);
+  subscribe(payload: SubscribePayload): Promise<CheckoutSessionResponse> {
+    return apiClient.post<CheckoutSessionResponse>('/billing/subscription', payload);
   },
 
-  changePlan(payload: ChangePlanPayload): Promise<Subscription> {
-    return apiClient.patch<Subscription>('/billing/subscription/change-plan', payload);
+  changePlan(payload: ChangePlanPayload): Promise<CheckoutSessionResponse> {
+    return apiClient.patch<CheckoutSessionResponse>('/billing/subscription/change-plan', payload);
   },
 
   cancelSubscription(): Promise<ApiMessageResponse> {
@@ -36,5 +38,9 @@ export const billingApi = {
 
   getInvoice(id: string): Promise<Invoice> {
     return apiClient.get<Invoice>(`/billing/invoices/${id}`);
+  },
+
+  getUsage(): Promise<OrganizationUsage> {
+    return apiClient.get<OrganizationUsage>('/billing/usage');
   },
 };
