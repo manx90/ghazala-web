@@ -79,6 +79,7 @@ export interface TemplateLibraryButton {
   text?: string;
   url?: string;
   phone_number?: string;
+  otp_type?: string;
 }
 
 export interface TemplateLibraryItem {
@@ -111,10 +112,18 @@ export interface ListTemplateLibraryParams {
   limit?: number;
 }
 
+export interface LibraryTemplateSupportedApp {
+  package_name: string;
+  signature_hash: string;
+}
+
 export interface LibraryTemplateButtonInput {
   type: string;
   phone_number?: string;
   url?: { base_url: string; url_suffix_example?: string };
+  otp_type?: string;
+  zero_tap_terms_accepted?: boolean;
+  supported_apps?: LibraryTemplateSupportedApp[];
 }
 
 export interface LibraryTemplateBodyInputs {

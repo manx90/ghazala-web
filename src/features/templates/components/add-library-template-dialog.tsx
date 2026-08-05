@@ -14,7 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCreateFromLibrary } from '@/features/templates/hooks/use-templates';
-import { buildCreateFromLibraryPayload } from '@/features/templates/utils/library-template';
+import { buildCreateFromLibraryPayload, isAuthenticationLibraryItem } from '@/features/templates/utils/library-template';
 import type { TemplateLibraryItem } from '@/types/template.types';
 
 interface AddLibraryTemplateDialogProps {
@@ -35,6 +35,8 @@ export function AddLibraryTemplateDialog({
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const createMutation = useCreateFromLibrary();
+
+  const isAuthentication = item ? isAuthenticationLibraryItem(item) : false;
 
   const urlButton = useMemo(
     () => item?.buttons?.find((button) => button.type === 'URL'),
@@ -105,7 +107,13 @@ export function AddLibraryTemplateDialog({
               />
             </div>
 
-            {urlButton ? (
+            {isAuthentication ? (
+              <div className="rounded-lg border border-sky-500/30 bg-sky-500/5 px-3 py-2 text-sm text-sky-950 dark:text-sky-100">
+                قالب مصادقة (OTP) — يُضاف بزر نسخ الرمز تلقائياً كما تتطلب Meta.
+              </div>
+            ) : null}
+
+            {urlButton && !isAuthentication ? (
               <div className="space-y-1.5">
                 <Label htmlFor="library-template-url">رابط الزر ({urlButton.text ?? 'URL'}) *</Label>
                 <Input
@@ -118,7 +126,7 @@ export function AddLibraryTemplateDialog({
               </div>
             ) : null}
 
-            {phoneButton ? (
+            {phoneButton && !isAuthentication ? (
               <div className="space-y-1.5">
                 <Label htmlFor="library-template-phone">
                   رقم الهاتف ({phoneButton.text ?? 'Phone'}) *
@@ -145,8 +153,8 @@ export function AddLibraryTemplateDialog({
             disabled={
               !item ||
               !name.trim() ||
-              (urlButton ? !urlBase.trim() : false) ||
-              (phoneButton ? !phoneNumber.trim() : false) ||
+              (!isAuthentication && urlButton ? !urlBase.trim() : false) ||
+              (!isAuthentication && phoneButton ? !phoneNumber.trim() : false) ||
               createMutation.isPending
             }
             onClick={handleSubmit}

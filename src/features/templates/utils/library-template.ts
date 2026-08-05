@@ -20,15 +20,31 @@ export function resolveLibraryCategory(value?: string): TemplateCategory {
   return TemplateCategory.UTILITY;
 }
 
-function buildButtonInputs(input: {
+function resolveOtpType(item: TemplateLibraryItem): string {
+  const otpButton = item.buttons?.find((button) => button.type === 'OTP');
+  return otpButton?.otp_type ?? 'COPY_CODE';
+}
+
+function buildAuthenticationButtonInputs(item: TemplateLibraryItem): LibraryTemplateButtonInput[] {
+  return [
+    {
+      type: 'OTP',
+      otp_type: resolveOtpType(item),
+    },
+  ];
+}
+
+function buildUtilityMarketingButtonInputs(input: {
+  item: TemplateLibraryItem;
   urlBase?: string;
   phoneNumber?: string;
-  hasUrlButton: boolean;
-  hasPhoneButton: boolean;
 }): LibraryTemplateButtonInput[] | undefined {
   const buttonInputs: LibraryTemplateButtonInput[] = [];
+  const hasUrlButton = input.item.buttons?.some((button) => button.type === 'URL') ?? false;
+  const hasPhoneButton =
+    input.item.buttons?.some((button) => button.type === 'PHONE_NUMBER') ?? false;
 
-  if (input.hasUrlButton && input.urlBase?.trim()) {
+  if (hasUrlButton && input.urlBase?.trim()) {
     const baseUrl = input.urlBase.trim();
     buttonInputs.push({
       type: 'URL',
@@ -41,7 +57,7 @@ function buildButtonInputs(input: {
     });
   }
 
-  if (input.hasPhoneButton && input.phoneNumber?.trim()) {
+  if (hasPhoneButton && input.phoneNumber?.trim()) {
     buttonInputs.push({
       type: 'PHONE_NUMBER',
       phone_number: input.phoneNumber.trim(),
@@ -51,12 +67,14 @@ function buildButtonInputs(input: {
   return buttonInputs.length ? buttonInputs : undefined;
 }
 
-/** Meta library body inputs — object flags only, never variable text arrays. */
 export function buildLibraryBodyInputs(
   category?: TemplateCategory,
 ): LibraryTemplateBodyInputs | undefined {
   if (category === TemplateCategory.AUTHENTICATION) {
-    return { code_expiration_minutes: 5 };
+    return {
+      code_expiration_minutes: 5,
+      add_security_recommendation: true,
+    };
   }
 
   return undefined;
@@ -69,9 +87,6 @@ export function buildCreateFromLibraryPayload(input: {
   phoneNumber?: string;
 }): CreateFromLibraryPayload {
   const category = resolveLibraryCategory(input.item.category);
-  const hasUrlButton = input.item.buttons?.some((button) => button.type === 'URL') ?? false;
-  const hasPhoneButton =
-    input.item.buttons?.some((button) => button.type === 'PHONE_NUMBER') ?? false;
 
   const payload: CreateFromLibraryPayload = {
     name: input.name.trim(),
@@ -80,15 +95,13 @@ export function buildCreateFromLibraryPayload(input: {
     category,
   };
 
-  const buttonInputs = buildButtonInputs({
-    urlBase: input.urlBase,
-    phoneNumber: input.phoneNumber,
-    hasUrlButton,
-    hasPhoneButton,
-  });
-
-  if (buttonInputs) {
-    payload.libraryTemplateButtonInputs = buttonInputs;
+  if (category === TemplateCategory.AUTHENTICATION) {
+    payload.libraryTemplateButtonInputs = buildAuthenticationButtonInputs(input.item);
+  } else {
+    const buttonInputs = buildUtilityMarketingButtonInputs(input);
+    if (buttonInputs) {
+      payload.libraryTemplateButtonInputs = buttonInputs;
+    }
   }
 
   const bodyInputs = buildLibraryBodyInputs(category);
@@ -97,4 +110,8 @@ export function buildCreateFromLibraryPayload(input: {
   }
 
   return payload;
+}
+
+export function isAuthenticationLibraryItem(item: TemplateLibraryItem): boolean {
+  return resolveLibraryCategory(item.category) === TemplateCategory.AUTHENTICATION;
 }
