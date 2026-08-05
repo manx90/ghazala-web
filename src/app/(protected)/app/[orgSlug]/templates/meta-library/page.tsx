@@ -97,6 +97,18 @@ export default function TemplateMetaLibraryPage() {
           </div>
         )}
 
+        {isMetaConnected && (
+          <div className="rounded-xl border border-sky-500/30 bg-sky-500/5 px-4 py-3 text-sm text-sky-950 dark:text-sky-100">
+            <strong>كيف تعمل المكتبة:</strong> اختر قالباً → أضفه لحسابك → Meta تراجعه (عادة دقائق) →
+            {' '}
+            <Link href={ROUTES.app.templates(orgSlug)} className="font-medium underline underline-offset-2">
+              زامن من صفحة قوالبي
+            </Link>
+            {' '}
+            → عند الحالة <strong>معتمد</strong> يمكنك الإرسال من Inbox.
+          </div>
+        )}
+
         <div
           className="stagger-in grid gap-3 rounded-xl border bg-card p-4 shadow-2xs md:grid-cols-2 xl:grid-cols-3"
           style={{ '--stagger-delay': '120ms' } as React.CSSProperties}

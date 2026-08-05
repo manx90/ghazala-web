@@ -73,7 +73,14 @@ export function TemplateTable({ templates, orgSlug }: TemplateTableProps) {
                 </span>
               </TableCell>
               <TableCell>
-                <StatusBadge status={template.status} />
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <StatusBadge status={template.status} />
+                  {!template.metaTemplateId ? (
+                    <span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 dark:text-amber-200">
+                      غير مربوط بـ Meta
+                    </span>
+                  ) : null}
+                </div>
               </TableCell>
               <TableCell className="max-w-xs truncate text-muted-foreground">
                 {getBodyPreview(template)}

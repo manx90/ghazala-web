@@ -28,6 +28,7 @@ import {
   buildTemplateSendMeta,
   getTemplateBodyPreview,
 } from '@/features/templates/utils/template-preview';
+import { filterSendableTemplates } from '@/features/templates/utils/template-sendable';
 import { TemplateStatus, type Template } from '@/types/template.types';
 import { normalizePhone } from '@/utils/phone';
 
@@ -58,7 +59,7 @@ export function SendTemplateComposeDialog({
   );
 
   const approvedTemplates = useMemo(() => {
-    const items = templatesQuery.data?.items ?? [];
+    const items = filterSendableTemplates(templatesQuery.data?.items ?? []);
     if (!selectedPhone?.wabaId) return items;
     return items.filter((item) => item.wabaId === selectedPhone.wabaId);
   }, [templatesQuery.data?.items, selectedPhone?.wabaId]);
@@ -160,7 +161,8 @@ export function SendTemplateComposeDialog({
             </div>
           ) : !approvedTemplates.length ? (
             <p className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-sm text-amber-900 dark:text-amber-200">
-              لا توجد قوالب معتمدة لرقم الإرسال هذا. زامن القوالب من Meta أو أضف hello_world من المكتبة.
+              لا توجد قوالب جاهزة للإرسال على هذا الحساب. أضف قالباً من{' '}
+              <strong>مكتبة Meta</strong> ثم زامن — بعد اعتماد Meta يمكنك الإرسال.
             </p>
           ) : (
             <>

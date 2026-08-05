@@ -22,6 +22,7 @@ import {
 import { getLanguageLabel } from '@/features/templates/constants/template-filters';
 import { useTemplatesList } from '@/features/templates/hooks/use-templates';
 import { getTemplateBodyPreview } from '@/features/templates/utils/template-preview';
+import { filterSendableTemplates } from '@/features/templates/utils/template-sendable';
 import { TemplateStatus, type Template } from '@/types/template.types';
 
 interface TemplatePickerDialogProps {
@@ -46,8 +47,9 @@ export function TemplatePickerDialog({
 
   const approvedTemplates = useMemo(() => {
     const items = templatesQuery.data?.items ?? [];
-    if (!wabaId) return items;
-    return items.filter((item) => item.wabaId === wabaId);
+    const sendable = filterSendableTemplates(items);
+    if (!wabaId) return sendable;
+    return sendable.filter((item) => item.wabaId === wabaId);
   }, [templatesQuery.data?.items, wabaId]);
 
   const languages = useMemo(() => {
@@ -98,8 +100,8 @@ export function TemplatePickerDialog({
         ) : !approvedTemplates.length ? (
           <p className="py-4 text-sm text-muted-foreground">
             {wabaId
-              ? 'لا توجد قوالب معتمدة لحساب WhatsApp هذا — زامن القوالب من الإعدادات.'
-              : 'لا توجد قوالب معتمدة. زامن من Meta أو أضف قالباً من المكتبة.'}
+              ? 'لا توجد قوالب معتمدة على Meta لهذا الحساب — أضف من مكتبة Meta ثم زامن.'
+              : 'لا توجد قوالب جاهزة للإرسال. أضف من مكتبة Meta ثم زامن بعد الاعتماد.'}
           </p>
         ) : (
           <div className="space-y-4">

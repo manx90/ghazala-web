@@ -93,17 +93,11 @@ export function AddLibraryTemplateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>إضافة قالب للمنظمة</DialogTitle>
+          <DialogTitle>إضافة قالب إلى حساب WhatsApp</DialogTitle>
           <DialogDescription>
             {item ? (
               <>
-                <span dir="ltr" className="font-mono">
-                  {item.name}
-                </span>
-                {' '}
-                —
-                {' '}
-                {item.language}
+                يُرسل القالب لـ Meta للمراجعة. بعد الاعتماد زامن من صفحة قوالبي ثم أرسل من Inbox.
               </>
             ) : (
               'اختر قالباً من المكتبة'
@@ -175,7 +169,7 @@ export function AddLibraryTemplateDialog({
             }
             onClick={handleSubmit}
           >
-            {createMutation.isPending ? <Loader2Icon className="animate-spin" /> : 'إضافة للمنظمة'}
+            {createMutation.isPending ? <Loader2Icon className="animate-spin" /> : 'إرسال لـ Meta'}
           </Button>
         </DialogFooter>
       </DialogContent>

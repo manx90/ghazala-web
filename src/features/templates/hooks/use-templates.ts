@@ -12,6 +12,7 @@ import type {
   SyncTemplatesParams,
   UpdateTemplatePayload,
 } from '@/types/template.types';
+import { TemplateStatus } from '@/types/template.types';
 
 export function useTemplatesList(params?: ListTemplatesParams) {
   return useQuery({
@@ -63,9 +64,22 @@ export function useCreateFromLibrary() {
 
   return useMutation({
     mutationFn: (payload: CreateFromLibraryPayload) => templatesApi.createFromLibrary(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.templates.all });
-      toastSuccess('تمت إضافة القالب من المكتبة بنجاح');
+    onSuccess: async (template) => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.templates.all });
+      try {
+        await templatesApi.sync({ incremental: false });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.templates.all });
+      } catch {
+        // المزامنة اختيارية بعد الإضافة
+      }
+
+      if (template.status === TemplateStatus.APPROVED) {
+        toastSuccess('تمت إضافة القالب على Meta وهو معتمد — يمكنك إرساله الآن');
+      } else if (template.status === TemplateStatus.PENDING) {
+        toastSuccess('تم إرسال القالب لـ Meta — انتظر الاعتماد (دقائق) ثم زامن القوالب');
+      } else {
+        toastSuccess('تمت إضافة القالب — زامن القوالب لمتابعة الحالة');
+      }
     },
     onError: toastApiError,
   });
