@@ -64,19 +64,13 @@ export function useCreateFromLibrary() {
 
   return useMutation({
     mutationFn: (payload: CreateFromLibraryPayload) => templatesApi.createFromLibrary(payload),
-    onSuccess: async (template) => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.templates.all });
-      try {
-        await templatesApi.sync({ incremental: false });
-        await queryClient.invalidateQueries({ queryKey: queryKeys.templates.all });
-      } catch {
-        // المزامنة اختيارية بعد الإضافة
-      }
+    onSuccess: (template) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.templates.all });
 
       if (template.status === TemplateStatus.APPROVED) {
         toastSuccess('تمت إضافة القالب على Meta وهو معتمد — يمكنك إرساله الآن');
       } else if (template.status === TemplateStatus.PENDING) {
-        toastSuccess('تم إرسال القالب لـ Meta — انتظر الاعتماد (دقائق) ثم زامن القوالب');
+        toastSuccess('تم إرسال القالب لـ Meta — انتظر الاعتماد ثم زامن من صفحة قوالبي');
       } else {
         toastSuccess('تمت إضافة القالب — زامن القوالب لمتابعة الحالة');
       }

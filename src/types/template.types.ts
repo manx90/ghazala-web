@@ -124,6 +124,7 @@ export interface CreateFromLibraryPayload {
   language: string;
   category?: TemplateCategory;
   libraryTemplateButtonInputs?: LibraryTemplateButtonInput[];
+  libraryTemplateBodyInputs?: Record<string, unknown>[];
 }
 
 export interface TemplateLanguagesResponse {
