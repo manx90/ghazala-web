@@ -38,7 +38,7 @@ export function useDashboard() {
         ...queryConfig.static,
       },
       {
-        queryKey: queryKeys.templates.list,
+        queryKey: queryKeys.templates.list(),
         queryFn: () => templatesApi.list(),
         enabled,
         ...queryConfig.static,

@@ -69,6 +69,65 @@ export interface SyncTemplatesParams {
   wabaId?: string;
 }
 
+export interface ListTemplatesParams {
+  language?: string;
+  status?: TemplateStatus | string;
+}
+
+export interface TemplateLibraryButton {
+  type: string;
+  text?: string;
+  url?: string;
+  phone_number?: string;
+}
+
+export interface TemplateLibraryItem {
+  id: string;
+  name: string;
+  language: string;
+  category: string;
+  topic?: string;
+  usecase?: string;
+  industry?: string[];
+  header?: string;
+  body: string;
+  bodyParams?: string[];
+  buttons?: TemplateLibraryButton[];
+}
+
+export interface TemplateLibraryListResponse {
+  items: TemplateLibraryItem[];
+  total: number;
+}
+
+export interface ListTemplateLibraryParams {
+  search?: string;
+  name?: string;
+  language?: string;
+  topic?: string;
+  usecase?: string;
+  industry?: string;
+}
+
+export interface LibraryTemplateButtonInput {
+  type: string;
+  phone_number?: string;
+  url?: { base_url: string; url_suffix_example?: string };
+}
+
+export interface CreateFromLibraryPayload {
+  wabaId?: string;
+  name: string;
+  libraryTemplateName: string;
+  language: string;
+  category?: TemplateCategory;
+  libraryTemplateButtonInputs?: LibraryTemplateButtonInput[];
+}
+
+export interface TemplateLanguagesResponse {
+  languages: string[];
+}
+
 export interface TemplateSyncResult {
   synced: number;
   created: number;

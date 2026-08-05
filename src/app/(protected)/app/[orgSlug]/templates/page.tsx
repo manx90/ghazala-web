@@ -1,6 +1,6 @@
 'use client';
 
-import { PlusIcon, RefreshCwIcon } from 'lucide-react';
+import { BookOpenIcon, PlusIcon, RefreshCwIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import type React from 'react';
@@ -16,8 +16,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { ROUTES } from '@/config/routes';
+import {
+  getLanguageLabel,
+  TEMPLATE_LANGUAGE_OPTIONS,
+} from '@/features/templates/constants/template-filters';
 import { TemplateTable } from '@/features/templates/components/template-table';
-import { useSyncTemplates, useTemplatesList } from '@/features/templates/hooks/use-templates';
+import {
+  useSyncTemplates,
+  useTemplateLanguages,
+  useTemplatesList,
+} from '@/features/templates/hooks/use-templates';
+import { useMetaStatus } from '@/features/settings/hooks/use-integration-settings';
 import { TemplateStatus } from '@/types/template.types';
 
 const STATUS_FILTERS = [
@@ -34,15 +44,50 @@ export default function TemplatesPage() {
   const params = useParams<{ orgSlug: string }>();
   const orgSlug = params.orgSlug;
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [languageFilter, setLanguageFilter] = useState('ALL');
 
-  const { data, isLoading, isError, error, refetch } = useTemplatesList();
+  const listParams = useMemo(
+    () => ({
+      ...(languageFilter !== 'ALL' ? { language: languageFilter } : {}),
+      ...(statusFilter !== 'ALL' ? { status: statusFilter } : {}),
+    }),
+    [languageFilter, statusFilter],
+  );
+
+  const { data, isLoading, isError, error, refetch } = useTemplatesList(listParams);
+  const { data: languagesData } = useTemplateLanguages();
+  const { data: metaStatus } = useMetaStatus();
   const syncMutation = useSyncTemplates();
 
-  const filteredTemplates = useMemo(() => {
-    const items = data?.items ?? [];
-    if (statusFilter === 'ALL') return items;
-    return items.filter((template) => template.status === statusFilter);
-  }, [data?.items, statusFilter]);
+  const isMetaConnected = metaStatus?.isConnected ?? false;
+  const templates = data?.items ?? [];
+
+  const languageOptions = useMemo(() => {
+    const fromOrg = languagesData?.languages ?? [];
+    const merged = new Set([
+      ...fromOrg,
+      ...TEMPLATE_LANGUAGE_OPTIONS.map((item) => item.value),
+    ]);
+    return [...merged].sort();
+  }, [languagesData?.languages]);
+
+  const emptyDescription =
+    statusFilter !== 'ALL' || languageFilter !== 'ALL'
+      ? 'لا توجد قوالب بهذه التصفية'
+      : !isMetaConnected
+        ? 'اربط حساب WhatsApp من الإعدادات أولاً، ثم زامن القوالب أو أضف من مكتبة Meta.'
+        : 'زامن من Meta، أو تصفح مكتبة القوالب الجاهزة (طلبات، شحن، دفع...) وأضفها لمنظمتك.';
+
+  const handleSync = () => {
+    syncMutation.mutate(
+      { incremental: false },
+      {
+        onSuccess: () => {
+          void refetch();
+        },
+      },
+    );
+  };
 
   return (
     <PermissionGuard permission="templates.read">
@@ -54,11 +99,22 @@ export default function TemplatesPage() {
             <>
               <Button
                 variant="outline"
-                onClick={() => syncMutation.mutate({ incremental: true })}
-                disabled={syncMutation.isPending}
+                onClick={handleSync}
+                disabled={syncMutation.isPending || !isMetaConnected}
               >
-                <RefreshCwIcon data-icon="inline-start" className={syncMutation.isPending ? 'animate-spin' : ''} />
-                مزامنة
+                <RefreshCwIcon
+                  data-icon="inline-start"
+                  className={syncMutation.isPending ? 'animate-spin' : ''}
+                />
+                مزامنة من Meta
+              </Button>
+              <Button
+                variant="outline"
+                render={<Link href={ROUTES.app.templateLibrary(orgSlug)} />}
+                disabled={!isMetaConnected}
+              >
+                <BookOpenIcon data-icon="inline-start" />
+                مكتبة Meta
               </Button>
               <Button variant="gradient" render={<Link href={`/app/${orgSlug}/templates/new`} />}>
                 <PlusIcon data-icon="inline-start" />
@@ -68,14 +124,37 @@ export default function TemplatesPage() {
           }
         />
 
+        {!isMetaConnected && (
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
+            WhatsApp غير مربوط.{' '}
+            <Link href={ROUTES.app.settings.whatsapp(orgSlug)} className="font-medium underline underline-offset-2">
+              اربط الحساب من الإعدادات
+            </Link>{' '}
+            لتفعيل المزامنة وإرسال القوالب.
+          </div>
+        )}
+
         <div
           className="stagger-in flex flex-wrap items-center gap-3 rounded-xl border bg-card p-3 shadow-2xs"
           style={{ '--stagger-delay': '120ms' } as React.CSSProperties}
         >
-          <span className="text-sm text-muted-foreground">تصفية حسب الحالة:</span>
+          <span className="text-sm text-muted-foreground">تصفية:</span>
+          <Select value={languageFilter} onValueChange={(value) => setLanguageFilter(value ?? 'ALL')}>
+            <SelectTrigger className="w-52">
+              <SelectValue placeholder="اللغة" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">كل اللغات</SelectItem>
+              {languageOptions.map((code) => (
+                <SelectItem key={code} value={code}>
+                  {getLanguageLabel(code)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value ?? 'ALL')}>
             <SelectTrigger className="w-48">
-              <SelectValue />
+              <SelectValue placeholder="الحالة" />
             </SelectTrigger>
             <SelectContent>
               {STATUS_FILTERS.map((filter) => (
@@ -91,18 +170,35 @@ export default function TemplatesPage() {
           isLoading={isLoading}
           isError={isError}
           error={error}
-          isEmpty={!isLoading && filteredTemplates.length === 0}
+          isEmpty={!isLoading && templates.length === 0}
           emptyTitle="لا توجد قوالب"
-          emptyDescription={
-            statusFilter !== 'ALL'
-              ? 'لا توجد قوالب بهذه الحالة'
-              : 'قم بمزامنة القوالب من Meta أو أنشئ قالباً جديداً'
-          }
+          emptyDescription={emptyDescription}
           emptyAction={
-            <Button render={<Link href={`/app/${orgSlug}/templates/new`} />}>
-              <PlusIcon data-icon="inline-start" />
-              إنشاء قالب
-            </Button>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {isMetaConnected ? (
+                <>
+                  <Button variant="outline" onClick={handleSync} disabled={syncMutation.isPending}>
+                    <RefreshCwIcon
+                      data-icon="inline-start"
+                      className={syncMutation.isPending ? 'animate-spin' : ''}
+                    />
+                    مزامنة من Meta
+                  </Button>
+                  <Button render={<Link href={ROUTES.app.templateLibrary(orgSlug)} />}>
+                    <BookOpenIcon data-icon="inline-start" />
+                    مكتبة Meta
+                  </Button>
+                </>
+              ) : (
+                <Button render={<Link href={ROUTES.app.settings.whatsapp(orgSlug)} />}>
+                  ربط WhatsApp
+                </Button>
+              )}
+              <Button render={<Link href={`/app/${orgSlug}/templates/new`} />}>
+                <PlusIcon data-icon="inline-start" />
+                إنشاء قالب
+              </Button>
+            </div>
           }
           onRetry={() => refetch()}
         >
@@ -110,7 +206,7 @@ export default function TemplatesPage() {
             className="stagger-in"
             style={{ '--stagger-delay': '180ms' } as React.CSSProperties}
           >
-            <TemplateTable templates={filteredTemplates} orgSlug={orgSlug} />
+            <TemplateTable templates={templates} orgSlug={orgSlug} />
           </div>
         </QueryState>
       </div>

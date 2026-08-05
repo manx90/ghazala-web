@@ -17,7 +17,9 @@ export const queryKeys = {
   },
   templates: {
     all: ['templates'] as const,
-    list: ['templates', 'list'] as const,
+    list: (params?: Record<string, unknown>) => ['templates', 'list', params] as const,
+    languages: ['templates', 'languages'] as const,
+    library: (params?: Record<string, unknown>) => ['templates', 'library', params] as const,
     detail: (id: string) => ['templates', id] as const,
   },
   messages: {

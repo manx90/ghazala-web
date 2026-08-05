@@ -17,6 +17,7 @@ export const ROUTES = {
       `/app/${orgSlug}/inbox/${conversationId}`,
     contacts: (orgSlug: string) => `/app/${orgSlug}/contacts`,
     templates: (orgSlug: string) => `/app/${orgSlug}/templates`,
+    templateLibrary: (orgSlug: string) => `/app/${orgSlug}/templates/library`,
     messages: (orgSlug: string) => `/app/${orgSlug}/messages`,
     settings: {
       root: (orgSlug: string) => `/app/${orgSlug}/settings`,

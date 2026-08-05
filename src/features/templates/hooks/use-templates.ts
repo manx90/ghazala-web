@@ -5,15 +5,33 @@ import { toastSuccess, toastApiError } from '@/components/global/toast-helpers';
 import { queryKeys } from '@/config/query-keys';
 import { templatesApi } from '@/features/templates/api/templates.api';
 import type {
+  CreateFromLibraryPayload,
   CreateTemplatePayload,
+  ListTemplateLibraryParams,
+  ListTemplatesParams,
   SyncTemplatesParams,
   UpdateTemplatePayload,
 } from '@/types/template.types';
 
-export function useTemplatesList() {
+export function useTemplatesList(params?: ListTemplatesParams) {
   return useQuery({
-    queryKey: queryKeys.templates.list,
-    queryFn: () => templatesApi.list(),
+    queryKey: queryKeys.templates.list(params as Record<string, unknown> | undefined),
+    queryFn: () => templatesApi.list(params),
+  });
+}
+
+export function useTemplateLanguages() {
+  return useQuery({
+    queryKey: queryKeys.templates.languages,
+    queryFn: () => templatesApi.getLanguages(),
+  });
+}
+
+export function useTemplateLibrary(params?: ListTemplateLibraryParams, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.templates.library(params as Record<string, unknown> | undefined),
+    queryFn: () => templatesApi.listLibrary(params),
+    enabled,
   });
 }
 
@@ -33,6 +51,19 @@ export function useCreateTemplate() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.templates.all });
       toastSuccess('تم إنشاء القالب بنجاح');
+    },
+    onError: toastApiError,
+  });
+}
+
+export function useCreateFromLibrary() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: CreateFromLibraryPayload) => templatesApi.createFromLibrary(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.templates.all });
+      toastSuccess('تمت إضافة القالب من المكتبة بنجاح');
     },
     onError: toastApiError,
   });

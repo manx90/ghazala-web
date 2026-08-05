@@ -1,6 +1,5 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import {
   FileIcon,
   ImageIcon,
@@ -20,20 +19,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
-import { queryKeys } from '@/config/query-keys';
+import { TemplatePickerDialog } from '@/features/templates/components/template-picker-dialog';
 import { useSendMessage } from '@/features/inbox/hooks/use-send-message';
-import { templatesApi } from '@/features/templates/api/templates.api';
-import { TemplateStatus } from '@/types/template.types';
 import { ConversationStatus, type Conversation } from '@/types/conversation.types';
 
 const COMMON_EMOJIS = [
@@ -56,17 +47,9 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
   const [attachmentUrl, setAttachmentUrl] = useState('');
   const [attachmentCaption, setAttachmentCaption] = useState('');
   const [attachmentFilename, setAttachmentFilename] = useState('');
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
 
   const { sendText, sendTemplate, sendImage, sendDocument, isSending } = useSendMessage();
-
-  const templatesQuery = useQuery({
-    queryKey: queryKeys.templates.list,
-    queryFn: () => templatesApi.list(),
-    enabled: !disabled,
-  });
-
-  const approvedTemplates =
-    templatesQuery.data?.items.filter((item) => item.status === TemplateStatus.APPROVED) ?? [];
 
   const basePayload = {
     phoneNumberId: conversation.phoneNumberId,
@@ -180,37 +163,23 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
           </PopoverContent>
         </Popover>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="rounded-full text-muted-foreground hover:text-foreground"
-                aria-label="اختيار قالب"
-              >
-                <FileIcon />
-              </Button>
-            }
-          />
-          <DropdownMenuContent align="start" className="max-h-64 w-56">
-            {templatesQuery.isLoading && (
-              <DropdownMenuItem disabled>جاري التحميل...</DropdownMenuItem>
-            )}
-            {!templatesQuery.isLoading && !approvedTemplates.length && (
-              <DropdownMenuItem disabled>لا توجد قوالب معتمدة</DropdownMenuItem>
-            )}
-            {approvedTemplates.map((template) => (
-              <DropdownMenuItem
-                key={template.id}
-                onClick={() => handleSendTemplate(template.id)}
-              >
-                {template.name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          className="rounded-full text-muted-foreground hover:text-foreground"
+          aria-label="اختيار قالب"
+          onClick={() => setTemplatePickerOpen(true)}
+        >
+          <FileIcon />
+        </Button>
+
+        <TemplatePickerDialog
+          open={templatePickerOpen}
+          onOpenChange={setTemplatePickerOpen}
+          onSelect={(templateId) => void handleSendTemplate(templateId)}
+          isSending={isSending}
+        />
 
         <Button
           type="button"

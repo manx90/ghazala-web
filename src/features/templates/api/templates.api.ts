@@ -1,9 +1,14 @@
 import { apiClient } from '@/services/api/client';
 import type { ApiMessageResponse } from '@/types/api.types';
 import type {
+  CreateFromLibraryPayload,
   CreateTemplatePayload,
+  ListTemplateLibraryParams,
+  ListTemplatesParams,
   SyncTemplatesParams,
   Template,
+  TemplateLanguagesResponse,
+  TemplateLibraryListResponse,
   TemplateListResponse,
   TemplateSyncResult,
   UpdateTemplatePayload,
@@ -13,8 +18,20 @@ import { toQueryString } from '@/utils/query';
 const BASE = '/templates';
 
 export const templatesApi = {
-  list(): Promise<TemplateListResponse> {
-    return apiClient.get<TemplateListResponse>(BASE);
+  list(params?: ListTemplatesParams): Promise<TemplateListResponse> {
+    return apiClient.get<TemplateListResponse>(`${BASE}${toQueryString(params)}`);
+  },
+
+  getLanguages(): Promise<TemplateLanguagesResponse> {
+    return apiClient.get<TemplateLanguagesResponse>(`${BASE}/languages`);
+  },
+
+  listLibrary(params?: ListTemplateLibraryParams): Promise<TemplateLibraryListResponse> {
+    return apiClient.get<TemplateLibraryListResponse>(`${BASE}/library${toQueryString(params)}`);
+  },
+
+  createFromLibrary(payload: CreateFromLibraryPayload): Promise<Template> {
+    return apiClient.post<Template>(`${BASE}/from-library`, payload);
   },
 
   getById(id: string): Promise<Template> {
