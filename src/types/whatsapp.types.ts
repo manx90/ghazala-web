@@ -54,4 +54,5 @@ export interface PhoneNumberListResponse {
 export interface WhatsappSyncResult {
   wabasSynced: number;
   phoneNumbersSynced: number;
+  phoneNumbersRegistered: number;
 }

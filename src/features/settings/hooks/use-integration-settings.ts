@@ -6,6 +6,20 @@ import { queryKeys } from '@/config/query-keys';
 import { metaApi } from '@/features/meta/api/meta.api';
 import { whatsappApi } from '@/features/whatsapp/api/whatsapp.api';
 import type { ConnectMetaPayload } from '@/types/meta.types';
+import type { WhatsappSyncResult } from '@/types/whatsapp.types';
+
+function syncSuccessMessage(result: WhatsappSyncResult, includeWabas = false): string {
+  const parts: string[] = [];
+  if (includeWabas) {
+    parts.push(`تمت مزامنة ${result.wabasSynced} حساب و ${result.phoneNumbersSynced} رقم`);
+  } else {
+    parts.push(`تمت مزامنة ${result.phoneNumbersSynced} رقم`);
+  }
+  if (result.phoneNumbersRegistered > 0) {
+    parts.push(`وتم تسجيل ${result.phoneNumbersRegistered} رقم على Cloud API`);
+  }
+  return parts.join(' ');
+}
 
 export function useMetaStatus() {
   return useQuery({
@@ -82,7 +96,7 @@ export function useSyncWhatsappAccounts() {
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.businessAccounts });
       void queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.phoneNumbers });
-      toastSuccess(`تمت مزامنة ${result.wabasSynced} حساب و ${result.phoneNumbersSynced} رقم`);
+      toastSuccess(syncSuccessMessage(result, true));
     },
     onError: toastApiError,
   });
@@ -95,7 +109,7 @@ export function useSyncWhatsappPhoneNumbers() {
     mutationFn: () => whatsappApi.syncPhoneNumbers(),
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.phoneNumbers });
-      toastSuccess(`تمت مزامنة ${result.phoneNumbersSynced} رقم`);
+      toastSuccess(syncSuccessMessage(result));
     },
     onError: toastApiError,
   });
