@@ -19,6 +19,7 @@ export const ROUTES = {
     templates: (orgSlug: string) => `/app/${orgSlug}/templates`,
     templateLibrary: (orgSlug: string) => `/app/${orgSlug}/templates/meta-library`,
     messages: (orgSlug: string) => `/app/${orgSlug}/messages`,
+    messageDetail: (orgSlug: string, messageId: string) => `/app/${orgSlug}/messages/${messageId}`,
     settings: {
       root: (orgSlug: string) => `/app/${orgSlug}/settings`,
       organization: (orgSlug: string) => `/app/${orgSlug}/settings/organization`,

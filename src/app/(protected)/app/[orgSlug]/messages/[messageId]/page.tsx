@@ -6,6 +6,7 @@ import type React from 'react';
 import {
   ArrowRightIcon,
   CalendarIcon,
+  CodeIcon,
   FileTextIcon,
   PhoneIcon,
   RefreshCwIcon,
@@ -24,6 +25,10 @@ import {
   useMessageStatus,
   useRetryMessage,
 } from '@/features/messages/hooks/use-messages';
+import {
+  readProviderRequest,
+  readProviderResponse,
+} from '@/features/messages/utils/provider-request';
 import { ROUTES } from '@/config/routes';
 import { MessageStatus } from '@/types/message.types';
 import { formatDateTime } from '@/utils/date';
@@ -113,6 +118,12 @@ export default function MessageDetailPage() {
   };
 
   const timeline = statusQuery.data ? buildTimeline(statusQuery.data) : [];
+  const providerRequest = messageQuery.data
+    ? readProviderRequest(messageQuery.data.payload ?? {})
+    : undefined;
+  const providerResponse = messageQuery.data
+    ? readProviderResponse(messageQuery.data.payload ?? {})
+    : undefined;
 
   return (
     <PageContainer size="md">
@@ -215,6 +226,17 @@ export default function MessageDetailPage() {
                           </dd>
                         </div>
                       </div>
+                      <div className="flex items-center gap-3">
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                          <PhoneIcon className="size-4" aria-hidden="true" />
+                        </span>
+                        <div className="flex min-w-0 flex-col gap-0.5">
+                          <dt className="text-xs text-muted-foreground">رقم الإرسال (Meta)</dt>
+                          <dd dir="ltr" className="truncate text-start font-mono text-xs font-medium">
+                            {messageQuery.data.phoneNumberId}
+                          </dd>
+                        </div>
+                      </div>
                       {messageQuery.data.errorMessage && (
                         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3.5 sm:col-span-2">
                           <p className="text-xs font-medium text-destructive">رسالة الخطأ</p>
@@ -226,6 +248,52 @@ export default function MessageDetailPage() {
                     </dl>
                   </CardContent>
                 </Card>
+
+                {providerRequest && (
+                  <Card
+                    className="stagger-in"
+                    style={{ '--stagger-delay': '90ms' } as React.CSSProperties}
+                  >
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <CodeIcon className="size-4" aria-hidden="true" />
+                        طلب Meta (Provider)
+                      </CardTitle>
+                      <CardDescription>
+                        ما أُرسل فعلياً إلى Graph API — endpoint و body
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="rounded-lg border bg-muted/30 px-3 py-2 text-xs">
+                        <p dir="ltr" className="font-mono">
+                          POST {providerRequest.endpoint}
+                        </p>
+                        {providerRequest.sentAt && (
+                          <p className="mt-1 text-muted-foreground">
+                            آخر إرسال: {formatDateTime(providerRequest.sentAt)}
+                          </p>
+                        )}
+                      </div>
+                      <pre
+                        dir="ltr"
+                        className="max-h-80 overflow-auto rounded-xl border bg-muted/40 p-3 text-start font-mono text-xs leading-relaxed"
+                      >
+                        {JSON.stringify(providerRequest.body, null, 2)}
+                      </pre>
+                      {providerResponse && (
+                        <div className="space-y-2">
+                          <p className="text-xs font-medium text-muted-foreground">رد Meta</p>
+                          <pre
+                            dir="ltr"
+                            className="max-h-48 overflow-auto rounded-xl border bg-muted/40 p-3 text-start font-mono text-xs leading-relaxed"
+                          >
+                            {JSON.stringify(providerResponse, null, 2)}
+                          </pre>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
 
                 <Card
                   className="stagger-in"
