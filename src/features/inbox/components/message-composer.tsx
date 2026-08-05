@@ -24,8 +24,11 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { TemplatePickerDialog } from '@/features/templates/components/template-picker-dialog';
+import { buildTemplateSendMeta } from '@/features/templates/utils/template-preview';
 import { useSendMessage } from '@/features/inbox/hooks/use-send-message';
+import { usePhoneNumbers } from '@/components/shared/phone-number-select';
 import { ConversationStatus, type Conversation } from '@/types/conversation.types';
+import type { Template } from '@/types/template.types';
 
 const COMMON_EMOJIS = [
   '😀', '😂', '😍', '😊', '🙏', '👍', '❤️', '🔥', '✅', '🎉',
@@ -50,6 +53,11 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
 
   const { sendText, sendTemplate, sendImage, sendDocument, isSending } = useSendMessage();
+  const phoneNumbersQuery = usePhoneNumbers();
+
+  const senderWabaId = phoneNumbersQuery.data?.items.find(
+    (phone) => phone.phoneNumberId === conversation.phoneNumberId,
+  )?.wabaId;
 
   const basePayload = {
     phoneNumberId: conversation.phoneNumberId,
@@ -84,9 +92,13 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
     setBody('');
   };
 
-  const handleSendTemplate = async (templateId: string) => {
+  const handleSendTemplate = async (template: Template) => {
     if (disabled || isSending) return;
-    await sendTemplate({ ...basePayload, templateId });
+    await sendTemplate({
+      ...basePayload,
+      templateId: template.id,
+      ...buildTemplateSendMeta(template),
+    });
   };
 
   const handleSendAttachment = async () => {
@@ -177,7 +189,8 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
         <TemplatePickerDialog
           open={templatePickerOpen}
           onOpenChange={setTemplatePickerOpen}
-          onSelect={(templateId) => void handleSendTemplate(templateId)}
+          wabaId={senderWabaId}
+          onSelect={(template) => void handleSendTemplate(template)}
           isSending={isSending}
         />
 

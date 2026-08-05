@@ -78,9 +78,19 @@ export interface SendTextMessagePayload extends BaseSendMessagePayload {
   previewUrl?: boolean;
 }
 
+export interface TemplateMessagePreview {
+  header?: string;
+  body?: string;
+  footer?: string;
+  buttons?: string[];
+}
+
 export interface SendTemplateMessagePayload extends BaseSendMessagePayload {
   templateId: string;
   components?: { type: string; parameters?: Record<string, unknown>[] }[];
+  templateName?: string;
+  templateLanguage?: string;
+  templatePreview?: TemplateMessagePreview;
 }
 
 export interface SendMediaMessagePayload extends BaseSendMessagePayload {

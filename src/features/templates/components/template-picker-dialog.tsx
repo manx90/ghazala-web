@@ -21,12 +21,14 @@ import {
 } from '@/components/ui/select';
 import { getLanguageLabel } from '@/features/templates/constants/template-filters';
 import { useTemplatesList } from '@/features/templates/hooks/use-templates';
+import { getTemplateBodyPreview } from '@/features/templates/utils/template-preview';
 import { TemplateStatus, type Template } from '@/types/template.types';
 
 interface TemplatePickerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSelect: (templateId: string) => void;
+  onSelect: (template: Template) => void;
+  wabaId?: string;
   isSending?: boolean;
 }
 
@@ -34,6 +36,7 @@ export function TemplatePickerDialog({
   open,
   onOpenChange,
   onSelect,
+  wabaId,
   isSending,
 }: TemplatePickerDialogProps) {
   const [language, setLanguage] = useState('');
@@ -41,7 +44,11 @@ export function TemplatePickerDialog({
 
   const templatesQuery = useTemplatesList({ status: TemplateStatus.APPROVED });
 
-  const approvedTemplates = templatesQuery.data?.items ?? [];
+  const approvedTemplates = useMemo(() => {
+    const items = templatesQuery.data?.items ?? [];
+    if (!wabaId) return items;
+    return items.filter((item) => item.wabaId === wabaId);
+  }, [templatesQuery.data?.items, wabaId]);
 
   const languages = useMemo(() => {
     const codes = [...new Set(approvedTemplates.map((item) => item.language))].sort();
@@ -70,8 +77,8 @@ export function TemplatePickerDialog({
   };
 
   const handleSend = () => {
-    if (!templateId) return;
-    onSelect(templateId);
+    if (!selectedTemplate) return;
+    onSelect(selectedTemplate);
     handleOpenChange(false);
   };
 
@@ -90,7 +97,9 @@ export function TemplatePickerDialog({
           </div>
         ) : !approvedTemplates.length ? (
           <p className="py-4 text-sm text-muted-foreground">
-            لا توجد قوالب معتمدة. زامن من Meta أو أضف قالباً من المكتبة.
+            {wabaId
+              ? 'لا توجد قوالب معتمدة لحساب WhatsApp هذا — زامن القوالب من الإعدادات.'
+              : 'لا توجد قوالب معتمدة. زامن من Meta أو أضف قالباً من المكتبة.'}
           </p>
         ) : (
           <div className="space-y-4">
@@ -135,7 +144,7 @@ export function TemplatePickerDialog({
                 <p dir="ltr" className="mb-1 font-mono text-xs text-muted-foreground">
                   {selectedTemplate.name}
                 </p>
-                <p className="text-muted-foreground">{getTemplatePreview(selectedTemplate)}</p>
+                <p className="text-muted-foreground">{getTemplateBodyPreview(selectedTemplate)}</p>
               </div>
             ) : null}
           </div>
@@ -148,7 +157,7 @@ export function TemplatePickerDialog({
           <Button
             type="button"
             variant="gradient"
-            disabled={!templateId || isSending}
+            disabled={!selectedTemplate || isSending}
             onClick={handleSend}
           >
             {isSending ? <Loader2Icon className="animate-spin" /> : 'إرسال القالب'}
@@ -161,9 +170,4 @@ export function TemplatePickerDialog({
 
 function formatTemplateOption(template: Template): string {
   return `${template.name} (${template.language})`;
-}
-
-function getTemplatePreview(template: Template): string {
-  const body = template.components.find((component) => component.type === 'BODY');
-  return body?.text ?? '—';
 }

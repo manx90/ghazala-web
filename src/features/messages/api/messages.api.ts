@@ -28,7 +28,8 @@ export const messagesApi = {
   },
 
   sendTemplate(payload: SendTemplateMessagePayload): Promise<Message> {
-    return apiClient.post<Message>(`${BASE}/template`, payload);
+    const { templateName: _n, templateLanguage: _l, templatePreview: _p, ...apiPayload } = payload;
+    return apiClient.post<Message>(`${BASE}/template`, apiPayload);
   },
 
   sendImage(payload: SendMediaMessagePayload): Promise<Message> {

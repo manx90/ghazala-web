@@ -24,6 +24,10 @@ import {
 import { useSendMessage } from '@/features/inbox/hooks/use-send-message';
 import { getLanguageLabel } from '@/features/templates/constants/template-filters';
 import { useTemplatesList } from '@/features/templates/hooks/use-templates';
+import {
+  buildTemplateSendMeta,
+  getTemplateBodyPreview,
+} from '@/features/templates/utils/template-preview';
 import { TemplateStatus, type Template } from '@/types/template.types';
 import { normalizePhone } from '@/utils/phone';
 
@@ -49,7 +53,15 @@ export function SendTemplateComposeDialog({
   const templatesQuery = useTemplatesList({ status: TemplateStatus.APPROVED });
   const { sendTemplate, isSending } = useSendMessage();
 
-  const approvedTemplates = templatesQuery.data?.items ?? [];
+  const selectedPhone = phoneNumbersQuery.data?.items.find(
+    (phone) => phone.phoneNumberId === phoneNumberId,
+  );
+
+  const approvedTemplates = useMemo(() => {
+    const items = templatesQuery.data?.items ?? [];
+    if (!selectedPhone?.wabaId) return items;
+    return items.filter((item) => item.wabaId === selectedPhone.wabaId);
+  }, [templatesQuery.data?.items, selectedPhone?.wabaId]);
 
   const languages = useMemo(() => {
     const codes = [...new Set(approvedTemplates.map((item) => item.language))].sort();
@@ -69,6 +81,11 @@ export function SendTemplateComposeDialog({
     setLanguage('');
     setTemplateId('');
   }, [open, defaultRecipient]);
+
+  useEffect(() => {
+    setLanguage('');
+    setTemplateId('');
+  }, [phoneNumberId]);
 
   useEffect(() => {
     if (phoneNumberId || !phoneNumbersQuery.data?.items.length) return;
@@ -91,6 +108,7 @@ export function SendTemplateComposeDialog({
       phoneNumberId,
       recipient: normalizedRecipient,
       templateId,
+      ...buildTemplateSendMeta(selectedTemplate!),
     });
 
     if (message.conversationId) {
@@ -142,7 +160,7 @@ export function SendTemplateComposeDialog({
             </div>
           ) : !approvedTemplates.length ? (
             <p className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-sm text-amber-900 dark:text-amber-200">
-              لا توجد قوالب معتمدة. زامن من Meta أو أضف hello_world من المكتبة.
+              لا توجد قوالب معتمدة لرقم الإرسال هذا. زامن القوالب من Meta أو أضف hello_world من المكتبة.
             </p>
           ) : (
             <>
@@ -190,7 +208,7 @@ export function SendTemplateComposeDialog({
                   <p dir="ltr" className="mb-1 font-mono text-xs text-muted-foreground">
                     {selectedTemplate.name}
                   </p>
-                  <p className="text-muted-foreground">{getTemplatePreview(selectedTemplate)}</p>
+                  <p className="text-muted-foreground">{getTemplateBodyPreview(selectedTemplate)}</p>
                 </div>
               ) : null}
             </>
@@ -217,9 +235,4 @@ export function SendTemplateComposeDialog({
 
 function formatTemplateOption(template: Template): string {
   return `${template.name} (${template.language})`;
-}
-
-function getTemplatePreview(template: Template): string {
-  const body = template.components.find((component) => component.type === 'BODY');
-  return body?.text ?? '—';
 }

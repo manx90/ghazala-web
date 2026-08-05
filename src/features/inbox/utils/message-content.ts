@@ -1,4 +1,5 @@
 import { MessageType, type Message } from '@/types/message.types';
+import { readTemplatePreviewFromPayload } from '@/features/templates/utils/template-preview';
 
 export interface MessageContent {
   text?: string;
@@ -6,6 +7,8 @@ export interface MessageContent {
   caption?: string;
   filename?: string;
   templateName?: string;
+  templateLanguage?: string;
+  templatePreview?: ReturnType<typeof readTemplatePreviewFromPayload>;
 }
 
 function readString(payload: Record<string, unknown>, ...keys: string[]): string | undefined {
@@ -23,11 +26,16 @@ export function getMessageContent(message: Message): MessageContent {
     case MessageType.TEXT:
       return { text: readString(payload, 'body', 'text', 'message') };
 
-    case MessageType.TEMPLATE:
+    case MessageType.TEMPLATE: {
+      const templatePreview = readTemplatePreviewFromPayload(payload);
+
       return {
-        text: readString(payload, 'body', 'text'),
+        text: templatePreview?.body ?? readString(payload, 'body', 'text'),
         templateName: readString(payload, 'name', 'templateName'),
+        templateLanguage: readString(payload, 'templateLanguage', 'language'),
+        templatePreview,
       };
+    }
 
     case MessageType.IMAGE:
     case MessageType.VIDEO:

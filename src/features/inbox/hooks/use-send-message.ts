@@ -18,6 +18,21 @@ function buildOptimisticMessage(payload: SendTextMessagePayload | SendTemplateMe
   const now = new Date().toISOString();
   const isText = 'body' in payload;
   const isTemplate = 'templateId' in payload;
+
+  let optimisticPayload: Record<string, unknown>;
+  if (isText) {
+    optimisticPayload = { body: payload.body };
+  } else if (isTemplate) {
+    optimisticPayload = {
+      templateId: payload.templateId,
+      templateName: payload.templateName,
+      templateLanguage: payload.templateLanguage,
+      templatePreview: payload.templatePreview,
+    };
+  } else {
+    optimisticPayload = { link: (payload as SendMediaMessagePayload).link };
+  }
+
   return {
     id: `optimistic-${crypto.randomUUID()}`,
     organizationId: '',
@@ -30,7 +45,7 @@ function buildOptimisticMessage(payload: SendTextMessagePayload | SendTemplateMe
     direction: MessageDirection.OUTBOUND,
     status: MessageStatus.QUEUED,
     templateId: isTemplate ? payload.templateId : null,
-    payload: isText ? { body: payload.body } : isTemplate ? { templateId: payload.templateId } : { link: (payload as SendMediaMessagePayload).link },
+    payload: optimisticPayload,
     errorCode: null,
     errorMessage: null,
     retryCount: 0,

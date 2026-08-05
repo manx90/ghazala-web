@@ -64,6 +64,7 @@ export function useRetryMessage() {
       void queryClient.invalidateQueries({ queryKey: queryKeys.messages.list });
       void queryClient.invalidateQueries({ queryKey: queryKeys.messages.detail(messageId) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.messages.status(messageId) });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all });
     },
     onError: toastApiError,
   });
