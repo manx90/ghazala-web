@@ -21,6 +21,7 @@ interface ContactFormProps {
   onSubmit: (values: ContactFormValues) => void;
   isLoading?: boolean;
   onCancel?: () => void;
+  readOnly?: boolean;
 }
 
 function toFormValues(contact?: Contact): ContactFormValues {
@@ -43,6 +44,7 @@ export function ContactForm({
   onSubmit,
   isLoading = false,
   onCancel,
+  readOnly = false,
 }: ContactFormProps) {
   const {
     register,
@@ -63,7 +65,7 @@ export function ContactForm({
   }, [contact, reset]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+    <form onSubmit={readOnly ? (event) => event.preventDefault() : handleSubmit(onSubmit)} className="flex flex-col gap-5">
       {mode === 'create' && (
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="phone">رقم الهاتف *</Label>
@@ -71,6 +73,7 @@ export function ContactForm({
             id="phone"
             dir="ltr"
             placeholder="9665XXXXXXXX"
+            disabled={readOnly}
             {...register('phone')}
             aria-invalid={!!errors.phone}
           />
@@ -85,23 +88,23 @@ export function ContactForm({
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="firstName">الاسم الأول</Label>
-          <Input id="firstName" {...register('firstName')} />
+          <Input id="firstName" disabled={readOnly} {...register('firstName')} />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="lastName">اسم العائلة</Label>
-          <Input id="lastName" {...register('lastName')} />
+          <Input id="lastName" disabled={readOnly} {...register('lastName')} />
         </div>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="profileName">اسم الملف</Label>
-          <Input id="profileName" {...register('profileName')} />
+          <Input id="profileName" disabled={readOnly} {...register('profileName')} />
           <p className="text-xs text-muted-foreground">الاسم الظاهر في حساب WhatsApp</p>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="email">البريد الإلكتروني</Label>
-          <Input id="email" type="email" dir="ltr" {...register('email')} aria-invalid={!!errors.email} />
+          <Input id="email" type="email" dir="ltr" disabled={readOnly} {...register('email')} aria-invalid={!!errors.email} />
           {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
         </div>
       </div>
@@ -109,13 +112,14 @@ export function ContactForm({
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="waId">WhatsApp ID</Label>
-          <Input id="waId" dir="ltr" {...register('waId')} />
+          <Input id="waId" dir="ltr" disabled={readOnly} {...register('waId')} />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="profilePhotoUrl">رابط الصورة</Label>
           <Input
             id="profilePhotoUrl"
             dir="ltr"
+            disabled={readOnly}
             {...register('profilePhotoUrl')}
             aria-invalid={!!errors.profilePhotoUrl}
           />
@@ -127,7 +131,7 @@ export function ContactForm({
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="notes">ملاحظات</Label>
-        <Textarea id="notes" rows={4} {...register('notes')} />
+        <Textarea id="notes" rows={4} disabled={readOnly} {...register('notes')} />
       </div>
 
       {mode === 'edit' && (
@@ -139,22 +143,25 @@ export function ContactForm({
           <Switch
             id="isBlocked"
             checked={isBlocked}
+            disabled={readOnly}
             onCheckedChange={(checked) => setValue('isBlocked', checked)}
           />
         </div>
       )}
 
-      <div className="flex justify-end gap-2 border-t pt-4">
-        {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-            إلغاء
+      {!readOnly ? (
+        <div className="flex justify-end gap-2 border-t pt-4">
+          {onCancel && (
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+              إلغاء
+            </Button>
+          )}
+          <Button type="submit" variant="gradient" disabled={isLoading}>
+            {isLoading && <Loader2Icon data-icon="inline-start" className="animate-spin" />}
+            {mode === 'create' ? 'إضافة جهة اتصال' : 'حفظ التغييرات'}
           </Button>
-        )}
-        <Button type="submit" variant="gradient" disabled={isLoading}>
-          {isLoading && <Loader2Icon data-icon="inline-start" className="animate-spin" />}
-          {mode === 'create' ? 'إضافة جهة اتصال' : 'حفظ التغييرات'}
-        </Button>
-      </div>
+        </div>
+      ) : null}
     </form>
   );
 }

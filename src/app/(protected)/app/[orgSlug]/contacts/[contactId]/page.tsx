@@ -21,6 +21,9 @@ import { StatusBadge } from '@/components/shared/status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ContactForm } from '@/features/contacts/components/contact-form';
+import { SendTemplateComposeDialog } from '@/features/inbox/components/send-template-compose-dialog';
+import { usePermissions } from '@/features/auth/hooks/use-permissions';
+import { ROUTES } from '@/config/routes';
 import {
   useContact,
   useDeleteContact,
@@ -33,7 +36,10 @@ export default function ContactDetailPage() {
   const params = useParams<{ orgSlug: string; contactId: string }>();
   const { orgSlug, contactId } = params;
   const router = useRouter();
+  const { can, canSendMessages } = usePermissions();
+  const canManageContacts = can('contacts.manage');
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [composeOpen, setComposeOpen] = useState(false);
 
   const { data: contact, isLoading, isError, error, refetch } = useContact(contactId);
   const updateMutation = useUpdateContact(contactId);
@@ -76,10 +82,18 @@ export default function ContactDetailPage() {
                 <ArrowRightIcon data-icon="inline-start" />
                 العودة للقائمة
               </Button>
-              <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
-                <Trash2Icon data-icon="inline-start" />
-                حذف
-              </Button>
+              {canSendMessages && contact && !contact.isBlocked ? (
+                <Button variant="gradient" onClick={() => setComposeOpen(true)}>
+                  <MessageSquareIcon data-icon="inline-start" />
+                  إرسال قالب
+                </Button>
+              ) : null}
+              {canManageContacts ? (
+                <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
+                  <Trash2Icon data-icon="inline-start" />
+                  حذف
+                </Button>
+              ) : null}
             </>
           }
         />
@@ -108,6 +122,7 @@ export default function ContactDetailPage() {
                     mode="edit"
                     onSubmit={handleUpdate}
                     isLoading={updateMutation.isPending}
+                    readOnly={!canManageContacts}
                   />
                 </CardContent>
               </Card>
@@ -184,6 +199,17 @@ export default function ContactDetailPage() {
           onConfirm={handleDelete}
           isLoading={deleteMutation.isPending}
         />
+
+        {contact ? (
+          <SendTemplateComposeDialog
+            open={composeOpen}
+            onOpenChange={setComposeOpen}
+            defaultRecipient={contact.phone}
+            onSent={(conversationId) => {
+              router.push(ROUTES.app.inboxConversation(orgSlug, conversationId));
+            }}
+          />
+        ) : null}
       </div>
     </PermissionGuard>
   );

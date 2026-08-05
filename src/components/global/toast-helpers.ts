@@ -19,7 +19,12 @@ export function toastApiError(error: unknown): void {
   const parsed = error instanceof ApiError ? error : null;
 
   if (parsed?.isForbidden) {
-    toast.error('ليس لديك صلاحية لتنفيذ هذا الإجراء');
+    toast.error(parsed.message || 'ليس لديك صلاحية لتنفيذ هذا الإجراء');
+    return;
+  }
+
+  if (parsed?.code === 'CONFLICT') {
+    toast.error(parsed.message || 'تعارض في البيانات');
     return;
   }
 

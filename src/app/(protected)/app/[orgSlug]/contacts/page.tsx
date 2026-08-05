@@ -23,6 +23,9 @@ import {
   useDeleteContact,
   useMergeContacts,
 } from '@/features/contacts/hooks/use-contacts';
+import { SendTemplateComposeDialog } from '@/features/inbox/components/send-template-compose-dialog';
+import { usePermissions } from '@/features/auth/hooks/use-permissions';
+import { ROUTES } from '@/config/routes';
 import type { ContactFormValues } from '@/features/contacts/schemas/contact.schemas';
 import type { Contact } from '@/types/contact.types';
 
@@ -32,6 +35,8 @@ export default function ContactsPage() {
   const params = useParams<{ orgSlug: string }>();
   const orgSlug = params.orgSlug;
   const router = useRouter();
+  const { can, canSendMessages } = usePermissions();
+  const canManageContacts = can('contacts.manage');
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -40,6 +45,8 @@ export default function ContactsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Contact | null>(null);
   const [mergeOpen, setMergeOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [composeRecipient, setComposeRecipient] = useState('');
 
   const queryParams = useMemo(
     () => ({ page, limit: PAGE_LIMIT, search: search || undefined }),
@@ -107,18 +114,33 @@ export default function ContactsPage() {
           description="إدارة جهات اتصال WhatsApp الخاصة بمنظمتك"
           actions={
             <>
-              <Button
-                variant="outline"
-                disabled={selectedIds.length < 2}
-                onClick={() => setMergeOpen(true)}
-              >
-                <GitMergeIcon data-icon="inline-start" />
-                دمج ({selectedIds.length})
-              </Button>
-              <Button variant="gradient" onClick={() => setCreateOpen(true)}>
-                <PlusIcon data-icon="inline-start" />
-                جهة اتصال جديدة
-              </Button>
+              {canSendMessages ? (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setComposeRecipient('');
+                    setComposeOpen(true);
+                  }}
+                >
+                  إرسال قالب
+                </Button>
+              ) : null}
+              {canManageContacts ? (
+                <>
+                  <Button
+                    variant="outline"
+                    disabled={selectedIds.length < 2}
+                    onClick={() => setMergeOpen(true)}
+                  >
+                    <GitMergeIcon data-icon="inline-start" />
+                    دمج ({selectedIds.length})
+                  </Button>
+                  <Button variant="gradient" onClick={() => setCreateOpen(true)}>
+                    <PlusIcon data-icon="inline-start" />
+                    جهة اتصال جديدة
+                  </Button>
+                </>
+              ) : null}
             </>
           }
         />
@@ -190,10 +212,16 @@ export default function ContactsPage() {
           emptyTitle="لا توجد جهات اتصال"
           emptyDescription={search ? 'لم يتم العثور على نتائج مطابقة' : 'ابدأ بإضافة جهة اتصال جديدة'}
           emptyAction={
-            <Button onClick={() => setCreateOpen(true)}>
-              <PlusIcon data-icon="inline-start" />
-              إضافة جهة اتصال
-            </Button>
+            canManageContacts ? (
+              <Button onClick={() => setCreateOpen(true)}>
+                <PlusIcon data-icon="inline-start" />
+                إضافة جهة اتصال
+              </Button>
+            ) : canSendMessages ? (
+              <Button variant="gradient" onClick={() => setComposeOpen(true)}>
+                إرسال قالب لرقم
+              </Button>
+            ) : undefined
           }
           onRetry={() => refetch()}
         >
@@ -204,10 +232,18 @@ export default function ContactsPage() {
             <ContactTable
               contacts={contacts}
               orgSlug={orgSlug}
-              selectedIds={selectedIds}
-              onSelectionChange={setSelectedIds}
-              onDelete={setDeleteTarget}
-              onMerge={() => setMergeOpen(true)}
+              selectedIds={canManageContacts ? selectedIds : undefined}
+              onSelectionChange={canManageContacts ? setSelectedIds : undefined}
+              onDelete={canManageContacts ? setDeleteTarget : undefined}
+              onMerge={canManageContacts ? () => setMergeOpen(true) : undefined}
+              onSendTemplate={
+                canSendMessages
+                  ? (contact) => {
+                      setComposeRecipient(contact.phone);
+                      setComposeOpen(true);
+                    }
+                  : undefined
+              }
             />
             <PaginationControls
               page={data?.page ?? page}
@@ -248,6 +284,16 @@ export default function ContactsPage() {
           preselectedIds={selectedIds}
           onConfirm={handleMerge}
           isLoading={mergeMutation.isPending}
+        />
+
+        <SendTemplateComposeDialog
+          open={composeOpen}
+          onOpenChange={setComposeOpen}
+          defaultRecipient={composeRecipient}
+          onSent={(conversationId) => {
+            setComposeRecipient('');
+            router.push(ROUTES.app.inboxConversation(orgSlug, conversationId));
+          }}
         />
       </div>
     </PermissionGuard>

@@ -1,6 +1,6 @@
 'use client';
 
-import { EyeIcon, GitMergeIcon, MoreHorizontalIcon, Trash2Icon } from 'lucide-react';
+import { EyeIcon, GitMergeIcon, MessageSquareIcon, MoreHorizontalIcon, Trash2Icon } from 'lucide-react';
 import Link from 'next/link';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -30,6 +30,7 @@ interface ContactTableProps {
   onSelectionChange?: (ids: string[]) => void;
   onDelete?: (contact: Contact) => void;
   onMerge?: (contact: Contact) => void;
+  onSendTemplate?: (contact: Contact) => void;
 }
 
 function getDisplayName(contact: Contact): string {
@@ -59,6 +60,7 @@ export function ContactTable({
   onSelectionChange,
   onDelete,
   onMerge,
+  onSendTemplate,
 }: ContactTableProps) {
   const toggleSelection = (contactId: string, checked: boolean) => {
     if (!onSelectionChange) return;
@@ -156,6 +158,12 @@ export function ContactTable({
                       <EyeIcon data-icon="inline-start" />
                       عرض التفاصيل
                     </DropdownMenuItem>
+                    {onSendTemplate && !contact.isBlocked ? (
+                      <DropdownMenuItem onClick={() => onSendTemplate(contact)}>
+                        <MessageSquareIcon data-icon="inline-start" />
+                        إرسال قالب
+                      </DropdownMenuItem>
+                    ) : null}
                     {onMerge && (
                       <DropdownMenuItem onClick={() => onMerge(contact)}>
                         <GitMergeIcon data-icon="inline-start" />

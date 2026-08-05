@@ -26,6 +26,7 @@ import { ConversationList } from '@/features/inbox/components/conversation-list'
 import { CustomerPanel } from '@/features/inbox/components/customer-panel';
 import { MessageComposer } from '@/features/inbox/components/message-composer';
 import { MessageThread } from '@/features/inbox/components/message-thread';
+import { SendTemplateComposeDialog } from '@/features/inbox/components/send-template-compose-dialog';
 import { useInbox } from '@/features/inbox/hooks/use-inbox';
 import { contactsApi } from '@/features/contacts/api/contacts.api';
 import { ConversationStatus } from '@/types/conversation.types';
@@ -50,6 +51,7 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
   const orgSlug = params.orgSlug;
   const { canSendMessages } = usePermissions();
   const [customerSheetOpen, setCustomerSheetOpen] = useState(false);
+  const [composeOpen, setComposeOpen] = useState(false);
 
   const {
     filters,
@@ -118,6 +120,10 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
     reopenConversation(conversation.id);
   };
 
+  const handleTemplateSent = (id: string) => {
+    router.push(ROUTES.app.inboxConversation(orgSlug, id));
+  };
+
   const showMobileThread = Boolean(conversationId);
 
   return (
@@ -139,6 +145,8 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
           onSelect={handleSelectConversation}
           onFiltersChange={updateFilters}
           onRetry={() => void conversationsQuery.refetch()}
+          onNewTemplate={() => setComposeOpen(true)}
+          canCompose={canSendMessages}
         />
       </div>
 
@@ -149,12 +157,18 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
         )}
       >
         {!conversationId ? (
-          <div className="flex flex-1 items-center justify-center bg-muted/30 p-6">
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-muted/30 p-6">
             <EmptyState
               icon={<MessagesSquareIcon />}
               title="اختر محادثة"
-              description="اختر محادثة من القائمة لعرض الرسائل والرد على العملاء"
+              description="اختر محادثة من القائمة أو أرسل قالباً لبدء محادثة جديدة"
             />
+            {canSendMessages ? (
+              <Button variant="gradient" onClick={() => setComposeOpen(true)}>
+                <MessagesSquareIcon data-icon="inline-start" />
+                إرسال قالب لرقم
+              </Button>
+            ) : null}
           </div>
         ) : conversationQuery.isLoading ? (
           <div className="flex flex-1 items-center justify-center bg-muted/30">
@@ -276,6 +290,12 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
           </div>
         </div>
       )}
+
+      <SendTemplateComposeDialog
+        open={composeOpen}
+        onOpenChange={setComposeOpen}
+        onSent={handleTemplateSent}
+      />
     </div>
   );
 }

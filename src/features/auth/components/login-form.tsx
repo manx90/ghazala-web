@@ -39,6 +39,14 @@ export function LoginForm() {
     login.mutate(values, {
       onSuccess: async (response) => {
         const returnUrl = searchParams.get('returnUrl');
+
+        if (!response.user.emailVerified) {
+          router.replace(
+            `${ROUTES.auth.verifyEmail}?email=${encodeURIComponent(response.user.email)}`,
+          );
+          return;
+        }
+
         let orgSlug: string | null = null;
 
         if (response.user.role === UserRole.USER) {

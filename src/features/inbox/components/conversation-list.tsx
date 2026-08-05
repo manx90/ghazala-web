@@ -1,9 +1,10 @@
 'use client';
 
-import { SearchIcon } from 'lucide-react';
+import { PlusIcon, SearchIcon } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import { QueryState } from '@/components/shared/query-state';
 import { PhoneNumberSelect } from '@/components/shared/phone-number-select';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ConversationItem } from '@/features/inbox/components/conversation-item';
@@ -22,6 +23,8 @@ interface ConversationListProps {
   onSelect: (conversationId: string) => void;
   onFiltersChange: (patch: Partial<InboxFilters>) => void;
   onRetry?: () => void;
+  onNewTemplate?: () => void;
+  canCompose?: boolean;
 }
 
 const STATUS_TABS: { value: InboxStatusFilter; label: string }[] = [
@@ -42,11 +45,19 @@ export function ConversationList({
   onSelect,
   onFiltersChange,
   onRetry,
+  onNewTemplate,
+  canCompose,
 }: ConversationListProps) {
   return (
     <div className="flex h-full min-h-0 flex-col border-e border-border/60 bg-card">
-      <div className="flex h-14 shrink-0 items-center border-b border-border/60 px-4">
+      <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border/60 px-4">
         <h2 className="text-sm font-semibold">الرسائل الواردة</h2>
+        {canCompose && onNewTemplate ? (
+          <Button type="button" variant="gradient" size="sm" onClick={onNewTemplate}>
+            <PlusIcon data-icon="inline-start" />
+            قالب جديد
+          </Button>
+        ) : null}
       </div>
 
       <div className="space-y-2.5 border-b border-border/60 p-3">
@@ -88,7 +99,15 @@ export function ConversationList({
           error={error}
           isEmpty={!conversations.length}
           emptyTitle="لا توجد محادثات"
-          emptyDescription="ستظهر المحادثات هنا عند استلام رسائل جديدة"
+          emptyDescription="أرسل قالباً لرقم جديد أو انتظر رسائل العملاء"
+          emptyAction={
+            canCompose && onNewTemplate ? (
+              <Button variant="gradient" onClick={onNewTemplate}>
+                <PlusIcon data-icon="inline-start" />
+                إرسال قالب لرقم
+              </Button>
+            ) : undefined
+          }
           onRetry={onRetry}
           skeletonRows={8}
         >
