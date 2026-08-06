@@ -14,7 +14,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCreateFromLibrary } from '@/features/templates/hooks/use-templates';
-import { buildCreateFromLibraryPayload, isAuthenticationLibraryItem } from '@/features/templates/utils/library-template';
+import {
+  buildCreateFromLibraryPayload,
+  canSubmitLibraryTemplate,
+  getRequiredConfigurableButtons,
+  getUnsupportedLibraryButtons,
+  isAuthenticationLibraryItem,
+} from '@/features/templates/utils/library-template';
 import type { TemplateLibraryItem } from '@/types/template.types';
 
 interface AddLibraryTemplateDialogProps {
@@ -37,15 +43,19 @@ export function AddLibraryTemplateDialog({
   const createMutation = useCreateFromLibrary();
 
   const isAuthentication = item ? isAuthenticationLibraryItem(item) : false;
+  const unsupportedButtons = useMemo(
+    () => (item ? getUnsupportedLibraryButtons(item) : []),
+    [item],
+  );
+  const requiredButtons = useMemo(
+    () => (item ? getRequiredConfigurableButtons(item) : { url: false, phone: false }),
+    [item],
+  );
 
-  const urlButton = useMemo(
-    () => item?.buttons?.find((button) => button.type === 'URL'),
-    [item],
-  );
-  const phoneButton = useMemo(
-    () => item?.buttons?.find((button) => button.type === 'PHONE_NUMBER'),
-    [item],
-  );
+  const submitCheck = useMemo(() => {
+    if (!item) return { ok: false as const, reason: undefined };
+    return canSubmitLibraryTemplate({ item, name, urlBase, phoneNumber });
+  }, [item, name, urlBase, phoneNumber]);
 
   useEffect(() => {
     if (!item) return;
@@ -55,7 +65,7 @@ export function AddLibraryTemplateDialog({
   }, [item]);
 
   const handleSubmit = () => {
-    if (!item || !name.trim()) return;
+    if (!item || !submitCheck.ok) return;
 
     createMutation.mutate(
       buildCreateFromLibraryPayload({
@@ -113,9 +123,17 @@ export function AddLibraryTemplateDialog({
               </div>
             ) : null}
 
-            {urlButton && !isAuthentication ? (
+            {unsupportedButtons.length ? (
+              <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-sm text-amber-950 dark:text-amber-100">
+                هذا القالب يحتوي أزرار غير مدعومة حالياً (
+                {unsupportedButtons.map((button) => button.type).join(', ')}
+                ). اختر قالباً بأزرار URL أو Phone أو OTP فقط.
+              </div>
+            ) : null}
+
+            {requiredButtons.url ? (
               <div className="space-y-1.5">
-                <Label htmlFor="library-template-url">رابط الزر ({urlButton.text ?? 'URL'}) *</Label>
+                <Label htmlFor="library-template-url">رابط الزر *</Label>
                 <Input
                   id="library-template-url"
                   dir="ltr"
@@ -126,11 +144,9 @@ export function AddLibraryTemplateDialog({
               </div>
             ) : null}
 
-            {phoneButton && !isAuthentication ? (
+            {requiredButtons.phone ? (
               <div className="space-y-1.5">
-                <Label htmlFor="library-template-phone">
-                  رقم الهاتف ({phoneButton.text ?? 'Phone'}) *
-                </Label>
+                <Label htmlFor="library-template-phone">رقم الهاتف *</Label>
                 <Input
                   id="library-template-phone"
                   dir="ltr"
@@ -150,13 +166,7 @@ export function AddLibraryTemplateDialog({
           <Button
             type="button"
             variant="gradient"
-            disabled={
-              !item ||
-              !name.trim() ||
-              (!isAuthentication && urlButton ? !urlBase.trim() : false) ||
-              (!isAuthentication && phoneButton ? !phoneNumber.trim() : false) ||
-              createMutation.isPending
-            }
+            disabled={!item || !submitCheck.ok || createMutation.isPending}
             onClick={handleSubmit}
           >
             {createMutation.isPending ? <Loader2Icon className="animate-spin" /> : 'إرسال لـ Meta'}

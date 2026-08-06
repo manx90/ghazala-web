@@ -68,11 +68,11 @@ export function useCreateFromLibrary() {
       void queryClient.invalidateQueries({ queryKey: queryKeys.templates.all });
 
       if (template.status === TemplateStatus.APPROVED) {
-        toastSuccess('تمت إضافة القالب على Meta وهو معتمد — يمكنك إرساله الآن');
+        toastSuccess('تمت إضافة القالب وهو معتمد — يمكنك إرساله الآن');
       } else if (template.status === TemplateStatus.PENDING) {
-        toastSuccess('تم إرسال القالب لـ Meta — انتظر الاعتماد ثم زامن من صفحة قوالبي');
+        toastSuccess('تمت إضافة القالب لـ Meta — انتظر الاعتماد ثم زامن من صفحة قوالبي');
       } else {
-        toastSuccess('تمت إضافة القالب — زامن القوالب لمتابعة الحالة');
+        toastSuccess('تمت إضافة/استيراد القالب بنجاح');
       }
     },
     onError: toastApiError,
