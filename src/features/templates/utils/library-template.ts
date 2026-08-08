@@ -171,7 +171,7 @@ export function buildCreateFromLibraryPayload(input: {
   const payload: CreateFromLibraryPayload = {
     name: input.name.trim(),
     libraryTemplateName: input.item.name,
-    language: input.item.language,
+    libraryTemplateLanguage: input.item.language,
     category,
   };
 
@@ -190,4 +190,26 @@ export function buildCreateFromLibraryPayload(input: {
   }
 
   return payload;
+}
+
+/** يرسل للـ API الحقول المسموحة فقط — يمنع رفض validation بسبب حقول زائدة */
+export function sanitizeCreateFromLibraryPayload(
+  payload: CreateFromLibraryPayload,
+): CreateFromLibraryPayload {
+  const sanitized: CreateFromLibraryPayload = {
+    name: payload.name,
+    libraryTemplateName: payload.libraryTemplateName,
+    libraryTemplateLanguage: payload.libraryTemplateLanguage,
+  };
+
+  if (payload.wabaId) sanitized.wabaId = payload.wabaId;
+  if (payload.category) sanitized.category = payload.category;
+  if (payload.libraryTemplateButtonInputs?.length) {
+    sanitized.libraryTemplateButtonInputs = payload.libraryTemplateButtonInputs;
+  }
+  if (payload.libraryTemplateBodyInputs) {
+    sanitized.libraryTemplateBodyInputs = payload.libraryTemplateBodyInputs;
+  }
+
+  return sanitized;
 }

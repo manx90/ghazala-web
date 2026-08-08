@@ -14,6 +14,7 @@ import type {
   UpdateTemplatePayload,
 } from '@/types/template.types';
 import { toQueryString } from '@/utils/query';
+import { sanitizeCreateFromLibraryPayload } from '@/features/templates/utils/library-template';
 
 const BASE = '/templates';
 const LIBRARY_BASE = '/template-library';
@@ -37,7 +38,7 @@ export const templatesApi = {
   },
 
   createFromLibrary(payload: CreateFromLibraryPayload): Promise<Template> {
-    return apiClient.post<Template>(LIBRARY_BASE, payload);
+    return apiClient.post<Template>(LIBRARY_BASE, sanitizeCreateFromLibraryPayload(payload));
   },
 
   getById(id: string): Promise<Template> {

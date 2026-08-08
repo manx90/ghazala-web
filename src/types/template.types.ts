@@ -138,7 +138,7 @@ export interface CreateFromLibraryPayload {
   wabaId?: string;
   name: string;
   libraryTemplateName: string;
-  language: string;
+  libraryTemplateLanguage: string;
   category?: TemplateCategory;
   libraryTemplateButtonInputs?: LibraryTemplateButtonInput[];
   libraryTemplateBodyInputs?: LibraryTemplateBodyInputs;
