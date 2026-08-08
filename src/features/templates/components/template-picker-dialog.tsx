@@ -1,7 +1,7 @@
 'use client';
 
 import { Loader2Icon } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -19,16 +19,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { TemplateVariableFields } from '@/features/templates/components/template-variable-fields';
 import { getLanguageLabel } from '@/features/templates/constants/template-filters';
 import { useTemplatesList } from '@/features/templates/hooks/use-templates';
 import { getTemplateBodyPreview } from '@/features/templates/utils/template-preview';
 import { filterSendableTemplates } from '@/features/templates/utils/template-sendable';
+import {
+  areTemplateVariablesFilled,
+  buildTemplateSendComponents,
+} from '@/features/templates/utils/template-variables';
 import { TemplateStatus, type Template } from '@/types/template.types';
+import type { SendTemplateMessagePayload } from '@/types/message.types';
 
 interface TemplatePickerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSelect: (template: Template) => void;
+  onSelect: (
+    template: Template,
+    components?: SendTemplateMessagePayload['components'],
+  ) => void;
   wabaId?: string;
   isSending?: boolean;
 }
@@ -42,6 +51,7 @@ export function TemplatePickerDialog({
 }: TemplatePickerDialogProps) {
   const [language, setLanguage] = useState('');
   const [templateId, setTemplateId] = useState('');
+  const [variableValues, setVariableValues] = useState<Record<string, string>>({});
 
   const templatesQuery = useTemplatesList({ status: TemplateStatus.APPROVED });
 
@@ -64,23 +74,35 @@ export function TemplatePickerDialog({
 
   const selectedTemplate = templatesForLanguage.find((item) => item.id === templateId);
 
+  useEffect(() => {
+    setVariableValues({});
+  }, [templateId]);
+
   const handleLanguageChange = (value: string | null) => {
     const next = value ?? '';
     setLanguage(next);
     setTemplateId('');
+    setVariableValues({});
   };
 
   const handleOpenChange = (next: boolean) => {
     if (!next) {
       setLanguage('');
       setTemplateId('');
+      setVariableValues({});
     }
     onOpenChange(next);
   };
 
+  const canSend =
+    Boolean(selectedTemplate) &&
+    (!selectedTemplate || areTemplateVariablesFilled(selectedTemplate, variableValues)) &&
+    !isSending;
+
   const handleSend = () => {
-    if (!selectedTemplate) return;
-    onSelect(selectedTemplate);
+    if (!selectedTemplate || !canSend) return;
+    const components = buildTemplateSendComponents(selectedTemplate, variableValues);
+    onSelect(selectedTemplate, components);
     handleOpenChange(false);
   };
 
@@ -142,12 +164,19 @@ export function TemplatePickerDialog({
             </div>
 
             {selectedTemplate ? (
-              <div className="rounded-lg border bg-muted/40 p-3 text-sm">
-                <p dir="ltr" className="mb-1 font-mono text-xs text-muted-foreground">
-                  {selectedTemplate.name}
-                </p>
-                <p className="text-muted-foreground">{getTemplateBodyPreview(selectedTemplate)}</p>
-              </div>
+              <>
+                <div className="rounded-lg border bg-muted/40 p-3 text-sm">
+                  <p dir="ltr" className="mb-1 font-mono text-xs text-muted-foreground">
+                    {selectedTemplate.name}
+                  </p>
+                  <p className="text-muted-foreground">{getTemplateBodyPreview(selectedTemplate)}</p>
+                </div>
+                <TemplateVariableFields
+                  template={selectedTemplate}
+                  values={variableValues}
+                  onChange={setVariableValues}
+                />
+              </>
             ) : null}
           </div>
         )}
@@ -156,12 +185,7 @@ export function TemplatePickerDialog({
           <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
             إلغاء
           </Button>
-          <Button
-            type="button"
-            variant="gradient"
-            disabled={!selectedTemplate || isSending}
-            onClick={handleSend}
-          >
+          <Button type="button" variant="gradient" disabled={!canSend} onClick={handleSend}>
             {isSending ? <Loader2Icon className="animate-spin" /> : 'إرسال القالب'}
           </Button>
         </DialogFooter>

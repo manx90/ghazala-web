@@ -29,6 +29,7 @@ import { useSendMessage } from '@/features/inbox/hooks/use-send-message';
 import { usePhoneNumbers } from '@/components/shared/phone-number-select';
 import { ConversationStatus, type Conversation } from '@/types/conversation.types';
 import type { Template } from '@/types/template.types';
+import type { SendTemplateMessagePayload } from '@/types/message.types';
 
 const COMMON_EMOJIS = [
   '😀', '😂', '😍', '😊', '🙏', '👍', '❤️', '🔥', '✅', '🎉',
@@ -92,12 +93,16 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
     setBody('');
   };
 
-  const handleSendTemplate = async (template: Template) => {
+  const handleSendTemplate = async (
+    template: Template,
+    components?: SendTemplateMessagePayload['components'],
+  ) => {
     if (disabled || isSending) return;
     await sendTemplate({
       ...basePayload,
       templateId: template.id,
       ...buildTemplateSendMeta(template),
+      components,
     });
   };
 
@@ -190,7 +195,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
           open={templatePickerOpen}
           onOpenChange={setTemplatePickerOpen}
           wabaId={senderWabaId}
-          onSelect={(template) => void handleSendTemplate(template)}
+          onSelect={(template, components) => void handleSendTemplate(template, components)}
           isSending={isSending}
         />
 

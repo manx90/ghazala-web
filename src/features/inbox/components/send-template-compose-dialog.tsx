@@ -22,12 +22,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useSendMessage } from '@/features/inbox/hooks/use-send-message';
+import { TemplateVariableFields } from '@/features/templates/components/template-variable-fields';
 import { getLanguageLabel } from '@/features/templates/constants/template-filters';
 import { useTemplatesList } from '@/features/templates/hooks/use-templates';
 import {
   buildTemplateSendMeta,
   getTemplateBodyPreview,
 } from '@/features/templates/utils/template-preview';
+import {
+  areTemplateVariablesFilled,
+  buildTemplateSendComponents,
+} from '@/features/templates/utils/template-variables';
 import { filterSendableTemplates } from '@/features/templates/utils/template-sendable';
 import { TemplateStatus, type Template } from '@/types/template.types';
 import { normalizePhone } from '@/utils/phone';
@@ -49,6 +54,7 @@ export function SendTemplateComposeDialog({
   const [phoneNumberId, setPhoneNumberId] = useState('');
   const [language, setLanguage] = useState('');
   const [templateId, setTemplateId] = useState('');
+  const [variableValues, setVariableValues] = useState<Record<string, string>>({});
 
   const phoneNumbersQuery = usePhoneNumbers();
   const templatesQuery = useTemplatesList({ status: TemplateStatus.APPROVED });
@@ -77,6 +83,10 @@ export function SendTemplateComposeDialog({
   const selectedTemplate = templatesForLanguage.find((item) => item.id === templateId);
 
   useEffect(() => {
+    setVariableValues({});
+  }, [templateId]);
+
+  useEffect(() => {
     if (!open) return;
     setRecipient(defaultRecipient);
     setLanguage('');
@@ -97,19 +107,23 @@ export function SendTemplateComposeDialog({
     if (!next) {
       setLanguage('');
       setTemplateId('');
+      setVariableValues({});
     }
     onOpenChange(next);
   };
 
   const handleSend = async () => {
     const normalizedRecipient = normalizePhone(recipient).replace(/^\+/, '');
-    if (!normalizedRecipient || !phoneNumberId || !templateId) return;
+    if (!normalizedRecipient || !phoneNumberId || !templateId || !selectedTemplate) return;
+    if (!areTemplateVariablesFilled(selectedTemplate, variableValues)) return;
 
+    const components = buildTemplateSendComponents(selectedTemplate, variableValues);
     const message = await sendTemplate({
       phoneNumberId,
       recipient: normalizedRecipient,
       templateId,
-      ...buildTemplateSendMeta(selectedTemplate!),
+      ...buildTemplateSendMeta(selectedTemplate),
+      components,
     });
 
     if (message.conversationId) {
@@ -119,7 +133,10 @@ export function SendTemplateComposeDialog({
     handleOpenChange(false);
   };
 
-  const canSend = Boolean(recipient.trim() && phoneNumberId && templateId && !isSending);
+  const canSend =
+    Boolean(recipient.trim() && phoneNumberId && templateId && selectedTemplate) &&
+    (!selectedTemplate || areTemplateVariablesFilled(selectedTemplate, variableValues)) &&
+    !isSending;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -206,12 +223,19 @@ export function SendTemplateComposeDialog({
               </div>
 
               {selectedTemplate ? (
-                <div className="rounded-lg border bg-muted/40 p-3 text-sm">
-                  <p dir="ltr" className="mb-1 font-mono text-xs text-muted-foreground">
-                    {selectedTemplate.name}
-                  </p>
-                  <p className="text-muted-foreground">{getTemplateBodyPreview(selectedTemplate)}</p>
-                </div>
+                <>
+                  <div className="rounded-lg border bg-muted/40 p-3 text-sm">
+                    <p dir="ltr" className="mb-1 font-mono text-xs text-muted-foreground">
+                      {selectedTemplate.name}
+                    </p>
+                    <p className="text-muted-foreground">{getTemplateBodyPreview(selectedTemplate)}</p>
+                  </div>
+                  <TemplateVariableFields
+                    template={selectedTemplate}
+                    values={variableValues}
+                    onChange={setVariableValues}
+                  />
+                </>
               ) : null}
             </>
           )}

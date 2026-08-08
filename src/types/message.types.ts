@@ -87,7 +87,12 @@ export interface TemplateMessagePreview {
 
 export interface SendTemplateMessagePayload extends BaseSendMessagePayload {
   templateId: string;
-  components?: { type: string; parameters?: Record<string, unknown>[] }[];
+  components?: {
+    type: string;
+    sub_type?: string;
+    index?: string;
+    parameters?: Record<string, unknown>[];
+  }[];
   templateName?: string;
   templateLanguage?: string;
   templatePreview?: TemplateMessagePreview;
