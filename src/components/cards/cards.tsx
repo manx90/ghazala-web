@@ -105,7 +105,7 @@ interface ActivityCardProps {
   className?: string;
 }
 
-export function ActivityCard({ title, items, emptyMessage = 'لا يوجد نشاط', className }: ActivityCardProps) {
+export function ActivityCard({ title, items, emptyMessage, className }: ActivityCardProps) {
   return (
     <Card className={className}>
       <CardHeader>
@@ -113,7 +113,7 @@ export function ActivityCard({ title, items, emptyMessage = 'لا يوجد نش�
       </CardHeader>
       <CardContent>
         {items.length === 0 ? (
-          <p className="py-6 text-center text-sm text-muted-foreground">{emptyMessage}</p>
+          <p className="py-6 text-center text-sm text-muted-foreground">{emptyMessage ?? '—'}</p>
         ) : (
           <ol className="flex flex-col gap-3">
             {items.map((item) => (

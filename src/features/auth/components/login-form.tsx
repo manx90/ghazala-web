@@ -1,7 +1,10 @@
 'use client';
 
-import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useMemo } from 'react';
+import { Link } from '@/i18n/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2Icon, MessageCircleIcon } from 'lucide-react';
@@ -11,27 +14,34 @@ import { ROUTES } from '@/config/routes';
 import { organizationApi } from '@/features/auth/api/organization.api';
 import { fetchOnboardingState } from '@/features/onboarding/services/onboarding.service';
 import { useLogin } from '@/features/auth/hooks';
-import { loginSchema, type LoginFormValues } from '@/features/auth/schemas/auth.schemas';
+import { createLoginSchema, type LoginFormValues } from '@/features/auth/schemas/create-auth-schemas';
 import { useOrganizationStore } from '@/store/organization.store';
 import { UserRole } from '@/types/auth.types';
 import { resolveOnboardingPath } from '@/utils/onboarding';
 import { getPostLoginRedirect, sanitizeRedirectPath } from '@/utils/route';
 import { organizationStorage } from '@/utils/storage';
+import { stripLocalePrefix } from '@/i18n/utils';
 import { FormField } from './form-field';
 
 export function LoginForm() {
+  const t = useTranslations('auth');
+  const tVal = useTranslations('validation');
+  const tCommon = useTranslations('common');
+  const tNav = useTranslations('nav');
   const router = useRouter();
   const searchParams = useSearchParams();
   const login = useLogin();
   const setCurrentOrganization = useOrganizationStore((state) => state.setCurrentOrganization);
   const setOrganizations = useOrganizationStore((state) => state.setOrganizations);
 
+  const schema = useMemo(() => createLoginSchema((k) => tVal(k)), [tVal]);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(schema),
     defaultValues: { email: '', password: '' },
   });
 
@@ -68,7 +78,7 @@ export function LoginForm() {
           fallback = resolveOnboardingPath(state);
         }
 
-        router.replace(sanitizeRedirectPath(returnUrl, fallback));
+        router.replace(sanitizeRedirectPath(returnUrl ? stripLocalePrefix(returnUrl) : null, fallback));
       },
     });
   });
@@ -78,41 +88,41 @@ export function LoginForm() {
       <Link
         href={ROUTES.home}
         className="mb-8 flex items-center justify-center gap-3 lg:hidden"
-        aria-label="غزالة - الصفحة الرئيسية"
+        aria-label={tNav('homeAria')}
       >
         <span className="flex size-12 items-center justify-center rounded-2xl bg-gradient-brand text-white shadow-md glow-brand">
           <MessageCircleIcon className="size-6" aria-hidden />
         </span>
-        <span className="text-xl font-bold tracking-tight">غزالة</span>
+        <span className="text-xl font-bold tracking-tight">{tCommon('appName')}</span>
       </Link>
 
       <div className="glass-strong rounded-2xl p-7 shadow-xl sm:p-9">
         <div className="mb-7 text-center">
-          <h1 className="text-2xl font-bold tracking-tight">مرحباً بعودتك</h1>
-          <p className="mt-2 text-sm text-muted-foreground">أدخل بيانات حسابك للمتابعة إلى لوحة التحكم</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('welcomeBack')}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t('loginSubtitle')}</p>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-5" noValidate>
-          <FormField id="email" label="البريد الإلكتروني" error={errors.email?.message}>
+          <FormField id="email" label={t('email')} error={errors.email?.message}>
             <Input
               id="email"
               type="email"
               autoComplete="email"
               dir="ltr"
-              placeholder="name@company.com"
+              placeholder={t('emailPlaceholder')}
               aria-invalid={Boolean(errors.email)}
               className="h-11 transition-shadow focus-visible:shadow-md"
               {...register('email')}
             />
           </FormField>
 
-          <FormField id="password" label="كلمة المرور" error={errors.password?.message}>
+          <FormField id="password" label={t('password')} error={errors.password?.message}>
             <Input
               id="password"
               type="password"
               autoComplete="current-password"
               dir="ltr"
-              placeholder="••••••••"
+              placeholder={t('passwordPlaceholder')}
               aria-invalid={Boolean(errors.password)}
               className="h-11 transition-shadow focus-visible:shadow-md"
               {...register('password')}
@@ -124,7 +134,7 @@ export function LoginForm() {
               href={ROUTES.auth.forgotPassword}
               className="text-sm font-medium text-primary underline-offset-4 transition-colors hover:text-secondary hover:underline"
             >
-              نسيت كلمة المرور؟
+              {t('forgotPassword')}
             </Link>
           </div>
 
@@ -137,22 +147,22 @@ export function LoginForm() {
             {login.isPending ? (
               <>
                 <Loader2Icon className="animate-spin" aria-hidden />
-                جاري تسجيل الدخول...
+                {t('loggingIn')}
               </>
             ) : (
-              'تسجيل الدخول'
+              t('login')
             )}
           </Button>
         </form>
       </div>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        ليس لديك حساب؟{' '}
+        {t('noAccount')}{' '}
         <Link
           href={ROUTES.auth.register}
           className="font-semibold text-primary underline-offset-4 transition-colors hover:text-secondary hover:underline"
         >
-          إنشاء حساب جديد
+          {t('createAccount')}
         </Link>
       </p>
     </div>

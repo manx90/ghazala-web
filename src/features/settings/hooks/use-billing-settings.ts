@@ -1,7 +1,8 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toastApiError, toastSuccess } from '@/components/global/toast-helpers';
+import { useTranslations } from 'next-intl';
+import { useToastI18n } from '@/hooks/use-toast-i18n';
 import { queryKeys } from '@/config/query-keys';
 import { billingApi } from '@/features/billing/api/billing.api';
 import { redirectToCheckoutOrComplete } from '@/features/billing/utils/checkout';
@@ -38,13 +39,15 @@ export function useUsage(enabled = true) {
 
 export function useSubscribe() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('settings.toast');
 
   return useMutation({
     mutationFn: (payload: SubscribePayload) => billingApi.subscribe(payload),
     onSuccess: (session) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.billing.subscription });
       redirectToCheckoutOrComplete(session, () => {
-        toastSuccess('تم الاشتراك بنجاح');
+        toastSuccess(t('subscribed'));
       });
     },
     onError: toastApiError,
@@ -53,13 +56,15 @@ export function useSubscribe() {
 
 export function useChangePlan() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('settings.toast');
 
   return useMutation({
     mutationFn: (payload: ChangePlanPayload) => billingApi.changePlan(payload),
     onSuccess: (session) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.billing.subscription });
       redirectToCheckoutOrComplete(session, () => {
-        toastSuccess('تم تغيير الخطة');
+        toastSuccess(t('planChanged'));
       });
     },
     onError: toastApiError,
@@ -68,12 +73,14 @@ export function useChangePlan() {
 
 export function useCancelSubscription() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('settings.toast');
 
   return useMutation({
     mutationFn: () => billingApi.cancelSubscription(),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.billing.subscription });
-      toastSuccess('تم إلغاء الاشتراك');
+      toastSuccess(t('subscriptionCancelled'));
     },
     onError: toastApiError,
   });

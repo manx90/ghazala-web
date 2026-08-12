@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { ConstructionIcon } from 'lucide-react';
 import { PageContainer } from '@/components/global/page-container';
 import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
@@ -13,6 +16,8 @@ export function AdminUnavailablePage({
   description,
   requiredEndpoints,
 }: AdminUnavailablePageProps) {
+  const t = useTranslations('admin.unavailable');
+
   return (
     <PageContainer size="md">
       <div className="flex flex-col items-center gap-6 py-10 text-center">
@@ -25,8 +30,8 @@ export function AdminUnavailablePage({
         </div>
         <div className="w-full text-start">
           <UnavailableFeatureAlert
-            title="واجهة برمجة غير متوفرة"
-            description="هذه الميزة تتطلب endpoints في الـ backend قبل تفعيلها."
+            title={t('apiTitle')}
+            description={t('apiDescription')}
             requiredEndpoints={requiredEndpoints}
           />
         </div>

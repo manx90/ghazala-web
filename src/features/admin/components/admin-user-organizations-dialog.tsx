@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { ModalWrapper } from '@/components/global/modal-wrapper';
 import { QueryState } from '@/components/shared/query-state';
 import { StatusBadge } from '@/components/shared/status-badge';
@@ -30,6 +31,10 @@ export function AdminUserOrganizationsDialog({
   open,
   onOpenChange,
 }: AdminUserOrganizationsDialogProps) {
+  const t = useTranslations('admin.users.organizationsDialog');
+  const tOrg = useTranslations('admin.organizations');
+  const tTeam = useTranslations('settings.team.columns');
+  const tCommon = useTranslations('admin.common');
   const { data, isLoading, isError, error, refetch } = useAdminUserOrganizations(
     userId ?? '',
     open && !!userId,
@@ -39,7 +44,7 @@ export function AdminUserOrganizationsDialog({
     <ModalWrapper
       open={open}
       onOpenChange={onOpenChange}
-      title="منظمات المستخدم"
+      title={t('title')}
       description={userName}
     >
       <QueryState
@@ -47,16 +52,16 @@ export function AdminUserOrganizationsDialog({
         isError={isError}
         error={error}
         isEmpty={!data?.items.length && !isLoading}
-        emptyTitle="لا ينتمي لأي منظمة"
+        emptyTitle={t('empty')}
         onRetry={() => refetch()}
       >
         {data?.items.length ? (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>المنظمة</TableHead>
-                <TableHead>الدور</TableHead>
-                <TableHead>تاريخ الانضمام</TableHead>
+                <TableHead>{tOrg('columns.name')}</TableHead>
+                <TableHead>{tTeam('role')}</TableHead>
+                <TableHead>{tTeam('joinedAt')}</TableHead>
                 <TableHead />
               </TableRow>
             </TableHeader>
@@ -83,7 +88,7 @@ export function AdminUserOrganizationsDialog({
                       size="sm"
                       render={<Link href={ROUTES.admin.organization(item.organization.id)} />}
                     >
-                      عرض
+                      {tCommon('view')}
                     </Button>
                   </TableCell>
                 </TableRow>

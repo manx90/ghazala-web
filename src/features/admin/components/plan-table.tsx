@@ -1,7 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { EditIcon, MoreHorizontalIcon, Trash2Icon } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -32,6 +33,9 @@ interface PlanTableProps {
 }
 
 export function PlanTable({ plans, selectedIds = [], onSelectionChange, onDisable }: PlanTableProps) {
+  const t = useTranslations('admin.plans');
+  const tCommon = useTranslations('admin.common');
+
   const toggleSelection = (id: string, checked: boolean) => {
     if (!onSelectionChange) return;
     onSelectionChange(checked ? [...selectedIds, id] : selectedIds.filter((x) => x !== id));
@@ -53,16 +57,16 @@ export function PlanTable({ plans, selectedIds = [], onSelectionChange, onDisabl
               <Checkbox
                 checked={allSelected}
                 onCheckedChange={(checked) => toggleAll(checked === true)}
-                aria-label="تحديد الكل"
+                aria-label={tCommon('selectAll')}
               />
             </TableHead>
           )}
-          <TableHead>الاسم</TableHead>
-          <TableHead>الرمز</TableHead>
-          <TableHead>شهري</TableHead>
-          <TableHead>سنوي</TableHead>
-          <TableHead>الحالة</TableHead>
-          <TableHead>تاريخ الإنشاء</TableHead>
+          <TableHead>{t('columns.name')}</TableHead>
+          <TableHead>{t('columns.code')}</TableHead>
+          <TableHead>{t('columns.monthly')}</TableHead>
+          <TableHead>{t('columns.yearly')}</TableHead>
+          <TableHead>{t('columns.status')}</TableHead>
+          <TableHead>{t('columns.createdAt')}</TableHead>
           <TableHead className="w-12" />
         </TableRow>
       </TableHeader>
@@ -74,14 +78,14 @@ export function PlanTable({ plans, selectedIds = [], onSelectionChange, onDisabl
                 <Checkbox
                   checked={selectedIds.includes(plan.id)}
                   onCheckedChange={(checked) => toggleSelection(plan.id, checked === true)}
-                  aria-label={`تحديد ${plan.name}`}
+                  aria-label={tCommon('selectRow', { name: plan.name })}
                 />
               </TableCell>
             )}
             <TableCell>
               <div className="flex items-center gap-3">
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-xs font-bold text-primary ring-1 ring-primary/10">
-                  {plan.name.trim().charAt(0) || '—'}
+                  {plan.name.trim().charAt(0) || tCommon('notAvailable')}
                 </span>
                 <span className="font-medium">{plan.name}</span>
               </div>
@@ -103,7 +107,7 @@ export function PlanTable({ plans, selectedIds = [], onSelectionChange, onDisabl
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={
-                    <Button variant="ghost" size="sm" aria-label="إجراءات">
+                    <Button variant="ghost" size="sm" aria-label={tCommon('actions')}>
                       <MoreHorizontalIcon />
                     </Button>
                   }
@@ -111,14 +115,14 @@ export function PlanTable({ plans, selectedIds = [], onSelectionChange, onDisabl
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem render={<Link href={ROUTES.admin.plan(plan.id)} />}>
                     <EditIcon data-icon="inline-start" />
-                    تعديل
+                    {tCommon('edit')}
                   </DropdownMenuItem>
                   {plan.isActive && onDisable && (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem variant="destructive" onClick={() => onDisable(plan)}>
                         <Trash2Icon />
-                        تعطيل
+                        {tCommon('disable')}
                       </DropdownMenuItem>
                     </>
                   )}

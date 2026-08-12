@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Loader2Icon, PhoneIcon, RefreshCwIcon, SmartphoneIcon, UnplugIcon } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,7 @@ import { WhatsappAccountStatus, type PhoneNumber } from '@/types/whatsapp.types'
 import { useState } from 'react';
 
 export function WhatsappSettingsSection() {
+  const t = useTranslations('settings.whatsapp');
   const wabaQuery = useWhatsappBusinessAccounts();
   const phoneQuery = useWhatsappPhoneNumbers();
   const syncAccounts = useSyncWhatsappAccounts();
@@ -51,8 +53,8 @@ export function WhatsappSettingsSection() {
               <SmartphoneIcon className="size-5" aria-hidden="true" />
             </span>
             <div>
-              <CardTitle>حسابات WhatsApp Business</CardTitle>
-              <CardDescription>حسابات WABA المرتبطة بالمنظمة</CardDescription>
+              <CardTitle>{t('waba.title')}</CardTitle>
+              <CardDescription>{t('waba.description')}</CardDescription>
             </div>
           </div>
           <Button
@@ -65,7 +67,7 @@ export function WhatsappSettingsSection() {
             ) : (
               <RefreshCwIcon />
             )}
-            مزامنة الحسابات
+            {t('waba.sync')}
           </Button>
         </CardHeader>
         <CardContent>
@@ -74,17 +76,17 @@ export function WhatsappSettingsSection() {
             isError={wabaQuery.isError}
             error={wabaQuery.error}
             isEmpty={!wabaQuery.data?.items.length}
-            emptyTitle="لا توجد حسابات WABA"
-            emptyDescription="قم بربط Meta ثم زامن الحسابات"
+            emptyTitle={t('waba.emptyTitle')}
+            emptyDescription={t('waba.emptyDescription')}
             onRetry={() => void wabaQuery.refetch()}
           >
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>الاسم</TableHead>
-                  <TableHead>معرف WABA</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>المنطقة الزمنية</TableHead>
+                  <TableHead>{t('waba.columns.name')}</TableHead>
+                  <TableHead>{t('waba.columns.wabaId')}</TableHead>
+                  <TableHead>{t('waba.columns.status')}</TableHead>
+                  <TableHead>{t('waba.columns.timezone')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -119,8 +121,8 @@ export function WhatsappSettingsSection() {
               <PhoneIcon className="size-5" aria-hidden="true" />
             </span>
             <div>
-              <CardTitle>أرقام الهاتف</CardTitle>
-              <CardDescription>أرقام WhatsApp المرتبطة — يمكنك فصل أي رقم غير مستخدم</CardDescription>
+              <CardTitle>{t('phones.title')}</CardTitle>
+              <CardDescription>{t('phones.description')}</CardDescription>
             </div>
           </div>
           <Button
@@ -133,7 +135,7 @@ export function WhatsappSettingsSection() {
             ) : (
               <RefreshCwIcon />
             )}
-            مزامنة الأرقام
+            {t('phones.sync')}
           </Button>
         </CardHeader>
         <CardContent>
@@ -142,17 +144,17 @@ export function WhatsappSettingsSection() {
             isError={phoneQuery.isError}
             error={phoneQuery.error}
             isEmpty={!phoneQuery.data?.items.length}
-            emptyTitle="لا توجد أرقام"
-            emptyDescription="زامن الأرقام من Meta"
+            emptyTitle={t('phones.emptyTitle')}
+            emptyDescription={t('phones.emptyDescription')}
             onRetry={() => void phoneQuery.refetch()}
           >
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>الرقم</TableHead>
-                  <TableHead>الاسم المعتمد</TableHead>
-                  <TableHead>الجودة</TableHead>
-                  <TableHead>الحالة</TableHead>
+                  <TableHead>{t('phones.columns.phone')}</TableHead>
+                  <TableHead>{t('phones.columns.verifiedName')}</TableHead>
+                  <TableHead>{t('phones.columns.quality')}</TableHead>
+                  <TableHead>{t('phones.columns.status')}</TableHead>
                   <TableHead className="w-12" />
                 </TableRow>
               </TableHeader>
@@ -175,7 +177,7 @@ export function WhatsappSettingsSection() {
                       <Button
                         variant="ghost"
                         size="icon-sm"
-                        aria-label="فصل الرقم"
+                        aria-label={t('phones.disconnectAria')}
                         onClick={() => setPhoneToDisconnect(phone)}
                       >
                         <UnplugIcon className="text-destructive" />
@@ -192,9 +194,11 @@ export function WhatsappSettingsSection() {
       <ConfirmDialog
         open={Boolean(phoneToDisconnect)}
         onOpenChange={(open) => !open && setPhoneToDisconnect(null)}
-        title="فصل رقم الهاتف"
-        description={`هل تريد فصل ${phoneToDisconnect?.displayPhoneNumber}؟`}
-        confirmLabel="فصل"
+        title={t('disconnectDialog.title')}
+        description={t('disconnectDialog.description', {
+          phone: phoneToDisconnect?.displayPhoneNumber ?? '',
+        })}
+        confirmLabel={t('disconnectDialog.confirm')}
         variant="destructive"
         onConfirm={() => void handleDisconnect()}
         isLoading={disconnectPhone.isPending}

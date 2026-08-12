@@ -1,4 +1,5 @@
 import { loadFacebookSdk } from '@/lib/meta/load-facebook-sdk';
+import { MetaSignupError } from '@/lib/meta/meta-signup-error';
 import type {
   EmbeddedSignupMessage,
   EmbeddedSignupResult,
@@ -6,10 +7,23 @@ import type {
   FacebookLoginResponse,
 } from '@/types/meta-sdk.types';
 
-const FACEBOOK_ORIGINS = ['https://www.facebook.com', 'https://web.facebook.com'];
+const SIGNUP_TIMEOUT_MS = 120_000;
+
+const SUCCESS_EVENTS = new Set([
+  'FINISH',
+  'FINISH_ONLY_WABA',
+  'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING',
+  'FINISH_OBO_MIGRATION',
+  'FINISH_GRANT_ONLY_API_ACCESS',
+]);
 
 function isFacebookOrigin(origin: string): boolean {
-  return FACEBOOK_ORIGINS.includes(origin);
+  try {
+    const { hostname } = new URL(origin);
+    return hostname === 'facebook.com' || hostname.endsWith('.facebook.com');
+  } catch {
+    return false;
+  }
 }
 
 function parseEmbeddedSignupMessage(raw: unknown): EmbeddedSignupMessage | null {
@@ -26,12 +40,17 @@ function parseEmbeddedSignupMessage(raw: unknown): EmbeddedSignupMessage | null 
 }
 
 function toSessionInfo(data: EmbeddedSignupMessage['data']): EmbeddedSignupSessionInfo | null {
-  if (!data?.waba_id) {
+  if (!data) {
+    return null;
+  }
+
+  const wabaId = data.waba_id ?? data.waba_ids?.[0];
+  if (!wabaId) {
     return null;
   }
 
   return {
-    wabaId: data.waba_id,
+    wabaId,
     phoneNumberId: data.phone_number_id,
     metaBusinessId: data.business_id,
   };
@@ -52,9 +71,14 @@ export function launchEmbeddedSignup(
     let settled = false;
     let sessionInfo: EmbeddedSignupSessionInfo | null = null;
     let authorizationCode: string | null = null;
+    let timeoutId: number | null = null;
 
     const cleanup = (messageHandler: (event: MessageEvent) => void) => {
       window.removeEventListener('message', messageHandler);
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId);
+        timeoutId = null;
+      }
     };
 
     const fail = (messageHandler: (event: MessageEvent) => void, error: Error) => {
@@ -98,19 +122,24 @@ export function launchEmbeddedSignup(
       }
 
       if (message.event === 'CANCEL') {
-        fail(messageHandler, new Error('تم إلغاء عملية الربط'));
+        fail(messageHandler, new MetaSignupError('cancelled'));
         return;
       }
 
       if (message.event === 'ERROR') {
-        fail(messageHandler, new Error('فشلت عملية الربط مع Meta'));
+        fail(messageHandler, new MetaSignupError('failed'));
         return;
       }
 
-      if (message.event === 'FINISH') {
+      if (message.data?.code && !authorizationCode) {
+        authorizationCode = message.data.code;
+        tryComplete(messageHandler);
+      }
+
+      if (SUCCESS_EVENTS.has(message.event)) {
         sessionInfo = toSessionInfo(message.data);
         if (!sessionInfo) {
-          fail(messageHandler, new Error('لم يتم استلام بيانات حساب WhatsApp Business'));
+          fail(messageHandler, new MetaSignupError('noWabaData'));
           return;
         }
         tryComplete(messageHandler);
@@ -119,28 +148,39 @@ export function launchEmbeddedSignup(
 
     window.addEventListener('message', messageHandler);
 
+    timeoutId = window.setTimeout(() => {
+      if (authorizationCode && !sessionInfo?.wabaId) {
+        fail(messageHandler, new MetaSignupError('noWabaData'));
+        return;
+      }
+
+      if (!authorizationCode && sessionInfo?.wabaId) {
+        fail(messageHandler, new MetaSignupError('noAuthCode'));
+        return;
+      }
+
+      fail(messageHandler, new MetaSignupError('timeout'));
+    }, SIGNUP_TIMEOUT_MS);
+
     void loadFacebookSdk(appId, graphApiVersion)
       .then(() => {
         if (!window.FB) {
-          fail(messageHandler, new Error('Facebook SDK غير متاح'));
+          fail(messageHandler, new MetaSignupError('sdkUnavailable'));
           return;
         }
 
         window.FB.login(
           (response: FacebookLoginResponse) => {
             if (response.status === 'unknown') {
-              fail(messageHandler, new Error('تم إلغاء عملية الربط'));
+              fail(messageHandler, new MetaSignupError('cancelled'));
               return;
             }
 
             const code = response.authResponse?.code;
-            if (!code) {
-              fail(messageHandler, new Error('لم يتم استلام رمز التفويض من Meta'));
-              return;
+            if (code) {
+              authorizationCode = code;
+              tryComplete(messageHandler);
             }
-
-            authorizationCode = code;
-            tryComplete(messageHandler);
           },
           {
             config_id: embeddedSignupConfigId,
@@ -155,7 +195,10 @@ export function launchEmbeddedSignup(
         );
       })
       .catch((error: unknown) => {
-        fail(messageHandler, error instanceof Error ? error : new Error('فشل تحميل Facebook SDK'));
+        fail(
+          messageHandler,
+          error instanceof MetaSignupError ? error : new MetaSignupError('sdkLoadFailed'),
+        );
       });
   });
 }

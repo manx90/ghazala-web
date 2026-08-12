@@ -1,11 +1,20 @@
 import { TemplateCategory, TemplateComponentType, type Template } from '@/types/template.types';
 import type { SendTemplateMessagePayload } from '@/types/message.types';
 
+export type TemplateVariableLabelKey =
+  | 'otpCode'
+  | 'headerSingle'
+  | 'headerNumbered'
+  | 'buttonSingle'
+  | 'buttonNumbered'
+  | 'bodySingle'
+  | 'bodyNumbered';
+
 export interface TemplateVariableField {
   key: string;
-  label: string;
-  componentType: 'header' | 'body' | 'button';
+  labelKey: TemplateVariableLabelKey;
   paramNumber: number;
+  componentType: 'header' | 'body' | 'button';
   buttonIndex?: number;
 }
 
@@ -17,30 +26,30 @@ export function countTemplateVariablesInText(text: string): number {
   return Math.max(...matches.map((match) => Number(match[1])));
 }
 
-function resolveFieldLabel(
+function resolveFieldLabelKey(
   template: Template,
   componentType: 'header' | 'body' | 'button',
   paramNumber: number,
   totalInComponent: number,
-): string {
+): TemplateVariableLabelKey {
   if (
     template.category === TemplateCategory.AUTHENTICATION &&
     componentType === 'body' &&
     totalInComponent === 1 &&
     paramNumber === 1
   ) {
-    return 'رمز التحقق';
+    return 'otpCode';
   }
 
   if (componentType === 'header') {
-    return totalInComponent === 1 ? 'متغير الرأس' : `متغير الرأس {{${paramNumber}}}`;
+    return totalInComponent === 1 ? 'headerSingle' : 'headerNumbered';
   }
 
   if (componentType === 'button') {
-    return totalInComponent === 1 ? 'قيمة رابط الزر' : `رابط الزر {{${paramNumber}}}`;
+    return totalInComponent === 1 ? 'buttonSingle' : 'buttonNumbered';
   }
 
-  return totalInComponent === 1 ? 'قيمة المتغير' : `المتغير {{${paramNumber}}}`;
+  return totalInComponent === 1 ? 'bodySingle' : 'bodyNumbered';
 }
 
 export function getTemplateVariableFields(template: Template): TemplateVariableField[] {
@@ -58,7 +67,7 @@ export function getTemplateVariableFields(template: Template): TemplateVariableF
       for (let paramNumber = 1; paramNumber <= count; paramNumber += 1) {
         fields.push({
           key: `header-${paramNumber}`,
-          label: resolveFieldLabel(template, 'header', paramNumber, count),
+          labelKey: resolveFieldLabelKey(template, 'header', paramNumber, count),
           componentType: 'header',
           paramNumber,
         });
@@ -70,7 +79,7 @@ export function getTemplateVariableFields(template: Template): TemplateVariableF
       for (let paramNumber = 1; paramNumber <= count; paramNumber += 1) {
         fields.push({
           key: `body-${paramNumber}`,
-          label: resolveFieldLabel(template, 'body', paramNumber, count),
+          labelKey: resolveFieldLabelKey(template, 'body', paramNumber, count),
           componentType: 'body',
           paramNumber,
         });
@@ -84,7 +93,7 @@ export function getTemplateVariableFields(template: Template): TemplateVariableF
         for (let paramNumber = 1; paramNumber <= count; paramNumber += 1) {
           fields.push({
             key: `button-${buttonIndex}-${paramNumber}`,
-            label: resolveFieldLabel(template, 'button', paramNumber, count),
+            labelKey: resolveFieldLabelKey(template, 'button', paramNumber, count),
             componentType: 'button',
             paramNumber,
             buttonIndex,

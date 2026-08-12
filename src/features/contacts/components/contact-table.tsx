@@ -1,7 +1,8 @@
 'use client';
 
 import { EyeIcon, GitMergeIcon, MessageSquareIcon, MoreHorizontalIcon, Trash2Icon } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -42,7 +43,6 @@ function getDisplayName(contact: Contact): string {
   );
 }
 
-// أحرف أولى للأفاتار عند غياب الصورة
 function getInitials(contact: Contact): string {
   const name = getDisplayName(contact).trim();
   if (!name || name === contact.phone) return contact.phone.slice(-2);
@@ -62,6 +62,9 @@ export function ContactTable({
   onMerge,
   onSendTemplate,
 }: ContactTableProps) {
+  const t = useTranslations('contacts.table');
+  const tCommon = useTranslations('common');
+
   const toggleSelection = (contactId: string, checked: boolean) => {
     if (!onSelectionChange) return;
     if (checked) {
@@ -88,15 +91,15 @@ export function ContactTable({
                 <Checkbox
                   checked={allSelected}
                   onCheckedChange={(checked) => toggleAll(checked === true)}
-                  aria-label="تحديد الكل"
+                  aria-label={t('selectAll')}
                 />
               </TableHead>
             )}
-            <TableHead>الاسم</TableHead>
-            <TableHead>الهاتف</TableHead>
-            <TableHead>البريد</TableHead>
-            <TableHead>آخر رسالة</TableHead>
-            <TableHead>الحالة</TableHead>
+            <TableHead>{t('name')}</TableHead>
+            <TableHead>{t('phone')}</TableHead>
+            <TableHead>{t('email')}</TableHead>
+            <TableHead>{t('lastMessage')}</TableHead>
+            <TableHead>{t('status')}</TableHead>
             <TableHead className="w-12" />
           </TableRow>
         </TableHeader>
@@ -108,7 +111,7 @@ export function ContactTable({
                   <Checkbox
                     checked={selectedIds.includes(contact.id)}
                     onCheckedChange={(checked) => toggleSelection(contact.id, checked === true)}
-                    aria-label={`تحديد ${getDisplayName(contact)}`}
+                    aria-label={t('selectContact', { name: getDisplayName(contact) })}
                   />
                 </TableCell>
               )}
@@ -148,7 +151,7 @@ export function ContactTable({
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     render={
-                      <Button variant="ghost" size="sm" aria-label="إجراءات">
+                      <Button variant="ghost" size="sm" aria-label={tCommon('actions')}>
                         <MoreHorizontalIcon />
                       </Button>
                     }
@@ -156,24 +159,24 @@ export function ContactTable({
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem render={<Link href={`/app/${orgSlug}/contacts/${contact.id}`} />}>
                       <EyeIcon data-icon="inline-start" />
-                      عرض التفاصيل
+                      {t('viewDetails')}
                     </DropdownMenuItem>
                     {onSendTemplate && !contact.isBlocked ? (
                       <DropdownMenuItem onClick={() => onSendTemplate(contact)}>
                         <MessageSquareIcon data-icon="inline-start" />
-                        إرسال قالب
+                        {t('sendTemplate')}
                       </DropdownMenuItem>
                     ) : null}
                     {onMerge && (
                       <DropdownMenuItem onClick={() => onMerge(contact)}>
                         <GitMergeIcon data-icon="inline-start" />
-                        دمج
+                        {t('merge')}
                       </DropdownMenuItem>
                     )}
                     {onDelete && (
                       <DropdownMenuItem variant="destructive" onClick={() => onDelete(contact)}>
                         <Trash2Icon data-icon="inline-start" />
-                        حذف
+                        {tCommon('delete')}
                       </DropdownMenuItem>
                     )}
                   </DropdownMenuContent>

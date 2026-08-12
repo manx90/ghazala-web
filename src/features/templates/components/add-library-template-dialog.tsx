@@ -2,6 +2,7 @@
 
 import { Loader2Icon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -36,6 +37,8 @@ export function AddLibraryTemplateDialog({
   onOpenChange,
   onSuccess,
 }: AddLibraryTemplateDialogProps) {
+  const t = useTranslations('templates.addLibrary');
+  const tCommon = useTranslations('common');
   const [name, setName] = useState('');
   const [urlBase, setUrlBase] = useState('https://example.com/{{1}}');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -53,7 +56,7 @@ export function AddLibraryTemplateDialog({
   );
 
   const submitCheck = useMemo(() => {
-    if (!item) return { ok: false as const, reason: undefined };
+    if (!item) return { ok: false as const, code: undefined };
     return canSubmitLibraryTemplate({ item, name, urlBase, phoneNumber });
   }, [item, name, urlBase, phoneNumber]);
 
@@ -87,15 +90,9 @@ export function AddLibraryTemplateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>إضافة قالب إلى حساب WhatsApp</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>
-            {item ? (
-              <>
-                يُرسل القالب لـ Meta للمراجعة. بعد الاعتماد زامن من صفحة قوالبي ثم أرسل من Inbox.
-              </>
-            ) : (
-              'اختر قالباً من المكتبة'
-            )}
+            {item ? t('description') : t('selectFromLibrary')}
           </DialogDescription>
         </DialogHeader>
 
@@ -107,7 +104,7 @@ export function AddLibraryTemplateDialog({
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="library-template-name">اسم القالب على حسابك *</Label>
+              <Label htmlFor="library-template-name">{t('templateName')}</Label>
               <Input
                 id="library-template-name"
                 dir="ltr"
@@ -119,21 +116,21 @@ export function AddLibraryTemplateDialog({
 
             {isAuthentication ? (
               <div className="rounded-lg border border-sky-500/30 bg-sky-500/5 px-3 py-2 text-sm text-sky-950 dark:text-sky-100">
-                قالب مصادقة (OTP) — يُضاف بزر نسخ الرمز تلقائياً كما تتطلب Meta.
+                {t('authTemplate')}
               </div>
             ) : null}
 
             {unsupportedButtons.length ? (
               <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-sm text-amber-950 dark:text-amber-100">
-                هذا القالب يحتوي أزرار غير مدعومة حالياً (
-                {unsupportedButtons.map((button) => button.type).join(', ')}
-                ). اختر قالباً بأزرار URL أو Phone أو OTP فقط.
+                {t('unsupportedButtons', {
+                  types: unsupportedButtons.map((button) => button.type).join(', '),
+                })}
               </div>
             ) : null}
 
             {requiredButtons.url ? (
               <div className="space-y-1.5">
-                <Label htmlFor="library-template-url">رابط الزر *</Label>
+                <Label htmlFor="library-template-url">{t('buttonUrl')}</Label>
                 <Input
                   id="library-template-url"
                   dir="ltr"
@@ -146,7 +143,7 @@ export function AddLibraryTemplateDialog({
 
             {requiredButtons.phone ? (
               <div className="space-y-1.5">
-                <Label htmlFor="library-template-phone">رقم الهاتف *</Label>
+                <Label htmlFor="library-template-phone">{t('buttonPhone')}</Label>
                 <Input
                   id="library-template-phone"
                   dir="ltr"
@@ -161,7 +158,7 @@ export function AddLibraryTemplateDialog({
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            إلغاء
+            {tCommon('cancel')}
           </Button>
           <Button
             type="button"
@@ -169,7 +166,7 @@ export function AddLibraryTemplateDialog({
             disabled={!item || !submitCheck.ok || createMutation.isPending}
             onClick={handleSubmit}
           >
-            {createMutation.isPending ? <Loader2Icon className="animate-spin" /> : 'إرسال لـ Meta'}
+            {createMutation.isPending ? <Loader2Icon className="animate-spin" /> : t('submitToMeta')}
           </Button>
         </DialogFooter>
       </DialogContent>

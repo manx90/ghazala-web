@@ -1,6 +1,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { metaApi } from '@/features/meta/api/meta.api';
 import { whatsappApi } from '@/features/whatsapp/api/whatsapp.api';
 import { queryKeys } from '@/config/query-keys';
@@ -18,6 +19,7 @@ export function useMetaStatus(enabled = true) {
 }
 
 export function useConnectMeta() {
+  const t = useTranslations('onboarding.connectWhatsapp');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -29,7 +31,7 @@ export function useConnectMeta() {
         queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.phoneNumbers }),
         invalidateOnboardingState(queryClient),
       ]);
-      toastSuccess('تم ربط WhatsApp Business بنجاح');
+      toastSuccess(t('connectSuccess'));
     },
     onError: (error) => {
       toastError(getErrorMessage(error));
@@ -38,6 +40,7 @@ export function useConnectMeta() {
 }
 
 export function useDisconnectMeta() {
+  const t = useTranslations('onboarding.connectWhatsapp');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -49,7 +52,7 @@ export function useDisconnectMeta() {
         queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.phoneNumbers }),
         invalidateOnboardingState(queryClient),
       ]);
-      toastSuccess('تم فصل WhatsApp Business');
+      toastSuccess(t('disconnectSuccess'));
     },
     onError: (error) => {
       toastError(getErrorMessage(error));
@@ -58,6 +61,7 @@ export function useDisconnectMeta() {
 }
 
 export function useSyncMeta() {
+  const t = useTranslations('onboarding.connectWhatsapp');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -72,7 +76,7 @@ export function useSyncMeta() {
         queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.businessAccounts }),
         queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.phoneNumbers }),
       ]);
-      toastSuccess(response.message || 'تمت المزامنة');
+      toastSuccess(response.message || t('syncSuccess'));
     },
     onError: (error) => {
       toastError(getErrorMessage(error));

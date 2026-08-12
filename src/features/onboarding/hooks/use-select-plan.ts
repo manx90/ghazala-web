@@ -1,7 +1,8 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { billingApi } from '@/features/billing/api/billing.api';
 import { redirectToCheckoutOrComplete } from '@/features/billing/utils/checkout';
 import { invalidateOnboardingState } from '@/features/onboarding/utils/invalidate-onboarding';
@@ -20,6 +21,7 @@ export function useBillingPlans() {
 }
 
 export function useSubscribePlan() {
+  const t = useTranslations('onboarding.selectPlan');
   const router = useRouter();
   const queryClient = useQueryClient();
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization);
@@ -34,7 +36,7 @@ export function useSubscribePlan() {
       ]);
 
       redirectToCheckoutOrComplete(session, () => {
-        toastSuccess('تم الاشتراك في الخطة بنجاح');
+        toastSuccess(t('success'));
         if (currentOrganization?.slug) {
           router.push(ROUTES.app.dashboard(currentOrganization.slug));
         }

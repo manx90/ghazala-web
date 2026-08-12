@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type CSSProperties } from 'react';
+import { useTranslations } from 'next-intl';
 import { CheckCircle2Icon, Loader2Icon, SparklesIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PageContainer } from '@/components/global/page-container';
@@ -21,34 +22,36 @@ import { BillingCycle } from '@/types/billing.types';
 import type { Plan } from '@/types/billing.types';
 import { cn } from '@/lib/utils';
 
-function formatPlanLimit(value: number | null): string {
-  return value === null ? 'غير محدود' : value.toLocaleString();
-}
-
 function PlanLimitsList({ plan }: { plan: Plan }) {
+  const t = useTranslations('onboarding.selectPlan');
+
+  const formatLimit = (value: number | null) =>
+    value === null ? t('unlimited') : value.toLocaleString();
+
   return (
     <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
       <li className="flex items-start gap-2">
         <CheckCircle2Icon className="mt-0.5 size-4 shrink-0 text-secondary" aria-hidden="true" />
-        {formatPlanLimit(plan.maxMessagesMonthly)} رسالة / شهر
+        {t('messagesPerMonth', { count: formatLimit(plan.maxMessagesMonthly) })}
       </li>
       <li className="flex items-start gap-2">
         <CheckCircle2Icon className="mt-0.5 size-4 shrink-0 text-secondary" aria-hidden="true" />
-        {formatPlanLimit(plan.maxContacts)} جهة اتصال
+        {t('contacts', { count: formatLimit(plan.maxContacts) })}
       </li>
       <li className="flex items-start gap-2">
         <CheckCircle2Icon className="mt-0.5 size-4 shrink-0 text-secondary" aria-hidden="true" />
-        {formatPlanLimit(plan.maxTeamMembers)} عضو فريق
+        {t('teamMembers', { count: formatLimit(plan.maxTeamMembers) })}
       </li>
       <li className="flex items-start gap-2">
         <CheckCircle2Icon className="mt-0.5 size-4 shrink-0 text-secondary" aria-hidden="true" />
-        {formatPlanLimit(plan.maxPhoneNumbers)} رقم هاتف
+        {t('phoneNumbers', { count: formatLimit(plan.maxPhoneNumbers) })}
       </li>
     </ul>
   );
 }
 
 export function SelectPlanForm() {
+  const t = useTranslations('onboarding.selectPlan');
   const plansQuery = useBillingPlans();
   const subscribePlan = useSubscribePlan();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>(BillingCycle.MONTHLY);
@@ -65,8 +68,8 @@ export function SelectPlanForm() {
         <span className="bg-gradient-brand glow-brand flex size-14 items-center justify-center rounded-2xl text-primary-foreground shadow-lg">
           <SparklesIcon className="size-7" aria-hidden="true" />
         </span>
-        <h1 className="text-3xl font-bold tracking-tight">اختر خطتك</h1>
-        <p className="text-sm text-muted-foreground">اختر الخطة المناسبة لاحتياجات منظمتك</p>
+        <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
+        <p className="text-sm text-muted-foreground">{t('description')}</p>
       </div>
 
       <div className="animate-fade-in-up mb-8 flex justify-center">
@@ -77,7 +80,7 @@ export function SelectPlanForm() {
             className="rounded-full"
             onClick={() => setBillingCycle(BillingCycle.MONTHLY)}
           >
-            شهري
+            {t('monthly')}
           </Button>
           <Button
             type="button"
@@ -85,7 +88,7 @@ export function SelectPlanForm() {
             className="rounded-full"
             onClick={() => setBillingCycle(BillingCycle.YEARLY)}
           >
-            سنوي
+            {t('yearly')}
           </Button>
         </div>
       </div>
@@ -95,8 +98,8 @@ export function SelectPlanForm() {
         isError={plansQuery.isError}
         error={plansQuery.error}
         isEmpty={!plansQuery.data?.items.length}
-        emptyTitle="لا توجد خطط متاحة"
-        emptyDescription="تواصل مع الدعم للحصول على المساعدة"
+        emptyTitle={t('noPlans')}
+        emptyDescription={t('noPlansDescription')}
         onRetry={() => plansQuery.refetch()}
         skeletonRows={3}
       >
@@ -130,10 +133,13 @@ export function SelectPlanForm() {
                 <CardContent className="flex flex-col gap-4">
                   <div>
                     <p className="text-3xl font-bold tracking-tight">
-                      {price} <span className="text-base font-medium text-muted-foreground">{plan.currency}</span>
+                      {price}{' '}
+                      <span className="text-base font-medium text-muted-foreground">
+                        {plan.currency}
+                      </span>
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {billingCycle === BillingCycle.MONTHLY ? 'شهرياً' : 'سنوياً'}
+                      {billingCycle === BillingCycle.MONTHLY ? t('perMonth') : t('perYear')}
                     </p>
                   </div>
                   <PlanLimitsList plan={plan} />
@@ -145,7 +151,7 @@ export function SelectPlanForm() {
                     className="w-full"
                     onClick={() => setSelectedPlanId(plan.id)}
                   >
-                    {isSelected ? 'محددة' : 'اختيار'}
+                    {isSelected ? t('selected') : t('select')}
                   </Button>
                 </CardFooter>
               </Card>
@@ -164,10 +170,10 @@ export function SelectPlanForm() {
             {subscribePlan.isPending ? (
               <>
                 <Loader2Icon className="animate-spin" />
-                جاري الاشتراك...
+                {t('subscribing')}
               </>
             ) : (
-              'اشتراك الآن'
+              t('subscribeNow')
             )}
           </Button>
         </div>

@@ -55,7 +55,7 @@ export function getMessageContent(message: Message): MessageContent {
 
     case MessageType.LOCATION:
       return {
-        text: readString(payload, 'address', 'name') ?? 'موقع',
+        text: readString(payload, 'address', 'name'),
       };
 
     default:

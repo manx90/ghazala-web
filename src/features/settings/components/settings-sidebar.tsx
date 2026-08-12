@@ -1,21 +1,16 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link } from '@/i18n/navigation';
+import { usePathname } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import type { CSSProperties } from 'react';
-import { SETTINGS_NAV_ITEMS } from '@/features/settings/constants/settings-nav';
+import { SETTINGS_NAV_ITEMS, SETTINGS_NAV_SECTIONS } from '@/features/settings/constants/settings-nav';
 import { usePermissions } from '@/features/auth/hooks/use-permissions';
 import { cn } from '@/lib/utils';
 
 interface SettingsSidebarProps {
   orgSlug: string;
 }
-
-const NAV_SECTIONS: { id: string; label: string; itemIds: string[] }[] = [
-  { id: 'management', label: 'إدارة المنظمة', itemIds: ['organization', 'team', 'billing'] },
-  { id: 'integrations', label: 'التكاملات', itemIds: ['whatsapp', 'meta', 'webhooks', 'api-keys'] },
-  { id: 'account', label: 'الحساب', itemIds: ['profile', 'security'] },
-];
 
 function isActiveRoute(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -24,6 +19,7 @@ function isActiveRoute(pathname: string, href: string): boolean {
 export function SettingsSidebar({ orgSlug }: SettingsSidebarProps) {
   const pathname = usePathname();
   const { can } = usePermissions();
+  const t = useTranslations('nav.settingsNav');
 
   const items = SETTINGS_NAV_ITEMS.filter(
     (item) => !item.permission || can(item.permission),
@@ -32,8 +28,8 @@ export function SettingsSidebar({ orgSlug }: SettingsSidebarProps) {
   let itemIndex = 0;
 
   return (
-    <nav aria-label="إعدادات" className="flex flex-col gap-5">
-      {NAV_SECTIONS.map((section) => {
+    <nav aria-label={t('ariaLabel')} className="flex flex-col gap-5">
+      {SETTINGS_NAV_SECTIONS.map((section) => {
         const sectionItems = section.itemIds
           .map((id) => items.find((item) => item.id === id))
           .filter((item) => item !== undefined);
@@ -43,7 +39,7 @@ export function SettingsSidebar({ orgSlug }: SettingsSidebarProps) {
         return (
           <div key={section.id} className="flex flex-col gap-1">
             <p className="px-3 pb-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-              {section.label}
+              {t(`sections.${section.labelKey}`)}
             </p>
             {sectionItems.map((item) => {
               const href = item.href(orgSlug);
@@ -74,7 +70,7 @@ export function SettingsSidebar({ orgSlug }: SettingsSidebarProps) {
                     className={cn('size-4 shrink-0 transition-colors duration-200', active && 'text-primary')}
                     aria-hidden="true"
                   />
-                  <span className="truncate">{item.label}</span>
+                  <span className="truncate">{t(item.labelKey)}</span>
                 </Link>
               );
             })}

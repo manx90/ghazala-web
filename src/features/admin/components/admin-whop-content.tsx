@@ -15,6 +15,7 @@ import {
   XCircleIcon,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { DataTable } from '@/components/data-table';
 import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
@@ -66,7 +67,7 @@ import type {
 } from '@/types/admin.types';
 import { formatCurrency } from '@/utils/currency';
 import { formatDateTime } from '@/utils/date';
-import { toastSuccess } from '@/components/global/toast-helpers';
+import { useToastI18n } from '@/hooks/use-toast-i18n';
 import {
   Select,
   SelectContent,
@@ -102,6 +103,8 @@ function PlanMappingRow({
   plan: AdminWhopLocalPlanMapping;
   whopPlanOptions: { id: string; label: string }[];
 }) {
+  const t = useTranslations('admin.whop');
+  const tPlans = useTranslations('admin.plans.columns');
   const [monthly, setMonthly] = useState(plan.whopPlanIdMonthly ?? '');
   const [yearly, setYearly] = useState(plan.whopPlanIdYearly ?? '');
   const updateMutation = useUpdateWhopPlanMapping(plan.id);
@@ -126,7 +129,7 @@ function PlanMappingRow({
             onClick={() => syncMutation.mutate(plan.id)}
           >
             <RotateCcwIcon data-icon="inline-start" />
-            مزامنة Whop
+            {t('actions.syncWhop')}
           </Button>
           {monthly ? (
             <Button
@@ -136,22 +139,22 @@ function PlanMappingRow({
               onClick={() => checkoutMutation.mutate({ whopPlanId: monthly })}
             >
               <ExternalLinkIcon data-icon="inline-start" />
-              Checkout شهري
+              {t('actions.monthlyCheckout')}
             </Button>
           ) : null}
         </div>
       </div>
       <div className="space-y-1">
-        <label className="text-xs text-muted-foreground">Whop شهري</label>
+        <label className="text-xs text-muted-foreground">{`Whop ${tPlans('monthly')}`}</label>
         <Select
           value={monthly || NONE_VALUE}
           onValueChange={(v) => setMonthly(v === NONE_VALUE ? '' : (v ?? ''))}
         >
           <SelectTrigger>
-            <SelectValue placeholder="اختر خطة Whop" />
+            <SelectValue placeholder={t('actions.selectWhopPlan')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={NONE_VALUE}>— غير مربوط —</SelectItem>
+            <SelectItem value={NONE_VALUE}>{t('mapping.notLinked')}</SelectItem>
             {whopPlanOptions.map((opt) => (
               <SelectItem key={opt.id} value={opt.id}>
                 {opt.label}
@@ -161,16 +164,16 @@ function PlanMappingRow({
         </Select>
       </div>
       <div className="space-y-1">
-        <label className="text-xs text-muted-foreground">Whop سنوي</label>
+        <label className="text-xs text-muted-foreground">{`Whop ${tPlans('yearly')}`}</label>
         <Select
           value={yearly || NONE_VALUE}
           onValueChange={(v) => setYearly(v === NONE_VALUE ? '' : (v ?? ''))}
         >
           <SelectTrigger>
-            <SelectValue placeholder="اختر خطة Whop" />
+            <SelectValue placeholder={t('actions.selectWhopPlan')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={NONE_VALUE}>— غير مربوط —</SelectItem>
+            <SelectItem value={NONE_VALUE}>{t('mapping.notLinked')}</SelectItem>
             {whopPlanOptions.map((opt) => (
               <SelectItem key={opt.id} value={opt.id}>
                 {opt.label}
@@ -189,13 +192,19 @@ function PlanMappingRow({
           })
         }
       >
-        حفظ
+        {t('actions.save')}
       </Button>
     </div>
   );
 }
 
 export function AdminWhopContent() {
+  const t = useTranslations('admin.whop');
+  const tPages = useTranslations('admin.pages.whop');
+  const tSubs = useTranslations('admin.subscriptions');
+  const tPlansCol = useTranslations('admin.plans.columns');
+  const tCommon = useTranslations('admin.common');
+  const { toastSuccess } = useToastI18n();
   const [tab, setTab] = useState('status');
   const [promoCode, setPromoCode] = useState('');
   const [promoAmount, setPromoAmount] = useState('20');
@@ -240,7 +249,7 @@ export function AdminWhopContent() {
     () => [
       {
         id: 'id',
-        header: 'المعرف',
+        header: t('payments.columns.id'),
         cell: ({ row }) => (
           <span className="font-mono text-xs" dir="ltr">
             {row.original.id}
@@ -249,24 +258,24 @@ export function AdminWhopContent() {
       },
       {
         id: 'amount',
-        header: 'المبلغ',
+        header: t('payments.columns.amount'),
         cell: ({ row }) => formatCurrency(String(row.original.amount), row.original.currency),
       },
       {
         id: 'status',
-        header: 'الحالة',
+        header: t('payments.columns.status'),
         cell: ({ row }) => (
-          <Badge variant="outline">{row.original.substatus || row.original.status || '—'}</Badge>
+          <Badge variant="outline">{row.original.substatus || row.original.status || tCommon('notAvailable')}</Badge>
         ),
       },
       {
         id: 'plan',
-        header: 'الخطة',
-        cell: ({ row }) => row.original.planTitle ?? row.original.planId ?? '—',
+        header: t('payments.columns.plan'),
+        cell: ({ row }) => row.original.planTitle ?? row.original.planId ?? tCommon('notAvailable'),
       },
       {
         id: 'createdAt',
-        header: 'التاريخ',
+        header: t('payments.columns.date'),
         cell: ({ row }) => (
           <span className="text-xs text-muted-foreground">{formatDateTime(row.original.createdAt)}</span>
         ),
@@ -279,7 +288,7 @@ export function AdminWhopContent() {
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <Button variant="ghost" size="sm" aria-label="إجراءات">
+                <Button variant="ghost" size="sm" aria-label={tCommon('actions')}>
                   <MoreHorizontalIcon />
                 </Button>
               }
@@ -288,31 +297,31 @@ export function AdminWhopContent() {
               <DropdownMenuItem
                 onClick={() => refundMutation.mutate({ paymentId: row.original.id })}
               >
-                استرجاع
+                {t('payments.refund')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => retryMutation.mutate(row.original.id)}>
-                إعادة محاولة
+                {t('payments.retry')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 variant="destructive"
                 onClick={() => voidMutation.mutate(row.original.id)}
               >
-                إلغاء
+                {t('payments.cancel')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ),
       },
     ],
-    [refundMutation, retryMutation, voidMutation],
+    [t, tCommon, refundMutation, retryMutation, voidMutation],
   );
 
   const membershipColumns = useMemo<ColumnDef<AdminWhopMembershipItem, unknown>[]>(
     () => [
       {
         id: 'id',
-        header: 'المعرف',
+        header: t('memberships.columns.id'),
         cell: ({ row }) => (
           <span className="font-mono text-xs" dir="ltr">
             {row.original.id}
@@ -321,28 +330,28 @@ export function AdminWhopContent() {
       },
       {
         id: 'status',
-        header: 'الحالة',
+        header: t('memberships.columns.status'),
         cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       {
         id: 'plan',
-        header: 'المنتج',
-        cell: ({ row }) => row.original.planTitle ?? '—',
+        header: t('memberships.columns.product'),
+        cell: ({ row }) => row.original.planTitle ?? tCommon('notAvailable'),
       },
       {
         id: 'member',
-        header: 'العضو',
+        header: t('memberships.columns.member'),
         cell: ({ row }) => (
           <span className="text-xs" dir="ltr">
-            {row.original.memberEmail ?? '—'}
+            {row.original.memberEmail ?? tCommon('notAvailable')}
           </span>
         ),
       },
       {
         id: 'renewsAt',
-        header: 'التجديد',
+        header: t('memberships.columns.renewal'),
         cell: ({ row }) =>
-          row.original.renewsAt ? formatDateTime(row.original.renewsAt) : '—',
+          row.original.renewsAt ? formatDateTime(row.original.renewsAt) : tCommon('notAvailable'),
       },
       {
         id: 'actions',
@@ -352,7 +361,7 @@ export function AdminWhopContent() {
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <Button variant="ghost" size="sm" aria-label="إجراءات">
+                <Button variant="ghost" size="sm" aria-label={tCommon('actions')}>
                   <MoreHorizontalIcon />
                 </Button>
               }
@@ -366,7 +375,7 @@ export function AdminWhopContent() {
                   })
                 }
               >
-                إلغاء بنهاية الفترة
+                {t('memberships.cancelEndOfPeriod')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() =>
@@ -376,23 +385,20 @@ export function AdminWhopContent() {
                   })
                 }
               >
-                إلغاء فوري
+                {t('memberships.cancelImmediate')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => pauseMembershipMutation.mutate(row.original.id)}>
-                إيقاف مؤقت
+                {t('memberships.pause')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => resumeMembershipMutation.mutate(row.original.id)}>
-                استئناف
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => uncancelMembershipMutation.mutate(row.original.id)}>
-                إلغاء جدولة الإيقاف
+                {t('memberships.resume')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => freeDaysMutation.mutate({ membershipId: row.original.id, freeDays: 7 })}
               >
-                +7 أيام مجانية
+                {t('memberships.freeDays')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -400,10 +406,11 @@ export function AdminWhopContent() {
       },
     ],
     [
+      t,
+      tCommon,
       cancelMembershipMutation,
       pauseMembershipMutation,
       resumeMembershipMutation,
-      uncancelMembershipMutation,
       freeDaysMutation,
     ],
   );
@@ -412,14 +419,14 @@ export function AdminWhopContent() {
     () => [
       {
         id: 'eventType',
-        header: 'النوع',
+        header: t('events.columns.type'),
         cell: ({ row }) => (
           <Badge variant="secondary">{row.original.eventType}</Badge>
         ),
       },
       {
         id: 'eventId',
-        header: 'معرف الحدث',
+        header: t('events.columns.eventId'),
         cell: ({ row }) => (
           <span className="font-mono text-xs" dir="ltr">
             {row.original.eventId}
@@ -428,7 +435,7 @@ export function AdminWhopContent() {
       },
       {
         id: 'processedAt',
-        header: 'معالج في',
+        header: t('events.columns.processedAt'),
         cell: ({ row }) => (
           <span className="text-xs text-muted-foreground">
             {formatDateTime(row.original.processedAt)}
@@ -436,7 +443,7 @@ export function AdminWhopContent() {
         ),
       },
     ],
-    [],
+    [t],
   );
 
   const refreshAll = () => {
@@ -452,15 +459,15 @@ export function AdminWhopContent() {
   const copyWebhookUrl = async () => {
     if (!status?.webhookUrl) return;
     await navigator.clipboard.writeText(status.webhookUrl);
-    toastSuccess('تم نسخ رابط Webhook');
+    toastSuccess(t('toast.webhookCopied'));
   };
 
   return (
     <PageContainer>
       <div className="flex flex-col gap-6">
         <PageHeader
-          title="إدارة Whop"
-          description="مراقبة التكامل، ربط الخطط، ومتابعة المدفوعات والعضويات"
+          title={tPages('title')}
+          description={tPages('description')}
           actions={
             <Button
               variant="outline"
@@ -473,17 +480,17 @@ export function AdminWhopContent() {
               }
             >
               <RefreshCwIcon data-icon="inline-start" />
-              تحديث
+              {tCommon('refresh')}
             </Button>
           }
         />
 
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="w-full sm:w-auto">
-            <TabsTrigger value="status">الحالة</TabsTrigger>
-            <TabsTrigger value="plans">الخطط</TabsTrigger>
-            <TabsTrigger value="transactions">المعاملات</TabsTrigger>
-            <TabsTrigger value="promo">أكواد الخصم</TabsTrigger>
+            <TabsTrigger value="status">{t('tabs.status')}</TabsTrigger>
+            <TabsTrigger value="plans">{t('tabs.plans')}</TabsTrigger>
+            <TabsTrigger value="transactions">{t('tabs.transactions')}</TabsTrigger>
+            <TabsTrigger value="promo">{t('tabs.promoCodes')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="status" className="mt-4 space-y-4">
@@ -499,24 +506,24 @@ export function AdminWhopContent() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-base">
                     <WalletIcon className="size-4" />
-                    إعدادات API
+                    {t('config.apiKey')}
                   </CardTitle>
-                  <CardDescription>حالة مفاتيح Whop والبيئة</CardDescription>
+                  <CardDescription>{t('config.configured')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {statusQuery.isLoading ? (
-                    <p className="text-sm text-muted-foreground">جاري التحميل...</p>
+                    <p className="text-sm text-muted-foreground">{tCommon('loading')}</p>
                   ) : (
                     <>
-                      <ConfigRow label="مهيأ" value={status?.configured ? 'نعم' : 'لا'} ok={status?.configured} />
-                      <ConfigRow label="Sandbox" value={status?.sandbox ? 'نعم' : 'لا'} />
+                      <ConfigRow label={t('config.configured')} value={status?.configured ? tCommon('yes') : tCommon('no')} ok={status?.configured} />
+                      <ConfigRow label={t('config.sandbox')} value={status?.sandbox ? tCommon('yes') : tCommon('no')} />
                       <ConfigRow
-                        label="Webhook Secret"
-                        value={status?.webhookSecretConfigured ? 'مضبوط' : 'غير مضبوط'}
+                        label={t('config.webhookSecret')}
+                        value={status?.webhookSecretConfigured ? t('config.configuredYes') : t('config.configuredNo')}
                         ok={status?.webhookSecretConfigured}
                       />
-                      <ConfigRow label="Company ID" value={status?.companyId ?? '—'} ok={status?.companyIdConfigured} />
-                      <ConfigRow label="API Key" value={status?.maskedApiKey ?? '—'} />
+                      <ConfigRow label={t('config.companyId')} value={status?.companyId ?? tCommon('notAvailable')} ok={status?.companyIdConfigured} />
+                      <ConfigRow label={t('config.apiKey')} value={status?.maskedApiKey ?? tCommon('notAvailable')} />
                     </>
                   )}
                 </CardContent>
@@ -528,7 +535,7 @@ export function AdminWhopContent() {
                     <WebhookIcon className="size-4" />
                     Webhook
                   </CardTitle>
-                  <CardDescription>رابط استقبال أحداث الدفع من Whop</CardDescription>
+                  <CardDescription>{t("tabs.transactions")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="rounded-md bg-muted/50 p-3">
@@ -538,7 +545,7 @@ export function AdminWhopContent() {
                   </div>
                   <Button variant="outline" size="sm" onClick={() => void copyWebhookUrl()}>
                     <CopyIcon data-icon="inline-start" />
-                    نسخ الرابط
+                    {t('actions.copyWebhook')}
                   </Button>
                   <Button
                     size="sm"
@@ -546,7 +553,7 @@ export function AdminWhopContent() {
                     onClick={() => registerWebhookMutation.mutate()}
                   >
                     <WebhookIcon data-icon="inline-start" />
-                    تسجيل في Whop
+                    {t('actions.registerWhop')}
                   </Button>
                 </CardContent>
               </Card>
@@ -555,7 +562,7 @@ export function AdminWhopContent() {
             {(webhooksQuery.data?.items.length ?? 0) > 0 ? (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Webhooks في Whop</CardTitle>
+                  <CardTitle className="text-base">Webhooks</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {webhooksQuery.data?.items.map((hook) => (
@@ -564,7 +571,7 @@ export function AdminWhopContent() {
                         {hook.url}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {hook.enabled ? 'مفعّل' : 'معطّل'} — {hook.events.length} حدث
+                        {hook.enabled ? t('promo.enabled') : t('promo.disabled')} — {t('promo.eventsCount', { count: hook.events.length })}
                       </p>
                     </div>
                   ))}
@@ -584,8 +591,8 @@ export function AdminWhopContent() {
             {(plansData?.suggestions ?? []).length > 0 ? (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">اقتراحات الربط التلقائي</CardTitle>
-                  <CardDescription>مطابقة بالسعر بين الخطط المحلية وWhop</CardDescription>
+                  <CardTitle className="text-base">{t("tabs.plans")}</CardTitle>
+                  <CardDescription>{t("mapping.notLinked")}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {plansData?.suggestions.map((s) => {
@@ -597,7 +604,7 @@ export function AdminWhopContent() {
                         className="flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm"
                       >
                         <span>
-                          {local?.name} ← {whop?.title} ({s.billingCycle === 'monthly' ? 'شهري' : 'سنوي'})
+                          {local?.name} ← {whop?.title} ({s.billingCycle === 'monthly' ? tSubs('cycle.monthly') : tSubs('cycle.yearly')})
                         </span>
                         <Button
                           size="sm"
@@ -614,7 +621,7 @@ export function AdminWhopContent() {
                           }
                         >
                           <LinkIcon data-icon="inline-start" />
-                          تطبيق
+                          {t('actions.save')}
                         </Button>
                       </div>
                     );
@@ -626,10 +633,10 @@ export function AdminWhopContent() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between gap-4">
                 <div>
-                  <CardTitle className="text-base">ربط الخطط المحلية</CardTitle>
+                  <CardTitle className="text-base">{t("tabs.plans")}</CardTitle>
                   <CardDescription>
                     {(plansData?.localPlans ?? []).filter((p) => p.isFullyMapped).length} /{' '}
-                    {plansData?.localPlans.length ?? 0} مربوطة — يتم إنشاء Product/Plans على Whop تلقائياً
+                    {plansData?.localPlans.length ?? 0}
                   </CardDescription>
                 </div>
                 <Button
@@ -639,12 +646,12 @@ export function AdminWhopContent() {
                   onClick={() => syncAllMutation.mutate()}
                 >
                   <RotateCcwIcon data-icon="inline-start" />
-                  مزامنة الكل
+                  {t('actions.syncWhop')}
                 </Button>
               </CardHeader>
               <CardContent className="space-y-3">
                 {plansQuery.isLoading ? (
-                  <p className="text-sm text-muted-foreground">جاري التحميل...</p>
+                  <p className="text-sm text-muted-foreground">{tCommon('loading')}</p>
                 ) : (
                   (plansData?.localPlans ?? []).map((plan) => (
                     <PlanMappingRow key={plan.id} plan={plan} whopPlanOptions={whopPlanOptions} />
@@ -656,17 +663,17 @@ export function AdminWhopContent() {
             {(plansData?.whopPlans ?? []).length > 0 ? (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">خطط Whop ({plansData?.whopPlans.length})</CardTitle>
+                  <CardTitle className="text-base">{t("tabs.plans")} ({plansData?.whopPlans.length})</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b text-muted-foreground">
-                          <th className="py-2 text-start">الاسم</th>
-                          <th className="py-2 text-start">السعر</th>
-                          <th className="py-2 text-start">الدورة</th>
-                          <th className="py-2 text-start">المعرف</th>
+                          <th className="py-2 text-start">{tPlansCol('name')}</th>
+                          <th className="py-2 text-start">{tPlansCol('monthly')}</th>
+                          <th className="py-2 text-start">{tSubs('columns.cycle')}</th>
+                          <th className="py-2 text-start">{t('payments.columns.id')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -676,7 +683,7 @@ export function AdminWhopContent() {
                             <td className="py-2 tabular-nums">
                               {formatCurrency(String(p.renewalPrice), p.currency)}
                             </td>
-                            <td className="py-2">{p.billingPeriod ?? '—'} يوم</td>
+                            <td className="py-2">{p.billingPeriod ?? tCommon("notAvailable")}</td>
                             <td className="py-2 font-mono text-xs" dir="ltr">
                               {p.id}
                             </td>
@@ -693,7 +700,7 @@ export function AdminWhopContent() {
           <TabsContent value="transactions" className="mt-4 space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">آخر المدفوعات</CardTitle>
+                <CardTitle className="text-base">{t('tabs.transactions')}</CardTitle>
                 {paymentsQuery.data?.error ? (
                   <CardDescription className="text-destructive">{paymentsQuery.data.error}</CardDescription>
                 ) : null}
@@ -710,14 +717,14 @@ export function AdminWhopContent() {
                   pagination={{ page: 1, limit: 20 }}
                   onPageChange={() => {}}
                   getRowId={(row) => row.id}
-                  emptyTitle="لا توجد مدفوعات"
+                  emptyTitle={t('payments.empty')}
                 />
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">آخر العضويات</CardTitle>
+                <CardTitle className="text-base">{t('memberships.columns.member')}</CardTitle>
                 {membershipsQuery.data?.error ? (
                   <CardDescription className="text-destructive">
                     {membershipsQuery.data.error}
@@ -736,15 +743,14 @@ export function AdminWhopContent() {
                   pagination={{ page: 1, limit: 20 }}
                   onPageChange={() => {}}
                   getRowId={(row) => row.id}
-                  emptyTitle="لا توجد عضويات"
+                  emptyTitle={t('memberships.empty')}
                 />
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">أحداث Webhook المعالجة</CardTitle>
-                <CardDescription>آخر الأحداث المسجلة محلياً من Whop</CardDescription>
+                <CardTitle className="text-base">{t('events.columns.type')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <DataTable
@@ -758,7 +764,7 @@ export function AdminWhopContent() {
                   pagination={{ page: 1, limit: 20 }}
                   onPageChange={() => {}}
                   getRowId={(row) => row.id}
-                  emptyTitle="لا توجد أحداث"
+                  emptyTitle={t('events.empty')}
                 />
               </CardContent>
             </Card>
@@ -767,11 +773,11 @@ export function AdminWhopContent() {
           <TabsContent value="promo" className="mt-4 space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">إنشاء كود خصم</CardTitle>
+                <CardTitle className="text-base">{t('promo.create')}</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="promo-code">الكود</Label>
+                  <Label htmlFor="promo-code">{t("promo.create")}</Label>
                   <Input
                     id="promo-code"
                     dir="ltr"
@@ -781,7 +787,7 @@ export function AdminWhopContent() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="promo-amount">قيمة الخصم</Label>
+                  <Label htmlFor="promo-amount">{t('promo.fixedAmount')}</Label>
                   <Input
                     id="promo-amount"
                     type="number"
@@ -790,19 +796,19 @@ export function AdminWhopContent() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>نوع الخصم</Label>
+                  <Label>{t('promo.percentage')}</Label>
                   <Select value={promoType} onValueChange={(v) => v && setPromoType(v as typeof promoType)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="percentage">نسبة مئوية</SelectItem>
-                      <SelectItem value="flat_amount">مبلغ ثابت</SelectItem>
+                      <SelectItem value="percentage">{t("promo.percentage")}</SelectItem>
+                      <SelectItem value="flat_amount">{t("promo.fixedAmount")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="promo-duration">مدة الخصم (أشهر)</Label>
+                  <Label htmlFor="promo-duration">{t('promo.create')}</Label>
                   <Input
                     id="promo-duration"
                     type="number"
@@ -813,7 +819,7 @@ export function AdminWhopContent() {
                 </div>
                 <div className="flex items-center gap-2 md:col-span-2">
                   <Switch checked={promoNewUsersOnly} onCheckedChange={setPromoNewUsersOnly} />
-                  <Label>مستخدمون جدد فقط</Label>
+                  <Label>{t("promo.newUsersOnly")}</Label>
                 </div>
                 <Button
                   className="md:col-span-2 md:w-fit"
@@ -828,20 +834,20 @@ export function AdminWhopContent() {
                     })
                   }
                 >
-                  إنشاء
+                  {t("promo.create")}
                 </Button>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">أكواد الخصم النشطة</CardTitle>
+                <CardTitle className="text-base">{t('tabs.promoCodes')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {promoQuery.isLoading ? (
-                  <p className="text-sm text-muted-foreground">جاري التحميل...</p>
+                  <p className="text-sm text-muted-foreground">{tCommon('loading')}</p>
                 ) : (promoQuery.data?.items.length ?? 0) === 0 ? (
-                  <p className="text-sm text-muted-foreground">لا توجد أكواد</p>
+                  <p className="text-sm text-muted-foreground">{t("promo.empty")}</p>
                 ) : (
                   promoQuery.data?.items.map((promo) => (
                     <div
@@ -867,7 +873,7 @@ export function AdminWhopContent() {
                         disabled={deletePromoMutation.isPending}
                         onClick={() => deletePromoMutation.mutate(promo.id)}
                       >
-                        أرشفة
+                        {t("promo.archive")}
                       </Button>
                     </div>
                   ))

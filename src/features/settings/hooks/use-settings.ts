@@ -1,7 +1,8 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toastApiError, toastSuccess } from '@/components/global/toast-helpers';
+import { useTranslations } from 'next-intl';
+import { useToastI18n } from '@/hooks/use-toast-i18n';
 import { queryKeys } from '@/config/query-keys';
 import { settingsApi } from '@/features/settings/api/settings.api';
 import { useOrganizationStore } from '@/store/organization.store';
@@ -21,6 +22,8 @@ export function useOrganizationSettings() {
 export function useUpdateOrganizationSettings() {
   const queryClient = useQueryClient();
   const setCurrentOrganization = useOrganizationStore((state) => state.setCurrentOrganization);
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('settings.toast');
 
   return useMutation({
     mutationFn: (payload: UpdateOrganizationSettingsPayload) =>
@@ -28,7 +31,7 @@ export function useUpdateOrganizationSettings() {
     onSuccess: (organization) => {
       queryClient.setQueryData(queryKeys.organizations.current, organization);
       setCurrentOrganization(organization);
-      toastSuccess('تم حفظ إعدادات المنظمة');
+      toastSuccess(t('organizationSaved'));
     },
     onError: toastApiError,
   });
@@ -43,12 +46,14 @@ export function useTeamMembers() {
 
 export function useAddTeamMember() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('settings.toast');
 
   return useMutation({
     mutationFn: (payload: AddOrganizationMemberPayload) => settingsApi.addMember(payload),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.members.list });
-      toastSuccess('تمت إضافة العضو');
+      toastSuccess(t('memberAdded'));
     },
     onError: toastApiError,
   });
@@ -56,13 +61,15 @@ export function useAddTeamMember() {
 
 export function useUpdateTeamMember() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('settings.toast');
 
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateOrganizationMemberPayload }) =>
       settingsApi.updateMember(id, payload),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.members.list });
-      toastSuccess('تم تحديث دور العضو');
+      toastSuccess(t('memberUpdated'));
     },
     onError: toastApiError,
   });
@@ -70,12 +77,14 @@ export function useUpdateTeamMember() {
 
 export function useRemoveTeamMember() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('settings.toast');
 
   return useMutation({
     mutationFn: (id: string) => settingsApi.removeMember(id),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.members.list });
-      toastSuccess('تمت إزالة العضو');
+      toastSuccess(t('memberRemoved'));
     },
     onError: toastApiError,
   });

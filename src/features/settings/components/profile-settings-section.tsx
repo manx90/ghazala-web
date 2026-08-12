@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Loader2Icon, MailCheckIcon } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,8 @@ import { SkeletonLoader } from '@/components/global/skeleton-loader';
 import { formatDateTime } from '@/utils/date';
 
 export function ProfileSettingsSection() {
+  const t = useTranslations('settings.profile');
+  const tCommon = useTranslations('common');
   const { user, isSessionLoading } = useSession();
   const resendVerification = useResendVerification();
 
@@ -38,10 +41,8 @@ export function ProfileSettingsSection() {
               <MailCheckIcon className="size-5" />
             </span>
             <div className="flex-1">
-              <CardTitle className="text-base">تأكيد البريد الإلكتروني</CardTitle>
-              <CardDescription>
-                حسابك بانتظار التحقق. أكّد بريدك لتفعيل الحساب بالكامل.
-              </CardDescription>
+              <CardTitle className="text-base">{t('verifyEmail.title')}</CardTitle>
+              <CardDescription>{t('verifyEmail.description')}</CardDescription>
             </div>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
@@ -53,7 +54,7 @@ export function ProfileSettingsSection() {
                 />
               }
             >
-              إدخال رمز التحقق
+              {t('verifyEmail.enterCode')}
             </Button>
             <Button
               type="button"
@@ -64,7 +65,7 @@ export function ProfileSettingsSection() {
               {resendVerification.isPending ? (
                 <Loader2Icon className="animate-spin" />
               ) : (
-                'إعادة إرسال الرمز'
+                t('verifyEmail.resendCode')
               )}
             </Button>
           </CardContent>
@@ -88,35 +89,35 @@ export function ProfileSettingsSection() {
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">الاسم الأول</p>
+            <p className="text-sm text-muted-foreground">{t('fields.firstName')}</p>
             <p className="font-medium">{user.firstName}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">اسم العائلة</p>
+            <p className="text-sm text-muted-foreground">{t('fields.lastName')}</p>
             <p className="font-medium">{user.lastName}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">البريد الإلكتروني</p>
+            <p className="text-sm text-muted-foreground">{t('fields.email')}</p>
             <p dir="ltr">{user.email}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">الحالة</p>
+            <p className="text-sm text-muted-foreground">{t('fields.status')}</p>
             <StatusBadge status={user.status} />
           </div>
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">البريد موثّق</p>
-            <p>{user.emailVerified ? 'نعم' : 'لا'}</p>
+            <p className="text-sm text-muted-foreground">{t('fields.emailVerified')}</p>
+            <p>{user.emailVerified ? tCommon('yes') : tCommon('no')}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">آخر تسجيل دخول</p>
+            <p className="text-sm text-muted-foreground">{t('fields.lastLogin')}</p>
             <p>{formatDateTime(user.lastLoginAt)}</p>
           </div>
         </CardContent>
       </Card>
 
       <UnavailableFeatureAlert
-        title="تحديث الملف الشخصي غير متاح"
-        description="لا يمكن تعديل بيانات الملف الشخصي حالياً لعدم توفر واجهة API."
+        title={t('unavailable.title')}
+        description={t('unavailable.description')}
         requiredEndpoints={['PATCH /auth/me']}
       />
     </div>

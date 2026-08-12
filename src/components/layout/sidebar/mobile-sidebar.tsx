@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { memo } from 'react';
 import { SidebarNav } from '@/components/layout/sidebar/sidebar-nav';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -24,9 +25,10 @@ interface MobileSidebarProps {
 function MobileSidebarComponent({ variant, navigation }: MobileSidebarProps) {
   const isOpen = useUiStore((state) => state.isMobileSidebarOpen);
   const setOpen = useUiStore((state) => state.setMobileSidebarOpen);
+  const t = useTranslations('nav');
 
   const homeHref = variant === 'admin' ? ROUTES.admin.dashboard : ROUTES.app.root;
-  const portalLabel = variant === 'admin' ? 'لوحة الإدارة' : 'بوابة العملاء';
+  const portalLabel = variant === 'admin' ? t('sidebar.adminPortal') : t('sidebar.clientPortal');
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
@@ -56,7 +58,7 @@ function MobileSidebarComponent({ variant, navigation }: MobileSidebarProps) {
               className="text-sm font-medium text-primary hover:underline"
               onClick={() => setOpen(false)}
             >
-              العودة لبوابة العملاء
+              {t('sidebar.backToClientPortal')}
             </Link>
           </div>
         )}

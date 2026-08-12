@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { Loader2Icon, MessageCircleIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PageContainer } from '@/components/global/page-container';
@@ -24,13 +25,8 @@ import {
 } from '@/features/onboarding/hooks/use-meta-onboarding';
 import { ROUTES } from '@/config/routes';
 
-const CONNECTION_STEPS = [
-  'اضغط Connect with WhatsApp للانتقال إلى Meta',
-  'سجّل الدخول واختر أو أنشئ حساب WhatsApp Business',
-  'بعد الموافقة، سيتم ربط حسابك تلقائياً دون إدخال أي رموز',
-];
-
 export function ConnectWhatsappForm() {
+  const t = useTranslations('onboarding.connectWhatsapp');
   const metaStatus = useMetaStatus();
   const connectMeta = useConnectMeta();
   const syncMeta = useSyncMeta();
@@ -42,11 +38,17 @@ export function ConnectWhatsappForm() {
 
   const integration = metaStatus.data?.integration;
   const embeddedSession = metaStatus.data?.embeddedSignupSession;
-  const primaryWaba = businessAccounts.data?.items[0] ?? null;
-  const primaryPhone = phoneNumbers.data?.items[0] ?? null;
+  const isEmbeddedConfigured = Boolean(
+    embeddedSession?.appId && embeddedSession?.embeddedSignupConfigId,
+  );
+  const primaryWaba = businessAccounts.data?.items?.[0] ?? null;
+  const primaryPhone = phoneNumbers.data?.items?.[0] ?? null;
 
   const isDetailsLoading =
     isConnected && (businessAccounts.isLoading || phoneNumbers.isLoading);
+  const detailsLoadFailed = isConnected && (businessAccounts.isError || phoneNumbers.isError);
+
+  const connectionSteps = t.raw('steps') as string[];
 
   const handleConnect = async (payload: {
     authorizationCode: string;
@@ -67,10 +69,8 @@ export function ConnectWhatsappForm() {
           <span className="bg-gradient-brand glow-brand flex size-14 items-center justify-center rounded-2xl text-primary-foreground shadow-lg">
             <MessageCircleIcon className="size-7" aria-hidden="true" />
           </span>
-          <CardTitle className="text-xl">ربط WhatsApp Business</CardTitle>
-          <CardDescription>
-            اربط حساب WhatsApp Business عبر Meta Embedded Signup للبدء في إرسال الرسائل
-          </CardDescription>
+          <CardTitle className="text-xl">{t('title')}</CardTitle>
+          <CardDescription>{t('description')}</CardDescription>
         </CardHeader>
         <CardContent className="pb-8">
           <QueryState
@@ -84,30 +84,29 @@ export function ConnectWhatsappForm() {
           >
             {isConnected && integration ? (
               <>
-                <QueryState
-                  isLoading={isDetailsLoading}
-                  isError={businessAccounts.isError || phoneNumbers.isError}
-                  error={businessAccounts.error ?? phoneNumbers.error}
-                  isEmpty={false}
-                  emptyTitle=""
-                  onRetry={() => {
-                    void businessAccounts.refetch();
-                    void phoneNumbers.refetch();
-                  }}
-                  skeletonRows={6}
-                >
-                  <MetaConnectionSummary
-                    integration={integration}
-                    businessAccount={primaryWaba}
-                    phoneNumber={primaryPhone}
-                    onSync={() => syncMeta.mutate()}
-                    onDisconnect={async () => {
-                      await disconnectMeta.mutateAsync();
-                    }}
-                    isSyncing={syncMeta.isPending}
-                    isDisconnecting={disconnectMeta.isPending}
-                  />
-                </QueryState>
+                {isDetailsLoading ? (
+                  <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
+                    <Loader2Icon className="size-4 animate-spin" />
+                    {t('loadingDetails')}
+                  </div>
+                ) : (
+                  <>
+                    {detailsLoadFailed ? (
+                      <p className="mb-4 text-sm text-muted-foreground">{t('detailsLoadFailed')}</p>
+                    ) : null}
+                    <MetaConnectionSummary
+                      integration={integration}
+                      businessAccount={primaryWaba}
+                      phoneNumber={primaryPhone}
+                      onSync={() => syncMeta.mutate()}
+                      onDisconnect={async () => {
+                        await disconnectMeta.mutateAsync();
+                      }}
+                      isSyncing={syncMeta.isPending}
+                      isDisconnecting={disconnectMeta.isPending}
+                    />
+                  </>
+                )}
 
                 <Button
                   variant="gradient"
@@ -115,15 +114,15 @@ export function ConnectWhatsappForm() {
                   className="mt-6 w-full"
                   render={<Link href={ROUTES.onboarding.selectPlan} />}
                 >
-                  المتابعة لاختيار الخطة
+                  {t('continueToPlan')}
                 </Button>
               </>
             ) : (
               <div className="flex flex-col gap-6">
                 <div className="bg-gradient-brand-soft rounded-xl p-4 ring-1 ring-primary/10">
-                  <p className="text-sm font-medium">كيف يعمل الربط؟</p>
+                  <p className="text-sm font-medium">{t('howItWorks')}</p>
                   <ol className="mt-3 flex flex-col gap-2.5">
-                    {CONNECTION_STEPS.map((step, index) => (
+                    {connectionSteps.map((step, index) => (
                       <li key={step} className="flex items-start gap-2.5 text-sm text-muted-foreground">
                         <span className="bg-gradient-brand mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-[0.65rem] font-semibold text-primary-foreground">
                           {index + 1}
@@ -134,22 +133,20 @@ export function ConnectWhatsappForm() {
                   </ol>
                 </div>
 
-                {embeddedSession ? (
+                {isEmbeddedConfigured ? (
                   <MetaEmbeddedSignupButton
-                    session={embeddedSession}
+                    session={embeddedSession!}
                     disabled={connectMeta.isPending}
                     onConnect={handleConnect}
                   />
                 ) : (
-                  <p className="text-sm text-destructive">
-                    Meta Embedded Signup غير مهيأ. تأكد من إعداد التطبيق في Meta Developer Console.
-                  </p>
+                  <p className="text-sm text-destructive">{t('embeddedNotConfigured')}</p>
                 )}
 
                 {connectMeta.isPending ? (
                   <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                     <Loader2Icon className="size-4 animate-spin" />
-                    جاري إكمال الربط...
+                    {t('connecting')}
                   </div>
                 ) : null}
               </div>

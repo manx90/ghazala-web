@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { FileTextIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { QueryState } from '@/components/shared/query-state';
 import { StatusBadge } from '@/components/shared/status-badge';
@@ -23,6 +24,7 @@ interface TemplateSummaryCardProps {
 }
 
 export function TemplateSummaryCard({ templates }: TemplateSummaryCardProps) {
+  const t = useTranslations('dashboard.templateSummary');
   const items = useMemo(() => templates.data?.items ?? [], [templates.data?.items]);
 
   const statusCounts = useMemo(() => {
@@ -51,9 +53,9 @@ export function TemplateSummaryCard({ templates }: TemplateSummaryCardProps) {
           <span className="flex size-8 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
             <FileTextIcon className="size-4" aria-hidden="true" />
           </span>
-          ملخص القوالب
+          {t('title')}
         </CardTitle>
-        <CardDescription>توزيع القوالب حسب الحالة</CardDescription>
+        <CardDescription>{t('description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <QueryState
@@ -61,8 +63,8 @@ export function TemplateSummaryCard({ templates }: TemplateSummaryCardProps) {
           isError={templates.isError}
           error={templates.error}
           isEmpty={items.length === 0}
-          emptyTitle="لا توجد قوالب"
-          emptyDescription="أنشئ أو زامن قوالب واتساب من صفحة القوالب."
+          emptyTitle={t('emptyTitle')}
+          emptyDescription={t('emptyDescription')}
           onRetry={() => void templates.refetch()}
         >
           <div className="flex flex-col gap-3">
@@ -78,11 +80,7 @@ export function TemplateSummaryCard({ templates }: TemplateSummaryCardProps) {
               </div>
             ))}
             <p className="border-t border-border/60 pt-3 text-xs text-muted-foreground">
-              الإجمالي:{' '}
-              <span className="font-semibold text-foreground tabular-nums">
-                {templates.data?.total ?? 0}
-              </span>{' '}
-              قالب
+              {t('total', { count: templates.data?.total ?? 0 })}
             </p>
           </div>
         </QueryState>

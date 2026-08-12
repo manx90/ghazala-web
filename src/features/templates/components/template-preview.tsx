@@ -9,26 +9,27 @@ import {
   StarIcon,
   TagIcon,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { TemplateCategory, TemplateComponentType } from '@/types/template.types';
 import type { Template } from '@/types/template.types';
-
-const CATEGORY_LABELS: Record<TemplateCategory, string> = {
-  [TemplateCategory.MARKETING]: 'تسويق',
-  [TemplateCategory.UTILITY]: 'خدمي',
-  [TemplateCategory.AUTHENTICATION]: 'مصادقة',
-};
 
 interface TemplatePreviewProps {
   template: Template;
 }
 
 export function TemplatePreview({ template }: TemplatePreviewProps) {
+  const t = useTranslations('templates.preview');
+  const tCategories = useTranslations('templates.categories');
+
   const header = template.components.find((c) => c.type === TemplateComponentType.HEADER);
   const body = template.components.find((c) => c.type === TemplateComponentType.BODY);
   const footer = template.components.find((c) => c.type === TemplateComponentType.FOOTER);
   const buttons = template.components.find((c) => c.type === TemplateComponentType.BUTTONS);
+
+  const getCategoryLabel = (category: TemplateCategory) =>
+    tCategories(category as 'MARKETING' | 'UTILITY' | 'AUTHENTICATION');
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
@@ -38,7 +39,7 @@ export function TemplatePreview({ template }: TemplatePreviewProps) {
             <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
               <MessageSquareIcon className="size-4" aria-hidden="true" />
             </span>
-            معاينة WhatsApp
+            {t('whatsappPreview')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -80,14 +81,14 @@ export function TemplatePreview({ template }: TemplatePreviewProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>تفاصيل القالب</CardTitle>
+          <CardTitle>{t('details')}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 text-sm">
           <div className="flex items-center gap-3">
             <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
               <FileTextIcon className="size-4" aria-hidden="true" />
             </span>
-            <span className="flex-1 text-muted-foreground">الاسم</span>
+            <span className="flex-1 text-muted-foreground">{t('name')}</span>
             <span dir="ltr" className="font-mono text-xs font-medium">
               {template.name}
             </span>
@@ -96,14 +97,14 @@ export function TemplatePreview({ template }: TemplatePreviewProps) {
             <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
               <TagIcon className="size-4" aria-hidden="true" />
             </span>
-            <span className="flex-1 text-muted-foreground">التصنيف</span>
-            <span>{CATEGORY_LABELS[template.category] ?? template.category}</span>
+            <span className="flex-1 text-muted-foreground">{t('category')}</span>
+            <span>{getCategoryLabel(template.category)}</span>
           </div>
           <div className="flex items-center gap-3">
             <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
               <LanguagesIcon className="size-4" aria-hidden="true" />
             </span>
-            <span className="flex-1 text-muted-foreground">اللغة</span>
+            <span className="flex-1 text-muted-foreground">{t('language')}</span>
             <span dir="ltr" className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs">
               {template.language}
             </span>
@@ -112,19 +113,19 @@ export function TemplatePreview({ template }: TemplatePreviewProps) {
             <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
               <ActivityIcon className="size-4" aria-hidden="true" />
             </span>
-            <span className="flex-1 text-muted-foreground">الحالة</span>
+            <span className="flex-1 text-muted-foreground">{t('status')}</span>
             <StatusBadge status={template.status} />
           </div>
           <div className="flex items-center gap-3">
             <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
               <StarIcon className="size-4" aria-hidden="true" />
             </span>
-            <span className="flex-1 text-muted-foreground">جودة القالب</span>
+            <span className="flex-1 text-muted-foreground">{t('quality')}</span>
             <StatusBadge status={template.qualityScore} />
           </div>
           {template.rejectionReason && (
             <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3.5">
-              <p className="text-xs font-medium text-destructive">سبب الرفض</p>
+              <p className="text-xs font-medium text-destructive">{t('rejectionReason')}</p>
               <p className="mt-1 text-sm">{template.rejectionReason}</p>
             </div>
           )}

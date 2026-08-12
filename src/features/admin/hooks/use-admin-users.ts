@@ -1,7 +1,8 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toastSuccess, toastApiError } from '@/components/global/toast-helpers';
+import { useTranslations } from 'next-intl';
+import { useToastI18n } from '@/hooks/use-toast-i18n';
 import { queryConfig } from '@/config/query';
 import { queryKeys } from '@/config/query-keys';
 import { adminApi } from '@/features/admin/api/admin.api';
@@ -27,6 +28,8 @@ export function useAdminUser(id: string, enabled = true) {
 
 export function useEnableUser() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.toast');
 
   return useMutation({
     mutationFn: (id: string) => adminApi.enableUser(id),
@@ -40,7 +43,7 @@ export function useEnableUser() {
       queryClient.setQueryData(queryKeys.admin.users.detail(user.id), user);
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.users.all });
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.dashboard });
-      toastSuccess('تم تفعيل المستخدم بنجاح');
+      toastSuccess(t('userEnabled'));
     },
     onError: (error, id) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.users.detail(id) });
@@ -51,6 +54,8 @@ export function useEnableUser() {
 
 export function useDisableUser() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.toast');
 
   return useMutation({
     mutationFn: (id: string) => adminApi.disableUser(id),
@@ -64,7 +69,7 @@ export function useDisableUser() {
       queryClient.setQueryData(queryKeys.admin.users.detail(user.id), user);
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.users.all });
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.dashboard });
-      toastSuccess('تم تعطيل المستخدم بنجاح');
+      toastSuccess(t('userDisabled'));
     },
     onError: (error, id) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.users.detail(id) });
@@ -75,13 +80,15 @@ export function useDisableUser() {
 
 export function useDeleteUser() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.toast');
 
   return useMutation({
     mutationFn: (id: string) => adminApi.deleteUser(id),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.users.all });
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.dashboard });
-      toastSuccess('تم حذف المستخدم بنجاح');
+      toastSuccess(t('userDeleted'));
     },
     onError: toastApiError,
   });
@@ -98,13 +105,15 @@ export function useAdminUserOrganizations(id: string, enabled = true) {
 
 export function useSendUserVerification() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.toast');
 
   return useMutation({
     mutationFn: (id: string) => adminApi.sendUserVerification(id),
     onSuccess: (_, id) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.users.detail(id) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.users.all });
-      toastSuccess('تم إرسال بريد التحقق');
+      toastSuccess(t('verificationSent'));
     },
     onError: toastApiError,
   });

@@ -1,6 +1,7 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { toastApiError, toastSuccess } from '@/components/global/toast-helpers';
 import { queryKeys } from '@/config/query-keys';
 import { useNetworkAware } from '@/hooks/use-network-aware';
@@ -113,13 +114,14 @@ function revertOptimisticMessage(queryClient: ReturnType<typeof useQueryClient>,
 function useSendMessageMutation<T extends SendTextMessagePayload | SendTemplateMessagePayload | SendMediaMessagePayload>(
   sendFn: (payload: T) => Promise<Message>,
   successMessage: string,
+  offlineMessage: string,
 ) {
   const queryClient = useQueryClient();
   const { isOnline } = useNetworkAware();
 
   return useMutation({
     mutationFn: (payload: T) => {
-      if (!isOnline) throw new Error('لا يوجد اتصال بالإنترنت');
+      if (!isOnline) throw new Error(offlineMessage);
       return sendFn(payload);
     },
     onMutate: async (payload) => {
@@ -149,21 +151,27 @@ function useSendMessageMutation<T extends SendTextMessagePayload | SendTemplateM
 }
 
 export function useSendMessage() {
+  const t = useTranslations('inbox');
+
   const sendTextMutation = useSendMessageMutation(
     (payload: SendTextMessagePayload) => messagesApi.sendText(payload),
-    'تم إرسال الرسالة',
+    t('toast.textSent'),
+    t('errors.noInternet'),
   );
   const sendTemplateMutation = useSendMessageMutation(
     (payload: SendTemplateMessagePayload) => messagesApi.sendTemplate(payload),
-    'تم إرسال القالب',
+    t('toast.templateSent'),
+    t('errors.noInternet'),
   );
   const sendImageMutation = useSendMessageMutation(
     (payload: SendMediaMessagePayload) => messagesApi.sendImage(payload),
-    'تم إرسال الصورة',
+    t('toast.imageSent'),
+    t('errors.noInternet'),
   );
   const sendDocumentMutation = useSendMessageMutation(
     (payload: SendMediaMessagePayload) => messagesApi.sendDocument(payload),
-    'تم إرسال الملف',
+    t('toast.documentSent'),
+    t('errors.noInternet'),
   );
 
   return {

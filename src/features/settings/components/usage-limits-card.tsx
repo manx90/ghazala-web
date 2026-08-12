@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { QueryState } from '@/components/shared/query-state';
 import { useUsage } from '@/features/settings/hooks/use-billing-settings';
@@ -36,16 +37,17 @@ function UsageBar({ label, metric }: { label: string; metric: UsageMetric }) {
 }
 
 export function UsageLimitsCard() {
+  const t = useTranslations('settings.billing.usage');
   const usageQuery = useUsage();
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">استخدام الخطة</CardTitle>
+        <CardTitle className="text-base">{t('title')}</CardTitle>
         <CardDescription>
           {usageQuery.data
             ? `${usageQuery.data.planName} — ${usageQuery.data.period}`
-            : 'مقارنة استخدامك بحدود خطتك الحالية'}
+            : t('description')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -60,10 +62,10 @@ export function UsageLimitsCard() {
         >
           {usageQuery.data ? (
             <div className="flex flex-col gap-5">
-              <UsageBar label="الرسائل الشهرية" metric={usageQuery.data.messages} />
-              <UsageBar label="جهات الاتصال" metric={usageQuery.data.contacts} />
-              <UsageBar label="أعضاء الفريق" metric={usageQuery.data.teamMembers} />
-              <UsageBar label="أرقام الهاتف" metric={usageQuery.data.phoneNumbers} />
+              <UsageBar label={t('messages')} metric={usageQuery.data.messages} />
+              <UsageBar label={t('contacts')} metric={usageQuery.data.contacts} />
+              <UsageBar label={t('teamMembers')} metric={usageQuery.data.teamMembers} />
+              <UsageBar label={t('phoneNumbers')} metric={usageQuery.data.phoneNumbers} />
             </div>
           ) : null}
         </QueryState>

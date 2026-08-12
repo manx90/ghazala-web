@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   AlertTriangleIcon,
   RefreshCwIcon,
@@ -13,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
-import { sanitizeErrorForDisplay } from '@/utils/sanitize-error';
+import { useErrorLabels, useSanitizeError } from '@/hooks/use-error-labels';
 
 interface ErrorStateProps {
   title?: string;
@@ -33,6 +34,8 @@ function ErrorLayout({
   className,
   variant = 'destructive',
 }: ErrorStateProps & { icon: ReactNode; variant?: 'default' | 'destructive' }) {
+  const tCommon = useTranslations('common');
+
   return (
     <div
       className={cn('animate-fade-in-up flex flex-col items-center justify-center gap-5 py-12 text-center', className)}
@@ -50,7 +53,7 @@ function ErrorLayout({
         {onRetry && (
           <Button variant="outline" size="sm" onClick={onRetry}>
             <RefreshCwIcon data-icon="inline-start" />
-            إعادة المحاولة
+            {tCommon('retry')}
           </Button>
         )}
         {action}
@@ -60,11 +63,14 @@ function ErrorLayout({
 }
 
 export function ApiErrorState({ error, onRetry, ...rest }: ErrorStateProps) {
+  const t = useTranslations('errors.api');
+  const sanitize = useSanitizeError();
+
   return (
     <ErrorLayout
       icon={<AlertTriangleIcon className="size-10" />}
-      title="تعذر تحميل البيانات"
-      message={error ? sanitizeErrorForDisplay(error) : 'حدث خطأ في الاتصال بالخادم'}
+      title={rest.title ?? t('title')}
+      message={error ? sanitize(error) : t('fallbackMessage')}
       error={error}
       onRetry={onRetry}
       {...rest}
@@ -73,70 +79,82 @@ export function ApiErrorState({ error, onRetry, ...rest }: ErrorStateProps) {
 }
 
 export function NetworkErrorState({ onRetry, ...rest }: ErrorStateProps) {
+  const t = useTranslations('errors.network');
+
   return (
     <ErrorLayout
       icon={<WifiOffIcon className="size-10" />}
-      title="خطأ في الشبكة"
-      message="تعذر الاتصال بالخادم. تحقق من اتصالك بالإنترنت."
+      title={rest.title ?? t('title')}
+      message={rest.message ?? t('description')}
       onRetry={onRetry}
       {...rest}
     />
   );
 }
 
-export function ForbiddenState({ message = 'ليس لديك صلاحية للوصول إلى هذا المحتوى.', ...rest }: ErrorStateProps) {
+export function ForbiddenState(props: ErrorStateProps) {
+  const t = useTranslations('errors.forbidden');
+
   return (
     <ErrorLayout
       icon={<LockIcon className="size-10" />}
-      title="وصول مرفوض"
-      message={message}
-      {...rest}
+      title={props.title ?? t('inlineTitle')}
+      message={props.message ?? t('inlineDescription')}
+      {...props}
     />
   );
 }
 
-export function UnauthorizedState({ message = 'يجب تسجيل الدخول للوصول إلى هذا المحتوى.', ...rest }: ErrorStateProps) {
+export function UnauthorizedState(props: ErrorStateProps) {
+  const t = useTranslations('errors.unauthorized');
+
   return (
     <ErrorLayout
       icon={<ShieldAlertIcon className="size-10" />}
-      title="غير مصرّح"
-      message={message}
-      {...rest}
+      title={props.title ?? t('title')}
+      message={props.message ?? t('description')}
+      {...props}
     />
   );
 }
 
-export function ValidationErrorState({ message = 'يرجى مراجعة الحقول وإصلاح الأخطاء.', ...rest }: ErrorStateProps) {
+export function ValidationErrorState(props: ErrorStateProps) {
+  const t = useTranslations('errors.validation');
+
   return (
     <ErrorLayout
       icon={<AlertTriangleIcon className="size-10" />}
-      title="خطأ في التحقق"
-      message={message}
+      title={props.title ?? t('title')}
+      message={props.message ?? t('description')}
       variant="default"
-      {...rest}
+      {...props}
     />
   );
 }
 
-export function NotFoundState({ message = 'المورد المطلوب غير موجود.', ...rest }: ErrorStateProps) {
+export function NotFoundState(props: ErrorStateProps) {
+  const t = useTranslations('errors.notFound');
+
   return (
     <ErrorLayout
       icon={<FileQuestionIcon className="size-10" />}
-      title="غير موجود"
-      message={message}
-      {...rest}
+      title={props.title ?? t('title')}
+      message={props.message ?? t('description')}
+      {...props}
     />
   );
 }
 
-export function UnexpectedErrorState({ message = 'حدث خطأ غير متوقع. حاول مرة أخرى لاحقاً.', onRetry, ...rest }: ErrorStateProps) {
+export function UnexpectedErrorState(props: ErrorStateProps) {
+  const t = useTranslations('errors.unexpected');
+
   return (
     <ErrorLayout
       icon={<BugIcon className="size-10" />}
-      title="خطأ غير متوقع"
-      message={message}
-      onRetry={onRetry}
-      {...rest}
+      title={props.title ?? t('title')}
+      message={props.message ?? t('description')}
+      onRetry={props.onRetry}
+      {...props}
     />
   );
 }

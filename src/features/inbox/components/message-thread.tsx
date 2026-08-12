@@ -3,7 +3,8 @@
 import { Fragment, useCallback, useEffect, useRef } from 'react';
 import { Loader2Icon, MessageSquareTextIcon } from 'lucide-react';
 import { format, isSameDay, isToday, isYesterday, parseISO } from 'date-fns';
-import { arSA } from 'date-fns/locale';
+import { arSA, enUS } from 'date-fns/locale';
+import { useLocale, useTranslations } from 'next-intl';
 import { EmptyState } from '@/components/global/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MessageBubble } from '@/features/inbox/components/message-bubble';
@@ -19,13 +20,16 @@ const SKELETON_BUBBLES = [
   'h-12 w-3/5 self-start',
 ];
 
-// فاصل اليوم: يُعرض ككبسولة عند تغيّر تاريخ الرسائل
 function DayDivider({ date }: { date: Date }) {
+  const tCommon = useTranslations('common');
+  const locale = useLocale();
+  const dateLocale = locale === 'ar' ? arSA : enUS;
+
   const label = isToday(date)
-    ? 'اليوم'
+    ? tCommon('today')
     : isYesterday(date)
-      ? 'أمس'
-      : format(date, 'd MMMM yyyy', { locale: arSA });
+      ? tCommon('yesterday')
+      : format(date, 'd MMMM yyyy', { locale: dateLocale });
 
   return (
     <div className="flex justify-center py-1.5">
@@ -53,6 +57,7 @@ export function MessageThread({
   isLoadingOlder,
   onLoadOlder,
 }: MessageThreadProps) {
+  const t = useTranslations('inbox');
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const prevCountRef = useRef(0);
@@ -104,8 +109,8 @@ export function MessageThread({
       <div className="flex flex-1 items-center justify-center bg-muted/30 bg-grid-pattern p-6">
         <EmptyState
           icon={<MessageSquareTextIcon />}
-          title="لا توجد رسائل"
-          description="ابدأ المحادثة بإرسال رسالة للعميل"
+          title={t('noMessages')}
+          description={t('noMessagesDescription')}
         />
       </div>
     );
@@ -123,7 +128,7 @@ export function MessageThread({
             <Loader2Icon className="size-4 animate-spin text-primary" />
           ) : (
             <span className="rounded-full bg-muted px-3.5 py-1 text-[11px] text-muted-foreground shadow-2xs">
-              مرّر للأعلى لتحميل رسائل أقدم
+              {t('scrollForOlder')}
             </span>
           )}
         </div>

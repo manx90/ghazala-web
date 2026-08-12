@@ -1,26 +1,29 @@
 import { z } from 'zod';
 
-export const contactFormSchema = z.object({
-  phone: z.string().min(1, 'رقم الهاتف مطلوب'),
-  waId: z.string().optional(),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
-  profileName: z.string().optional(),
-  profilePhotoUrl: z.string().url('رابط الصورة غير صالح').optional().or(z.literal('')),
-  email: z.string().email('البريد الإلكتروني غير صالح').optional().or(z.literal('')),
-  notes: z.string().optional(),
-  isBlocked: z.boolean().optional(),
-});
+type Translate = (key: string) => string;
 
-export const createContactSchema = contactFormSchema;
-export const updateContactSchema = contactFormSchema.omit({ phone: true });
+export function createContactFormSchema(t: Translate) {
+  return z.object({
+    phone: z.string().min(1, t('validation.phoneRequired')),
+    waId: z.string().optional(),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    profileName: z.string().optional(),
+    profilePhotoUrl: z.string().url(t('validation.photoUrlInvalid')).optional().or(z.literal('')),
+    email: z.string().email(t('validation.emailInvalid')).optional().or(z.literal('')),
+    notes: z.string().optional(),
+    isBlocked: z.boolean().optional(),
+  });
+}
 
-export const mergeContactsSchema = z.object({
-  primaryContactId: z.string().min(1, 'جهة الاتصال الأساسية مطلوبة'),
-  duplicateContactId: z.string().min(1, 'جهة الاتصال المكررة مطلوبة'),
-});
+export function createMergeContactsSchema(t: Translate) {
+  return z.object({
+    primaryContactId: z.string().min(1, t('validation.primaryRequired')),
+    duplicateContactId: z.string().min(1, t('validation.duplicateRequired')),
+  });
+}
 
-export type ContactFormValues = z.infer<typeof contactFormSchema>;
-export type CreateContactFormValues = z.infer<typeof createContactSchema>;
-export type UpdateContactFormValues = z.infer<typeof updateContactSchema>;
-export type MergeContactsFormValues = z.infer<typeof mergeContactsSchema>;
+export type ContactFormValues = z.infer<ReturnType<typeof createContactFormSchema>>;
+export type CreateContactFormValues = ContactFormValues;
+export type UpdateContactFormValues = Omit<ContactFormValues, 'phone'>;
+export type MergeContactsFormValues = z.infer<ReturnType<typeof createMergeContactsSchema>>;

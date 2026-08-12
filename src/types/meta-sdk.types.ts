@@ -36,13 +36,24 @@ export type EmbeddedSignupEventType = 'WA_EMBEDDED_SIGNUP';
 export interface EmbeddedSignupFinishData {
   phone_number_id?: string;
   waba_id?: string;
+  waba_ids?: string[];
   business_id?: string;
+  code?: string;
   current_step?: string;
 }
 
+export type EmbeddedSignupEventName =
+  | 'FINISH'
+  | 'FINISH_ONLY_WABA'
+  | 'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING'
+  | 'FINISH_OBO_MIGRATION'
+  | 'FINISH_GRANT_ONLY_API_ACCESS'
+  | 'CANCEL'
+  | 'ERROR';
+
 export interface EmbeddedSignupMessage {
   type: EmbeddedSignupEventType;
-  event: 'FINISH' | 'CANCEL' | 'ERROR';
+  event: EmbeddedSignupEventName;
   data?: EmbeddedSignupFinishData;
 }
 

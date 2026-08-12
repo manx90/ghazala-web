@@ -1,7 +1,8 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from '@/i18n/navigation';
 import { useEffect, type ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import { ROUTES } from '@/config/routes';
 import { LoadingScreen } from '@/components/global/loading-screen';
 import { useSession } from '@/features/auth/hooks/use-session';
@@ -19,6 +20,7 @@ export function OrganizationGuard({
   orgSlug,
   fallbackPath = ROUTES.onboarding.createOrganization,
 }: OrganizationGuardProps) {
+  const t = useTranslations('common');
   const router = useRouter();
   const pathname = usePathname();
   const { isSessionLoading } = useSession();
@@ -42,7 +44,7 @@ export function OrganizationGuard({
   }, [hasOrganization, slugMatches, isSessionLoading, fallbackPath, router, currentOrganization]);
 
   if (isSessionLoading) {
-    return <LoadingScreen label="جاري تحميل المنظمة..." />;
+    return <LoadingScreen label={t('loading')} />;
   }
 
   if (!hasOrganization || !slugMatches) {

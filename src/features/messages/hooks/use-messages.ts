@@ -1,6 +1,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { queryConfig } from '@/config/query';
 import { queryKeys } from '@/config/query-keys';
 import { toastApiError, toastSuccess } from '@/components/global/toast-helpers';
@@ -51,16 +52,17 @@ export function useMessageStatus(messageId: string) {
 }
 
 export function useRetryMessage() {
+  const t = useTranslations('messages');
   const queryClient = useQueryClient();
   const { isOnline } = useNetworkAware();
 
   return useMutation({
     mutationFn: (messageId: string) => {
-      if (!isOnline) throw new Error('لا يوجد اتصال بالإنترنت');
+      if (!isOnline) throw new Error(t('errors.noInternet'));
       return messagesApi.retry(messageId);
     },
     onSuccess: (_data, messageId) => {
-      toastSuccess('تم إعادة إرسال الرسالة');
+      toastSuccess(t('toast.retried'));
       void queryClient.invalidateQueries({ queryKey: queryKeys.messages.list });
       void queryClient.invalidateQueries({ queryKey: queryKeys.messages.detail(messageId) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.messages.status(messageId) });

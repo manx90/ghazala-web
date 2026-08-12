@@ -1,6 +1,7 @@
 'use client';
 
 import { BellIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { memo } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,7 +17,11 @@ import { useNotifications } from '@/features/shell/hooks/use-notifications';
 import { cn } from '@/lib/utils';
 
 function NotificationButtonComponent() {
-  const { isAvailable, unreadCount, items, message, markAllAsRead } = useNotifications();
+  const { isAvailable, unreadCount, items, markAllAsRead } = useNotifications();
+  const t = useTranslations('nav.notifications');
+
+  const ariaLabel =
+    unreadCount > 0 ? t('ariaLabelUnread', { count: unreadCount }) : t('ariaLabel');
 
   return (
     <DropdownMenu>
@@ -25,7 +30,7 @@ function NotificationButtonComponent() {
           <Button
             variant="ghost"
             size="icon-sm"
-            aria-label={`الإشعارات${unreadCount > 0 ? `، ${unreadCount} غير مقروء` : ''}`}
+            aria-label={ariaLabel}
           />
         }
       >
@@ -47,25 +52,27 @@ function NotificationButtonComponent() {
       <DropdownMenuContent align="end" className="w-80">
         <DropdownMenuGroup>
           <DropdownMenuLabel className="flex items-center justify-between">
-            <span>الإشعارات</span>
+            <span>{t('title')}</span>
             {isAvailable && unreadCount > 0 && (
               <button
                 type="button"
                 className="text-xs font-normal text-primary hover:underline"
                 onClick={markAllAsRead}
               >
-                تحديد الكل كمقروء
+                {t('markAllRead')}
               </button>
             )}
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         {!isAvailable && (
-          <div className="px-3 py-6 text-center text-sm text-muted-foreground">{message}</div>
+          <div className="px-3 py-6 text-center text-sm text-muted-foreground">
+            {t('apiUnavailable')}
+          </div>
         )}
         {isAvailable && items.length === 0 && (
           <div className="px-3 py-6 text-center text-sm text-muted-foreground">
-            لا توجد إشعارات
+            {t('empty')}
           </div>
         )}
         {isAvailable &&

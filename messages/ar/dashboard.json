@@ -1,0 +1,72 @@
+{
+  "page": {
+    "title": "لوحة التحكم",
+    "description": "نظرة عامة على نشاط المحادثات والرسائل",
+    "refresh": "تحديث"
+  },
+  "kpis": {
+    "totalConversations": "إجمالي المحادثات",
+    "totalConversationsDesc": "{open} مفتوحة حالياً",
+    "openConversations": "محادثات مفتوحة",
+    "openConversationsDesc": "{closed} مغلقة",
+    "whatsappNumbers": "أرقام واتساب",
+    "whatsappNumbersDesc": "أرقام نشطة مرتبطة",
+    "templates": "القوالب",
+    "templatesDesc": "قوالب رسائل مسجّلة"
+  },
+  "quickActions": {
+    "title": "إجراءات سريعة",
+    "description": "انتقل مباشرة إلى الأقسام الرئيسية",
+    "inbox": "صندوق الوارد",
+    "contacts": "جهات الاتصال",
+    "templates": "القوالب",
+    "messages": "الرسائل",
+    "whatsappSettings": "إعدادات واتساب"
+  },
+  "metaConnection": {
+    "title": "اتصال Meta",
+    "description": "حالة ربط حساب Meta Business",
+    "emptyTitle": "لا توجد بيانات اتصال",
+    "emptyDescription": "تعذّر جلب حالة الاتصال.",
+    "status": "الحالة",
+    "wabaId": "WABA ID",
+    "connectedAt": "تاريخ الربط",
+    "lastSyncAt": "آخر مزامنة",
+    "manageConnection": "إدارة الاتصال"
+  },
+  "phoneHealth": {
+    "title": "صحة أرقام واتساب",
+    "description": "حالة الأرقام وجودة المراسلة",
+    "emptyTitle": "لا توجد أرقام",
+    "emptyDescription": "اربط رقم واتساب من الإعدادات."
+  },
+  "templateSummary": {
+    "title": "ملخص القوالب",
+    "description": "توزيع القوالب حسب الحالة",
+    "emptyTitle": "لا توجد قوالب",
+    "emptyDescription": "أنشئ أو زامن قوالب واتساب من صفحة القوالب.",
+    "total": "الإجمالي: {count} قالب"
+  },
+  "recentConversations": {
+    "title": "أحدث المحادثات",
+    "description": "آخر 5 محادثات نشطة",
+    "viewAll": "عرض الكل",
+    "emptyTitle": "لا توجد محادثات",
+    "emptyDescription": "ستظهر المحادثات هنا عند استقبال رسائل جديدة.",
+    "customerPhone": "رقم العميل",
+    "status": "الحالة",
+    "lastMessage": "آخر رسالة"
+  },
+  "charts": {
+    "emptyTitle": "لا توجد بيانات محادثات",
+    "emptyDescription": "ستظهر الإحصائيات عند بدء استقبال المحادثات.",
+    "distributionTitle": "توزيع المحادثات",
+    "distributionDescription": "نسبة المحادثات حسب الحالة",
+    "statsTitle": "إحصائيات المحادثات",
+    "statsDescription": "مقارنة حسب الحالة",
+    "open": "مفتوحة",
+    "closed": "مغلقة",
+    "expired": "منتهية",
+    "count": "عدد"
+  }
+}

@@ -1,7 +1,8 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toastApiError, toastSuccess } from '@/components/global/toast-helpers';
+import { useTranslations } from 'next-intl';
+import { useToastI18n } from '@/hooks/use-toast-i18n';
 import { queryConfig } from '@/config/query';
 import { queryKeys } from '@/config/query-keys';
 import { adminSubscriptionsApi } from '@/features/admin/api/subscriptions.api';
@@ -34,12 +35,14 @@ export function useAdminSubscriptionDetail(id: string, enabled = true) {
 
 export function useActivateAdminSubscription() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.toast');
 
   return useMutation({
     mutationFn: (id: string) => adminSubscriptionsApi.activate(id),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.subscriptions.all });
-      toastSuccess('تم تفعيل الاشتراك');
+      toastSuccess(t('subscriptionActivated'));
     },
     onError: toastApiError,
   });
@@ -47,13 +50,15 @@ export function useActivateAdminSubscription() {
 
 export function useExtendAdminSubscription() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.toast');
 
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: ExtendSubscriptionPayload }) =>
       adminSubscriptionsApi.extend(id, payload),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.subscriptions.all });
-      toastSuccess('تم تمديد الاشتراك');
+      toastSuccess(t('subscriptionExtended'));
     },
     onError: toastApiError,
   });

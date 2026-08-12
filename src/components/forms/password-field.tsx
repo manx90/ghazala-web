@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group';
 import type { InputHTMLAttributes } from 'react';
@@ -9,7 +10,9 @@ export const PasswordField = forwardRef<HTMLInputElement, InputHTMLAttributes<HT
   { className, ...props },
   ref,
 ) {
+  const t = useTranslations('common.forms');
   const [visible, setVisible] = useState(false);
+
   return (
     <InputGroup>
       <InputGroupInput
@@ -25,7 +28,7 @@ export const PasswordField = forwardRef<HTMLInputElement, InputHTMLAttributes<HT
           size="icon-xs"
           variant="ghost"
           onClick={() => setVisible((v) => !v)}
-          aria-label={visible ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+          aria-label={visible ? t('hidePassword') : t('showPassword')}
         >
           {visible ? <EyeOffIcon /> : <EyeIcon />}
         </InputGroupButton>

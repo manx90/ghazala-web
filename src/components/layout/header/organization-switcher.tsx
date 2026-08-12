@@ -1,6 +1,7 @@
 'use client';
 
 import { Building2Icon, CheckIcon, ChevronsUpDownIcon, PlusIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { memo } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,7 @@ import {
   useOrganizations,
   useSwitchOrganization,
 } from '@/features/shell/hooks/use-organizations';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 function getOrgInitials(name: string): string {
   return name
@@ -33,6 +34,7 @@ function getOrgInitials(name: string): string {
 function OrganizationSwitcherComponent() {
   const { organizations, currentOrganization, isLoading } = useOrganizations();
   const switchOrganization = useSwitchOrganization();
+  const t = useTranslations('nav.organizationSwitcher');
 
   if (isLoading && !currentOrganization) {
     return <Skeleton className="h-8 w-40" />;
@@ -42,7 +44,7 @@ function OrganizationSwitcherComponent() {
     return (
       <Button variant="outline" size="sm" render={<Link href={ROUTES.onboarding.createOrganization} />}>
         <PlusIcon data-icon="inline-start" />
-        إنشاء منظمة
+        {t('createOrg')}
       </Button>
     );
   }
@@ -55,7 +57,7 @@ function OrganizationSwitcherComponent() {
             variant="outline"
             size="sm"
             className="max-w-[220px] justify-between gap-2"
-            aria-label="تبديل المنظمة"
+            aria-label={t('switchOrg')}
           />
         }
       >
@@ -72,7 +74,7 @@ function OrganizationSwitcherComponent() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>المنظمات</DropdownMenuLabel>
+          <DropdownMenuLabel>{t('organizations')}</DropdownMenuLabel>
           {organizations.map((org) => (
             <DropdownMenuItem
               key={org.id}
@@ -92,7 +94,7 @@ function OrganizationSwitcherComponent() {
         <DropdownMenuSeparator />
         <DropdownMenuItem render={<Link href={ROUTES.onboarding.createOrganization} />}>
           <PlusIcon data-icon="inline-start" />
-          إنشاء منظمة
+          {t('createOrg')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

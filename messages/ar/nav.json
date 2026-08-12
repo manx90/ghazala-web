@@ -1,0 +1,139 @@
+{
+  "dashboard": "لوحة التحكم",
+  "inbox": "صندوق الوارد",
+  "contacts": "جهات الاتصال",
+  "templates": "القوالب",
+  "messages": "الرسائل",
+  "settings": "الإعدادات",
+  "organization": "المنظمة",
+  "team": "الفريق",
+  "billing": "الفوترة",
+  "profile": "الملف الشخصي",
+  "security": "الأمان",
+  "adminPanel": "لوحة الإدارة",
+  "clientPortal": "بوابة العملاء",
+  "goToPlatform": "الذهاب للمنصة",
+  "openMenu": "فتح القائمة",
+  "closeMenu": "إغلاق القائمة",
+  "mainNav": "التنقل الرئيسي",
+  "mobileNav": "قائمة الجوال",
+  "homeAria": "غزالة - الصفحة الرئيسية",
+  "breadcrumb": {
+    "home": "الرئيسية",
+    "app": "التطبيق",
+    "admin": "الإدارة",
+    "dashboard": "لوحة التحكم",
+    "inbox": "صندوق الوارد",
+    "contacts": "جهات الاتصال",
+    "templates": "القوالب",
+    "messages": "الرسائل",
+    "settings": "الإعدادات",
+    "organization": "المنظمة",
+    "team": "الفريق",
+    "whatsapp": "WhatsApp",
+    "meta": "Meta",
+    "billing": "الفوترة",
+    "profile": "الملف الشخصي",
+    "security": "الأمان",
+    "webhooks": "Webhooks",
+    "api-keys": "مفاتيح API",
+    "organizations": "المنظمات",
+    "users": "المستخدمون",
+    "plans": "الخطط",
+    "whop": "Whop",
+    "subscriptions": "الاشتراكات",
+    "system": "النظام",
+    "health": "صحة النظام",
+    "monitoring": "مراقبة النظام",
+    "audit-logs": "سجل التدقيق",
+    "feature-flags": "Feature Flags",
+    "announcements": "الإعلانات",
+    "meta-config": "إعدادات Meta",
+    "global-settings": "الإعدادات العامة",
+    "new": "جديد"
+  },
+  "search": {
+    "title": "بحث عام",
+    "description": "بحث في المنصة",
+    "placeholder": "ابحث...",
+    "triggerPlaceholder": "بحث...",
+    "ariaLabel": "بحث عام",
+    "empty": "لا توجد نتائج — البحث غير مفعّل بعد",
+    "categoriesHeading": "فئات البحث (قريباً)",
+    "actionsHeading": "إجراءات",
+    "apiPending": "سيتم تفعيل البحث عند ربط واجهات API",
+    "categories": {
+      "contacts": {
+        "label": "جهات الاتصال",
+        "description": "سيتم الربط بـ GET /contacts?search="
+      },
+      "conversations": {
+        "label": "المحادثات",
+        "description": "سيتم الربط بـ GET /conversations?customerPhone="
+      },
+      "templates": {
+        "label": "القوالب",
+        "description": "سيتم الربط بـ GET /templates"
+      },
+      "organizations": {
+        "label": "المنظمات",
+        "description": "سيتم الربط بـ GET /organizations"
+      },
+      "users": {
+        "label": "المستخدمون",
+        "description": "سيتم الربط بـ GET /admin/users"
+      }
+    }
+  },
+  "sidebar": {
+    "adminPortal": "لوحة الإدارة",
+    "clientPortal": "بوابة العملاء",
+    "expandSidebar": "توسيع الشريط الجانبي",
+    "collapseSidebar": "طي الشريط الجانبي",
+    "backToClientPortal": "العودة لبوابة العملاء",
+    "unreadBadge": "{count} غير مقروء"
+  },
+  "userMenu": {
+    "ariaLabel": "قائمة المستخدم",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج"
+  },
+  "quickActions": {
+    "ariaLabel": "إجراءات سريعة",
+    "button": "إجراء سريع",
+    "title": "إجراءات سريعة",
+    "sendMessage": "إرسال رسالة",
+    "newContact": "جهة اتصال جديدة"
+  },
+  "organizationSwitcher": {
+    "createOrg": "إنشاء منظمة",
+    "switchOrg": "تبديل المنظمة",
+    "organizations": "المنظمات"
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "empty": "لا توجد إشعارات",
+    "ariaLabel": "الإشعارات",
+    "ariaLabelUnread": "الإشعارات، {count} غير مقروء",
+    "apiUnavailable": "API الإشعارات غير متوفر — GET /notifications"
+  },
+  "settingsNav": {
+    "ariaLabel": "إعدادات",
+    "organization": "المنظمة",
+    "team": "الفريق",
+    "whatsapp": "WhatsApp",
+    "meta": "Meta",
+    "billing": "الفوترة",
+    "profile": "الملف الشخصي",
+    "security": "الأمان",
+    "webhooks": "Webhooks",
+    "api-keys": "مفاتيح API",
+    "sections": {
+      "management": "إدارة المنظمة",
+      "integrations": "التكاملات",
+      "account": "الحساب"
+    }
+  }
+}

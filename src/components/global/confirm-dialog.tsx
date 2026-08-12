@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import { ModalWrapper } from '@/components/global/modal-wrapper';
 import { Button } from '@/components/ui/button';
 
@@ -22,13 +23,15 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = 'تأكيد',
-  cancelLabel = 'إلغاء',
+  confirmLabel,
+  cancelLabel,
   onConfirm,
   isLoading = false,
   variant = 'default',
   children,
 }: ConfirmDialogProps) {
+  const tCommon = useTranslations('common');
+
   return (
     <ModalWrapper
       open={open}
@@ -38,14 +41,14 @@ export function ConfirmDialog({
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-            {cancelLabel}
+            {cancelLabel ?? tCommon('cancel')}
           </Button>
           <Button
             variant={variant === 'destructive' ? 'destructive' : 'default'}
             onClick={onConfirm}
             disabled={isLoading}
           >
-            {confirmLabel}
+            {confirmLabel ?? tCommon('confirm')}
           </Button>
         </>
       }

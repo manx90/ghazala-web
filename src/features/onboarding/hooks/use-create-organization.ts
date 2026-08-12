@@ -1,7 +1,8 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { organizationApi } from '@/features/auth/api/organization.api';
 import { queryKeys } from '@/config/query-keys';
 import { ROUTES } from '@/config/routes';
@@ -12,6 +13,7 @@ import { toastError, toastSuccess } from '@/components/global/toast-helpers';
 import type { CreateOrganizationFormValues } from '@/features/onboarding/schemas/onboarding.schemas';
 
 export function useCreateOrganization() {
+  const t = useTranslations('onboarding.createOrganization');
   const router = useRouter();
   const queryClient = useQueryClient();
   const setCurrentOrganization = useOrganizationStore((state) => state.setCurrentOrganization);
@@ -33,7 +35,7 @@ export function useCreateOrganization() {
         queryClient.invalidateQueries({ queryKey: queryKeys.organizations.all }),
         invalidateOnboardingState(queryClient),
       ]);
-      toastSuccess('تم إنشاء المنظمة بنجاح');
+      toastSuccess(t('success'));
       router.push(ROUTES.onboarding.connectWhatsapp);
     },
     onError: (error) => {

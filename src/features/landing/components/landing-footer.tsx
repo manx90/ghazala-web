@@ -1,9 +1,13 @@
-import Link from 'next/link';
+'use client';
+
+import { Link } from '@/i18n/navigation';
 import { MessageCircleIcon } from 'lucide-react';
 import { ROUTES } from '@/config/routes';
-import { FOOTER_CONTENT } from '../data/landing-content';
+import { useLandingContent } from '../hooks/use-landing-content';
 
 export function LandingFooter() {
+  const { footer } = useLandingContent();
+
   return (
     <footer className="border-t border-border/60 bg-muted/30">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
@@ -13,14 +17,14 @@ export function LandingFooter() {
               <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-brand text-primary-foreground">
                 <MessageCircleIcon className="size-5" aria-hidden />
               </span>
-              {FOOTER_CONTENT.brand.name}
+              {footer.brandName}
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-7 text-muted-foreground">
-              {FOOTER_CONTENT.brand.description}
+              {footer.description}
             </p>
           </div>
 
-          {FOOTER_CONTENT.columns.map((column) => (
+          {footer.columns.map((column) => (
             <nav key={column.title} aria-label={column.title}>
               <h3 className="text-sm font-semibold">{column.title}</h3>
               <ul className="mt-4 space-y-3">
@@ -40,7 +44,7 @@ export function LandingFooter() {
         </div>
 
         <div className="mt-12 border-t border-border/60 pt-6 text-center text-xs text-muted-foreground">
-          {FOOTER_CONTENT.copyright}
+          {footer.copyright}
         </div>
       </div>
     </footer>

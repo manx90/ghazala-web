@@ -2,6 +2,7 @@
 
 import { Loader2Icon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -49,6 +50,9 @@ export function TemplatePickerDialog({
   wabaId,
   isSending,
 }: TemplatePickerDialogProps) {
+  const t = useTranslations('templates.picker');
+  const tCommon = useTranslations('common');
+  const tTemplates = useTranslations('templates');
   const [language, setLanguage] = useState('');
   const [templateId, setTemplateId] = useState('');
   const [variableValues, setVariableValues] = useState<Record<string, string>>({});
@@ -110,33 +114,31 @@ export function TemplatePickerDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>إرسال قالب</DialogTitle>
-          <DialogDescription>اختر اللغة ثم القالب المعتمد للإرسال.</DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         {templatesQuery.isLoading ? (
           <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
             <Loader2Icon className="me-2 size-4 animate-spin" />
-            جاري تحميل القوالب...
+            {t('loading')}
           </div>
         ) : !approvedTemplates.length ? (
           <p className="py-4 text-sm text-muted-foreground">
-            {wabaId
-              ? 'لا توجد قوالب معتمدة على Meta لهذا الحساب — أضف من مكتبة Meta ثم زامن.'
-              : 'لا توجد قوالب جاهزة للإرسال. أضف من مكتبة Meta ثم زامن بعد الاعتماد.'}
+            {wabaId ? t('noTemplatesWaba') : t('noTemplates')}
           </p>
         ) : (
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label>اللغة</Label>
+              <Label>{t('language')}</Label>
               <Select value={language} onValueChange={handleLanguageChange}>
                 <SelectTrigger>
-                  <SelectValue placeholder="اختر اللغة" />
+                  <SelectValue placeholder={t('selectLanguage')} />
                 </SelectTrigger>
                 <SelectContent>
                   {languages.map((code) => (
                     <SelectItem key={code} value={code}>
-                      {getLanguageLabel(code)}
+                      {getLanguageLabel(code, tTemplates)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -144,14 +146,14 @@ export function TemplatePickerDialog({
             </div>
 
             <div className="space-y-1.5">
-              <Label>القالب</Label>
+              <Label>{t('template')}</Label>
               <Select
                 value={templateId}
                 onValueChange={(value) => setTemplateId(value ?? '')}
                 disabled={!language}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={language ? 'اختر القالب' : 'اختر اللغة أولاً'} />
+                  <SelectValue placeholder={language ? t('selectTemplate') : t('selectLanguageFirst')} />
                 </SelectTrigger>
                 <SelectContent>
                   {templatesForLanguage.map((template) => (
@@ -183,10 +185,10 @@ export function TemplatePickerDialog({
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
-            إلغاء
+            {tCommon('cancel')}
           </Button>
           <Button type="button" variant="gradient" disabled={!canSend} onClick={handleSend}>
-            {isSending ? <Loader2Icon className="animate-spin" /> : 'إرسال القالب'}
+            {isSending ? <Loader2Icon className="animate-spin" /> : t('sendTemplate')}
           </Button>
         </DialogFooter>
       </DialogContent>

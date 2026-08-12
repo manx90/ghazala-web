@@ -2,13 +2,13 @@
 
 import type { UseQueryResult } from '@tanstack/react-query';
 import { PhoneIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { QueryState } from '@/components/shared/query-state';
 import { StatusBadge } from '@/components/shared/status-badge';
 import type { PhoneNumberListResponse } from '@/types/whatsapp.types';
 import { cn } from '@/lib/utils';
 
-// لون مؤشر جودة المراسلة
 const QUALITY_DOT: Record<string, string> = {
   GREEN: 'bg-emerald-500',
   YELLOW: 'bg-amber-500',
@@ -20,6 +20,7 @@ interface PhoneHealthCardProps {
 }
 
 export function PhoneHealthCard({ phones }: PhoneHealthCardProps) {
+  const t = useTranslations('dashboard.phoneHealth');
   const items = phones.data?.items ?? [];
 
   return (
@@ -29,9 +30,9 @@ export function PhoneHealthCard({ phones }: PhoneHealthCardProps) {
           <span className="flex size-8 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
             <PhoneIcon className="size-4" aria-hidden="true" />
           </span>
-          صحة أرقام واتساب
+          {t('title')}
         </CardTitle>
-        <CardDescription>حالة الأرقام وجودة المراسلة</CardDescription>
+        <CardDescription>{t('description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <QueryState
@@ -39,8 +40,8 @@ export function PhoneHealthCard({ phones }: PhoneHealthCardProps) {
           isError={phones.isError}
           error={phones.error}
           isEmpty={items.length === 0}
-          emptyTitle="لا توجد أرقام"
-          emptyDescription="اربط رقم واتساب من الإعدادات."
+          emptyTitle={t('emptyTitle')}
+          emptyDescription={t('emptyDescription')}
           onRetry={() => void phones.refetch()}
         >
           <ul className="flex flex-col gap-3">

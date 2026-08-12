@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, type CSSProperties } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { BadgeCheckIcon, CreditCardIcon, Loader2Icon, ReceiptTextIcon, SparklesIcon } from 'lucide-react';
@@ -27,7 +28,7 @@ import { ModalWrapper } from '@/components/global/modal-wrapper';
 import { QueryState } from '@/components/shared/query-state';
 import { StatusBadge } from '@/components/shared/status-badge';
 import {
-  changePlanSchema,
+  createChangePlanSchema,
   type ChangePlanFormValues,
 } from '@/features/settings/schemas/settings.schemas';
 import {
@@ -45,12 +46,10 @@ import { formatDate } from '@/utils/date';
 import { cn } from '@/lib/utils';
 import { UsageLimitsCard } from '@/features/settings/components/usage-limits-card';
 
-const BILLING_CYCLE_LABELS: Record<BillingCycle, string> = {
-  [BillingCycle.MONTHLY]: 'شهري',
-  [BillingCycle.YEARLY]: 'سنوي',
-};
-
 export function BillingSettingsSection() {
+  const t = useTranslations('settings.billing');
+  const tValidation = useTranslations('settings.validation');
+  const tCommon = useTranslations('common');
   const subscriptionQuery = useSubscription();
   const plansQuery = useBillingPlans();
   const invoicesQuery = useInvoices();
@@ -62,8 +61,13 @@ export function BillingSettingsSection() {
   const [cancelOpen, setCancelOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
 
+  const schema = useMemo(
+    () => createChangePlanSchema((k) => tValidation(k)),
+    [tValidation],
+  );
+
   const form = useForm<ChangePlanFormValues>({
-    resolver: zodResolver(changePlanSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       planId: '',
       billingCycle: BillingCycle.MONTHLY,
@@ -111,13 +115,13 @@ export function BillingSettingsSection() {
               <CreditCardIcon className="size-5" aria-hidden="true" />
             </span>
             <div>
-              <CardTitle>الاشتراك الحالي</CardTitle>
-              <CardDescription>تفاصيل خطتك ودورة الفوترة</CardDescription>
+              <CardTitle>{t('subscription.title')}</CardTitle>
+              <CardDescription>{t('subscription.description')}</CardDescription>
             </div>
           </div>
           {hasSubscription && subscription.status === SubscriptionStatus.ACTIVE && (
             <Button variant="destructive" onClick={() => setCancelOpen(true)}>
-              إلغاء الاشتراك
+              {t('subscription.cancel')}
             </Button>
           )}
         </CardHeader>
@@ -133,21 +137,25 @@ export function BillingSettingsSection() {
             {subscription && (
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">الخطة</p>
+                  <p className="text-sm text-muted-foreground">{t('subscription.plan')}</p>
                   <p className="text-lg font-semibold tracking-tight">
                     {subscription.plan?.name ?? subscription.planId}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">الحالة</p>
+                  <p className="text-sm text-muted-foreground">{t('subscription.status')}</p>
                   <StatusBadge status={subscription.status} />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">دورة الفوترة</p>
-                  <p className="font-medium">{BILLING_CYCLE_LABELS[subscription.billingCycle]}</p>
+                  <p className="text-sm text-muted-foreground">{t('subscription.cycle')}</p>
+                  <p className="font-medium">
+                    {subscription.billingCycle === BillingCycle.MONTHLY
+                      ? t('cycle.monthly')
+                      : t('cycle.yearly')}
+                  </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">تاريخ الانتهاء</p>
+                  <p className="text-sm text-muted-foreground">{t('subscription.expiresAt')}</p>
                   <p className="font-medium">{formatDate(subscription.expiresAt)}</p>
                 </div>
               </div>
@@ -164,8 +172,8 @@ export function BillingSettingsSection() {
             <SparklesIcon className="size-5" aria-hidden="true" />
           </span>
           <div>
-            <CardTitle>الخطط المتاحة</CardTitle>
-            <CardDescription>اختر خطة أو غيّر خطتك الحالية</CardDescription>
+            <CardTitle>{t('plans.title')}</CardTitle>
+            <CardDescription>{t('plans.description')}</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
@@ -174,7 +182,7 @@ export function BillingSettingsSection() {
             isError={plansQuery.isError}
             error={plansQuery.error}
             isEmpty={!plansQuery.data?.items.length}
-            emptyTitle="لا توجد خطط"
+            emptyTitle={t('plans.emptyTitle')}
             onRetry={() => void plansQuery.refetch()}
           >
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -198,7 +206,7 @@ export function BillingSettingsSection() {
                       {isCurrent && (
                         <Badge className="bg-gradient-brand shrink-0 gap-1 text-primary-foreground">
                           <BadgeCheckIcon className="size-3.5" aria-hidden="true" />
-                          الحالية
+                          {t('plans.current')}
                         </Badge>
                       )}
                     </CardHeader>
@@ -207,14 +215,18 @@ export function BillingSettingsSection() {
                         <p className="text-3xl font-bold tracking-tight">
                           {formatCurrency(plan.monthlyPrice, plan.currency)}
                         </p>
-                        <p className="mt-1 text-xs text-muted-foreground">شهرياً</p>
+                        <p className="mt-1 text-xs text-muted-foreground">{t('plans.perMonth')}</p>
                       </div>
                       <Button
                         variant={isCurrent ? 'secondary' : 'gradient'}
                         disabled={isCurrent || !plan.isActive}
                         onClick={() => openPlanDialog(plan)}
                       >
-                        {isCurrent ? 'الخطة الحالية' : hasSubscription ? 'تغيير الخطة' : 'اشتراك'}
+                        {isCurrent
+                          ? t('plans.currentPlan')
+                          : hasSubscription
+                            ? t('plans.changePlan')
+                            : t('plans.subscribe')}
                       </Button>
                     </CardContent>
                   </Card>
@@ -231,8 +243,8 @@ export function BillingSettingsSection() {
             <ReceiptTextIcon className="size-5" aria-hidden="true" />
           </span>
           <div>
-            <CardTitle>الفواتير</CardTitle>
-            <CardDescription>سجل الفواتير السابقة</CardDescription>
+            <CardTitle>{t('invoices.title')}</CardTitle>
+            <CardDescription>{t('invoices.description')}</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
@@ -241,17 +253,17 @@ export function BillingSettingsSection() {
             isError={invoicesQuery.isError}
             error={invoicesQuery.error}
             isEmpty={!invoicesQuery.data?.items.length}
-            emptyTitle="لا توجد فواتير"
+            emptyTitle={t('invoices.emptyTitle')}
             onRetry={() => void invoicesQuery.refetch()}
           >
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>رقم الفاتورة</TableHead>
-                  <TableHead>المبلغ</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>تاريخ الإصدار</TableHead>
-                  <TableHead>تاريخ الدفع</TableHead>
+                  <TableHead>{t('invoices.columns.number')}</TableHead>
+                  <TableHead>{t('invoices.columns.amount')}</TableHead>
+                  <TableHead>{t('invoices.columns.status')}</TableHead>
+                  <TableHead>{t('invoices.columns.issuedAt')}</TableHead>
+                  <TableHead>{t('invoices.columns.paidAt')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -277,23 +289,23 @@ export function BillingSettingsSection() {
       <ModalWrapper
         open={planDialogOpen}
         onOpenChange={setPlanDialogOpen}
-        title={hasSubscription ? 'تغيير الخطة' : 'اشتراك جديد'}
+        title={hasSubscription ? t('changePlanDialog.changeTitle') : t('changePlanDialog.subscribeTitle')}
         description={selectedPlan?.name}
         footer={
           <>
             <Button variant="outline" onClick={() => setPlanDialogOpen(false)}>
-              إلغاء
+              {tCommon('cancel')}
             </Button>
             <Button variant="gradient" onClick={() => void handlePlanSubmit()} disabled={isPlanPending}>
               {isPlanPending && <Loader2Icon className="animate-spin" />}
-              تأكيد
+              {tCommon('confirm')}
             </Button>
           </>
         }
       >
         <form className="flex flex-col gap-4">
           <div className="space-y-2">
-            <p className="text-sm font-medium">دورة الفوترة</p>
+            <p className="text-sm font-medium">{t('subscription.cycle')}</p>
             <Select
               value={form.watch('billingCycle')}
               onValueChange={(value) =>
@@ -304,8 +316,8 @@ export function BillingSettingsSection() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={BillingCycle.MONTHLY}>شهري</SelectItem>
-                <SelectItem value={BillingCycle.YEARLY}>سنوي</SelectItem>
+                <SelectItem value={BillingCycle.MONTHLY}>{t('cycle.monthly')}</SelectItem>
+                <SelectItem value={BillingCycle.YEARLY}>{t('cycle.yearly')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -315,9 +327,9 @@ export function BillingSettingsSection() {
       <ConfirmDialog
         open={cancelOpen}
         onOpenChange={setCancelOpen}
-        title="إلغاء الاشتراك"
-        description="هل أنت متأكد من إلغاء الاشتراك؟ سيظل نشطاً حتى نهاية دورة الفوترة."
-        confirmLabel="إلغاء الاشتراك"
+        title={t('cancelDialog.title')}
+        description={t('cancelDialog.description')}
+        confirmLabel={t('cancelDialog.confirm')}
         variant="destructive"
         onConfirm={() => void handleCancel()}
         isLoading={cancelSubscription.isPending}

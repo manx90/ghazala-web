@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,12 +23,6 @@ import { formatDateTime } from '@/utils/date';
 import type { Template } from '@/types/template.types';
 import { EyeIcon, FileTextIcon, MoreHorizontalIcon } from 'lucide-react';
 
-const CATEGORY_LABELS: Record<TemplateCategory, string> = {
-  [TemplateCategory.MARKETING]: 'تسويق',
-  [TemplateCategory.UTILITY]: 'خدمي',
-  [TemplateCategory.AUTHENTICATION]: 'مصادقة',
-};
-
 interface TemplateTableProps {
   templates: Template[];
   orgSlug: string;
@@ -39,17 +34,24 @@ function getBodyPreview(template: Template): string {
 }
 
 export function TemplateTable({ templates, orgSlug }: TemplateTableProps) {
+  const t = useTranslations('templates.table');
+  const tCategories = useTranslations('templates.categories');
+  const tCommon = useTranslations('common');
+
+  const getCategoryLabel = (category: TemplateCategory) =>
+    tCategories(category as 'MARKETING' | 'UTILITY' | 'AUTHENTICATION');
+
   return (
     <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
-            <TableHead>الاسم</TableHead>
-            <TableHead>التصنيف</TableHead>
-            <TableHead>اللغة</TableHead>
-            <TableHead>الحالة</TableHead>
-            <TableHead>المحتوى</TableHead>
-            <TableHead>آخر مزامنة</TableHead>
+            <TableHead>{t('name')}</TableHead>
+            <TableHead>{t('category')}</TableHead>
+            <TableHead>{t('language')}</TableHead>
+            <TableHead>{t('status')}</TableHead>
+            <TableHead>{t('content')}</TableHead>
+            <TableHead>{t('lastSync')}</TableHead>
             <TableHead className="w-12" />
           </TableRow>
         </TableHeader>
@@ -66,7 +68,7 @@ export function TemplateTable({ templates, orgSlug }: TemplateTableProps) {
                   </span>
                 </div>
               </TableCell>
-              <TableCell>{CATEGORY_LABELS[template.category] ?? template.category}</TableCell>
+              <TableCell>{getCategoryLabel(template.category)}</TableCell>
               <TableCell>
                 <span dir="ltr" className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs">
                   {template.language}
@@ -77,7 +79,7 @@ export function TemplateTable({ templates, orgSlug }: TemplateTableProps) {
                   <StatusBadge status={template.status} />
                   {!template.metaTemplateId ? (
                     <span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 dark:text-amber-200">
-                      غير مربوط بـ Meta
+                      {t('notLinkedMeta')}
                     </span>
                   ) : null}
                 </div>
@@ -92,7 +94,7 @@ export function TemplateTable({ templates, orgSlug }: TemplateTableProps) {
                 <DropdownMenu>
                   <DropdownMenuTrigger
                     render={
-                      <Button variant="ghost" size="sm" aria-label="إجراءات">
+                      <Button variant="ghost" size="sm" aria-label={tCommon('actions')}>
                         <MoreHorizontalIcon />
                       </Button>
                     }
@@ -100,7 +102,7 @@ export function TemplateTable({ templates, orgSlug }: TemplateTableProps) {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem render={<Link href={`/app/${orgSlug}/templates/${template.id}`} />}>
                       <EyeIcon data-icon="inline-start" />
-                      عرض التفاصيل
+                      {t('viewDetails')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

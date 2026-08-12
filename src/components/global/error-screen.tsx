@@ -1,10 +1,11 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { AlertTriangleIcon, RefreshCwIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { PageContainer } from '@/components/global/page-container';
-import { sanitizeErrorForDisplay } from '@/utils/sanitize-error';
+import { useErrorLabels, useSanitizeError } from '@/hooks/use-error-labels';
 import { cn } from '@/lib/utils';
 
 interface ErrorScreenProps {
@@ -17,15 +18,19 @@ interface ErrorScreenProps {
 }
 
 export function ErrorScreen({
-  title = 'حدث خطأ',
+  title,
   error,
   message,
   onRetry,
   className,
   fullScreen = true,
 }: ErrorScreenProps) {
-  const resolvedMessage =
-    message ?? (error ? sanitizeErrorForDisplay(error) : 'حدث خطأ غير متوقع');
+  const t = useTranslations('errors.generic');
+  const tCommon = useTranslations('common');
+  const { fallback } = useErrorLabels();
+  const sanitize = useSanitizeError();
+
+  const resolvedMessage = message ?? (error ? sanitize(error) : fallback);
 
   return (
     <div
@@ -41,13 +46,13 @@ export function ErrorScreen({
           <AlertTriangleIcon className="size-6" aria-hidden="true" />
         </div>
         <Alert variant="destructive" className="w-full rounded-xl shadow-xs">
-          <AlertTitle>{title}</AlertTitle>
+          <AlertTitle>{title ?? t('title')}</AlertTitle>
           <AlertDescription>{resolvedMessage}</AlertDescription>
         </Alert>
         {onRetry && (
           <Button variant="outline" onClick={onRetry}>
             <RefreshCwIcon data-icon="inline-start" />
-            إعادة المحاولة
+            {tCommon('retry')}
           </Button>
         )}
       </PageContainer>

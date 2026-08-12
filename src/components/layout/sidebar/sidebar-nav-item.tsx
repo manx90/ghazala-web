@@ -1,7 +1,8 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link } from '@/i18n/navigation';
+import { usePathname } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { memo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import type { NavItem } from '@/types/navigation.types';
@@ -26,6 +27,7 @@ function SidebarNavItemComponent({
   onNavigate,
 }: SidebarNavItemProps) {
   const pathname = usePathname();
+  const t = useTranslations('nav');
   const active = isActiveRoute(pathname, item.href, item.exact);
   const Icon = item.icon;
 
@@ -69,7 +71,7 @@ function SidebarNavItemComponent({
         </>
       )}
       {collapsed && item.badge && (
-        <span className="sr-only">{item.badge.value} غير مقروء</span>
+        <span className="sr-only">{t('sidebar.unreadBadge', { count: item.badge.value })}</span>
       )}
     </Link>
   );

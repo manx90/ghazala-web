@@ -1,19 +1,23 @@
-import { FEATURES_GRID } from '../data/landing-content';
+'use client';
+
+import { useLandingContent } from '../hooks/use-landing-content';
 import { SectionHeading } from './section-heading';
 import { StaggerGroup, StaggerItem } from './reveal';
 
 export function FeaturesGrid() {
+  const { featuresGrid } = useLandingContent();
+
   return (
-    <section id={FEATURES_GRID.id} className="scroll-mt-24 py-20 sm:py-24">
+    <section id={featuresGrid.id} className="scroll-mt-24 py-20 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
-          eyebrow={FEATURES_GRID.eyebrow}
-          title={FEATURES_GRID.title}
-          description={FEATURES_GRID.description}
+          eyebrow={featuresGrid.eyebrow}
+          title={featuresGrid.title}
+          description={featuresGrid.description}
         />
 
         <StaggerGroup className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES_GRID.items.map((feature) => (
+          {featuresGrid.items.map((feature) => (
             <StaggerItem key={feature.title}>
               <article className="card-interactive group relative h-full overflow-hidden rounded-2xl border border-border/60 bg-card p-6 shadow-sm hover:border-secondary/40">
                 <div

@@ -1,4 +1,7 @@
+'use client';
+
 import { Loader2Icon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 interface LoadingScreenProps {
@@ -7,11 +10,10 @@ interface LoadingScreenProps {
   fullScreen?: boolean;
 }
 
-export function LoadingScreen({
-  label = 'جاري التحميل...',
-  className,
-  fullScreen = true,
-}: LoadingScreenProps) {
+export function LoadingScreen({ label, className, fullScreen = true }: LoadingScreenProps) {
+  const t = useTranslations('common');
+  const displayLabel = label ?? t('loading');
+
   return (
     <div
       className={cn(
@@ -32,7 +34,7 @@ export function LoadingScreen({
           <Loader2Icon className="size-6 animate-spin text-white" aria-hidden="true" />
         </span>
       </div>
-      <p className="text-sm font-medium text-muted-foreground">{label}</p>
+      <p className="text-sm font-medium text-muted-foreground">{displayLabel}</p>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { MenuIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { memo } from 'react';
 import { BreadcrumbsNav } from '@/components/layout/header/breadcrumbs-nav';
 import { GlobalSearch } from '@/components/layout/header/global-search';
@@ -8,6 +9,7 @@ import { NotificationButton } from '@/components/layout/header/notification-butt
 import { OrganizationSwitcher } from '@/components/layout/header/organization-switcher';
 import { QuickActions } from '@/components/layout/header/quick-actions';
 import { ThemeSwitcher } from '@/components/layout/header/theme-switcher';
+import { LanguageSwitcher } from '@/components/shared/language-switcher';
 import { UserMenu } from '@/components/layout/header/user-menu';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -21,6 +23,7 @@ interface AppHeaderProps {
 
 function AppHeaderComponent({ variant, orgSlug }: AppHeaderProps) {
   const setMobileSidebarOpen = useUiStore((state) => state.setMobileSidebarOpen);
+  const t = useTranslations('nav');
 
   return (
     <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-3 border-b border-border/60 bg-background/80 px-4 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 sm:px-6">
@@ -29,7 +32,7 @@ function AppHeaderComponent({ variant, orgSlug }: AppHeaderProps) {
         size="icon-sm"
         className="lg:hidden"
         onClick={() => setMobileSidebarOpen(true)}
-        aria-label="فتح القائمة"
+        aria-label={t('openMenu')}
       >
         <MenuIcon />
       </Button>
@@ -44,6 +47,7 @@ function AppHeaderComponent({ variant, orgSlug }: AppHeaderProps) {
         <QuickActions variant={variant} orgSlug={orgSlug} />
         {variant === 'client' && <OrganizationSwitcher />}
         <NotificationButton />
+        <LanguageSwitcher />
         <ThemeSwitcher />
         <UserMenu variant={variant} orgSlug={orgSlug} />
       </div>

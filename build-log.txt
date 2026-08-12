@@ -1,0 +1,214 @@
+﻿
+> ghazala-web@0.1.0 build
+> next build
+
+ظû▓ Next.js 16.2.12 (Turbopack)
+- Environments: .env.local, .env
+- Experiments (use with caution):
+  ┬╖ optimizePackageImports
+
+node.exe : ظأب The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: 
+https://nextjs.org/docs/messages/middleware-to-proxy
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Users\21891\AppData\Roaming\ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ظأب The "middle...leware-to-proxy:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  Creating an optimized production build ...
+ظ£ô Compiled successfully in 19.7s
+  Running TypeScript ...
+  Finished TypeScript in 20.8s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/61) ...
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+  Generating static pages using 11 workers (15/61) 
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+  Generating static pages using 11 workers (30/61) 
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+  Generating static pages using 11 workers (45/61) 
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+Error: INSUFFICIENT_PATH
+    at j (C:\Users\21891\Desktop\ghazala\ghazala-web\.next\server\chunks\ssr\_123ll6z._.js:1:11256) {
+  code: 'INSUFFICIENT_PATH'
+}
+ظ£ô Generating static pages using 11 workers (61/61) in 1700ms
+  Finalizing page optimization ...
+
+Route (app)
+ظ¤î ظùï /_not-found
+ظ¤£ ظù /[locale]
+ظ¤é ظ¤£ /ar
+ظ¤é ظ¤¤ /en
+ظ¤£ ╞ْ /[locale]/admin
+ظ¤£ ╞ْ /[locale]/admin/announcements
+ظ¤£ ╞ْ /[locale]/admin/audit-logs
+ظ¤£ ╞ْ /[locale]/admin/dashboard
+ظ¤£ ╞ْ /[locale]/admin/feature-flags
+ظ¤£ ╞ْ /[locale]/admin/meta-config
+ظ¤£ ╞ْ /[locale]/admin/organizations
+ظ¤£ ╞ْ /[locale]/admin/organizations/[id]
+ظ¤£ ╞ْ /[locale]/admin/plans
+ظ¤£ ╞ْ /[locale]/admin/plans/[id]
+ظ¤£ ╞ْ /[locale]/admin/plans/new
+ظ¤£ ╞ْ /[locale]/admin/settings
+ظ¤£ ╞ْ /[locale]/admin/subscriptions
+ظ¤£ ╞ْ /[locale]/admin/system/health
+ظ¤£ ╞ْ /[locale]/admin/system/monitoring
+ظ¤£ ╞ْ /[locale]/admin/users
+ظ¤£ ╞ْ /[locale]/admin/users/[id]
+ظ¤£ ╞ْ /[locale]/admin/whop
+ظ¤£ ظù /[locale]/app
+ظ¤é ظ¤£ /ar/app
+ظ¤é ظ¤¤ /en/app
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/contacts
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/contacts/[contactId]
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/dashboard
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/inbox
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/inbox/[conversationId]
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/messages
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/messages/[messageId]
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/settings
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/settings/api-keys
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/settings/billing
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/settings/meta
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/settings/organization
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/settings/profile
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/settings/security
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/settings/team
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/settings/webhooks
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/settings/whatsapp
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/templates
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/templates/[templateId]
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/templates/library
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/templates/meta-library
+ظ¤£ ╞ْ /[locale]/app/[orgSlug]/templates/new
+ظ¤£ ظù /[locale]/billing/callback
+ظ¤é ظ¤£ /ar/billing/callback
+ظ¤é ظ¤¤ /en/billing/callback
+ظ¤£ ظù /[locale]/forbidden
+ظ¤é ظ¤£ /ar/forbidden
+ظ¤é ظ¤¤ /en/forbidden
+ظ¤£ ظù /[locale]/forgot-password
+ظ¤é ظ¤£ /ar/forgot-password
+ظ¤é ظ¤¤ /en/forgot-password
+ظ¤£ ظù /[locale]/login
+ظ¤é ظ¤£ /ar/login
+ظ¤é ظ¤¤ /en/login
+ظ¤£ ظù /[locale]/onboarding/connect-whatsapp
+ظ¤é ظ¤£ /ar/onboarding/connect-whatsapp
+ظ¤é ظ¤¤ /en/onboarding/connect-whatsapp
+ظ¤£ ظù /[locale]/onboarding/create-organization
+ظ¤é ظ¤£ /ar/onboarding/create-organization
+ظ¤é ظ¤¤ /en/onboarding/create-organization
+ظ¤£ ظù /[locale]/onboarding/select-plan
+ظ¤é ظ¤£ /ar/onboarding/select-plan
+ظ¤é ظ¤¤ /en/onboarding/select-plan
+ظ¤£ ╞ْ /[locale]/privacy
+ظ¤£ ظù /[locale]/register
+ظ¤é ظ¤£ /ar/register
+ظ¤é ظ¤¤ /en/register
+ظ¤£ ظù /[locale]/reset-password
+ظ¤é ظ¤£ /ar/reset-password
+ظ¤é ظ¤¤ /en/reset-password
+ظ¤£ ╞ْ /[locale]/terms
+ظ¤¤ ظù /[locale]/verify-email
+  ظ¤£ /ar/verify-email
+  ظ¤¤ /en/verify-email
+
+
+╞ْ Proxy (Middleware)
+
+ظùï  (Static)   prerendered as static content
+ظù  (SSG)      prerendered as static HTML (uses generateStaticParams)
+╞ْ  (Dynamic)  server-rendered on demand
+

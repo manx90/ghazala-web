@@ -2,14 +2,15 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckIcon } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import { ConfirmDialog } from '@/components/global/confirm-dialog';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import {
-  mergeContactsSchema,
+  createMergeContactsSchema,
   type MergeContactsFormValues,
 } from '@/features/contacts/schemas/contact.schemas';
 import type { Contact } from '@/types/contact.types';
@@ -48,7 +49,6 @@ interface ContactPickListProps {
   onSelect: (id: string) => void;
 }
 
-// قائمة اختيار مرئية لجهة اتصال واحدة
 function ContactPickList({ contacts, selectedId, onSelect }: ContactPickListProps) {
   return (
     <div className="max-h-44 divide-y overflow-y-auto rounded-xl border bg-card">
@@ -92,6 +92,10 @@ export function MergeContactsDialog({
   onConfirm,
   isLoading = false,
 }: MergeContactsDialogProps) {
+  const t = useTranslations('contacts.merge');
+  const tContacts = useTranslations('contacts');
+  const schema = useMemo(() => createMergeContactsSchema(tContacts), [tContacts]);
+
   const {
     setValue,
     watch,
@@ -99,7 +103,7 @@ export function MergeContactsDialog({
     reset,
     formState: { errors },
   } = useForm<MergeContactsFormValues>({
-    resolver: zodResolver(mergeContactsSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       primaryContactId: preselectedIds[0] ?? '',
       duplicateContactId: preselectedIds[1] ?? '',
@@ -125,15 +129,15 @@ export function MergeContactsDialog({
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="دمج جهات الاتصال"
-      description="سيتم نقل المحادثات من الجهة المكررة إلى الجهة الأساسية ثم حذف المكررة."
-      confirmLabel="دمج"
+      title={t('title')}
+      description={t('description')}
+      confirmLabel={t('confirm')}
       onConfirm={handleSubmit(onConfirm)}
       isLoading={isLoading}
     >
       <div className="flex flex-col gap-5 py-2">
         <div className="flex flex-col gap-1.5">
-          <Label>جهة الاتصال الأساسية (المحتفظ بها)</Label>
+          <Label>{t('primaryLabel')}</Label>
           <ContactPickList
             contacts={availablePrimaries}
             selectedId={primaryContactId}
@@ -145,7 +149,7 @@ export function MergeContactsDialog({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label>جهة الاتصال المكررة (سيتم حذفها)</Label>
+          <Label>{t('duplicateLabel')}</Label>
           <ContactPickList
             contacts={availableDuplicates}
             selectedId={duplicateContactId}

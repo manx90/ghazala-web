@@ -1,0 +1,139 @@
+{
+  "dashboard": "Dashboard",
+  "inbox": "Inbox",
+  "contacts": "Contacts",
+  "templates": "Templates",
+  "messages": "Messages",
+  "settings": "Settings",
+  "organization": "Organization",
+  "team": "Team",
+  "billing": "Billing",
+  "profile": "Profile",
+  "security": "Security",
+  "adminPanel": "Admin Panel",
+  "clientPortal": "Client Portal",
+  "goToPlatform": "Go to platform",
+  "openMenu": "Open menu",
+  "closeMenu": "Close menu",
+  "mainNav": "Main navigation",
+  "mobileNav": "Mobile menu",
+  "homeAria": "Ghazala - Home",
+  "breadcrumb": {
+    "home": "Home",
+    "app": "App",
+    "admin": "Admin",
+    "dashboard": "Dashboard",
+    "inbox": "Inbox",
+    "contacts": "Contacts",
+    "templates": "Templates",
+    "messages": "Messages",
+    "settings": "Settings",
+    "organization": "Organization",
+    "team": "Team",
+    "whatsapp": "WhatsApp",
+    "meta": "Meta",
+    "billing": "Billing",
+    "profile": "Profile",
+    "security": "Security",
+    "webhooks": "Webhooks",
+    "api-keys": "API Keys",
+    "organizations": "Organizations",
+    "users": "Users",
+    "plans": "Plans",
+    "whop": "Whop",
+    "subscriptions": "Subscriptions",
+    "system": "System",
+    "health": "System Health",
+    "monitoring": "Monitoring",
+    "audit-logs": "Audit Logs",
+    "feature-flags": "Feature Flags",
+    "announcements": "Announcements",
+    "meta-config": "Meta Config",
+    "global-settings": "Global Settings",
+    "new": "New"
+  },
+  "search": {
+    "title": "Global search",
+    "description": "Search across the platform",
+    "placeholder": "Search...",
+    "triggerPlaceholder": "Search...",
+    "ariaLabel": "Global search",
+    "empty": "No results — search is not enabled yet",
+    "categoriesHeading": "Search categories (coming soon)",
+    "actionsHeading": "Actions",
+    "apiPending": "Search will be enabled when API endpoints are connected",
+    "categories": {
+      "contacts": {
+        "label": "Contacts",
+        "description": "Will connect to GET /contacts?search="
+      },
+      "conversations": {
+        "label": "Conversations",
+        "description": "Will connect to GET /conversations?customerPhone="
+      },
+      "templates": {
+        "label": "Templates",
+        "description": "Will connect to GET /templates"
+      },
+      "organizations": {
+        "label": "Organizations",
+        "description": "Will connect to GET /organizations"
+      },
+      "users": {
+        "label": "Users",
+        "description": "Will connect to GET /admin/users"
+      }
+    }
+  },
+  "sidebar": {
+    "adminPortal": "Admin Panel",
+    "clientPortal": "Client Portal",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
+    "backToClientPortal": "Back to client portal",
+    "unreadBadge": "{count} unread"
+  },
+  "userMenu": {
+    "ariaLabel": "User menu",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Sign out"
+  },
+  "quickActions": {
+    "ariaLabel": "Quick actions",
+    "button": "Quick action",
+    "title": "Quick actions",
+    "sendMessage": "Send message",
+    "newContact": "New contact"
+  },
+  "organizationSwitcher": {
+    "createOrg": "Create organization",
+    "switchOrg": "Switch organization",
+    "organizations": "Organizations"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "empty": "No notifications",
+    "ariaLabel": "Notifications",
+    "ariaLabelUnread": "Notifications, {count} unread",
+    "apiUnavailable": "Notifications API unavailable — GET /notifications"
+  },
+  "settingsNav": {
+    "ariaLabel": "Settings",
+    "organization": "Organization",
+    "team": "Team",
+    "whatsapp": "WhatsApp",
+    "meta": "Meta",
+    "billing": "Billing",
+    "profile": "Profile",
+    "security": "Security",
+    "webhooks": "Webhooks",
+    "api-keys": "API Keys",
+    "sections": {
+      "management": "Organization management",
+      "integrations": "Integrations",
+      "account": "Account"
+    }
+  }
+}

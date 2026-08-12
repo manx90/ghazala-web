@@ -1,6 +1,7 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { ChevronDownIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 import { SidebarNavItem } from '@/components/layout/sidebar/sidebar-nav-item';
@@ -122,8 +123,10 @@ interface SidebarNavProps {
 }
 
 function SidebarNavComponent({ groups, collapsed, onNavigate }: SidebarNavProps) {
+  const t = useTranslations('nav');
+
   return (
-    <nav aria-label="التنقل الرئيسي" className="flex flex-col gap-4">
+    <nav aria-label={t('mainNav')} className="flex flex-col gap-4">
       {groups.map((group) => (
         <SidebarNavGroup
           key={group.id}

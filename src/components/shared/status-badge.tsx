@@ -1,44 +1,47 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline';
 
-const STATUS_MAP: Record<string, { label: string; variant: BadgeVariant }> = {
-  OPEN: { label: 'مفتوحة', variant: 'default' },
-  CLOSED: { label: 'مغلقة', variant: 'secondary' },
-  EXPIRED: { label: 'منتهية', variant: 'outline' },
-  QUEUED: { label: 'في الانتظار', variant: 'outline' },
-  SENDING: { label: 'جاري الإرسال', variant: 'outline' },
-  SENT: { label: 'مُرسلة', variant: 'secondary' },
-  DELIVERED: { label: 'مُسلّمة', variant: 'default' },
-  READ: { label: 'مقروءة', variant: 'default' },
-  FAILED: { label: 'فاشلة', variant: 'destructive' },
-  APPROVED: { label: 'معتمد', variant: 'default' },
-  PENDING: { label: 'قيد المراجعة', variant: 'outline' },
-  REJECTED: { label: 'مرفوض', variant: 'destructive' },
-  PAID: { label: 'مدفوعة', variant: 'default' },
-  VOID: { label: 'ملغاة', variant: 'secondary' },
-  DRAFT: { label: 'مسودة', variant: 'secondary' },
-  PAUSED: { label: 'موقوف', variant: 'outline' },
-  DISABLED: { label: 'معطل', variant: 'destructive' },
-  CONNECTED: { label: 'متصل', variant: 'default' },
-  DISCONNECTED: { label: 'غير متصل', variant: 'destructive' },
-  GREEN: { label: 'ممتاز', variant: 'default' },
-  YELLOW: { label: 'متوسط', variant: 'outline' },
-  RED: { label: 'ضعيف', variant: 'destructive' },
-  ACTIVE: { label: 'نشط', variant: 'default' },
-  TRIAL: { label: 'تجريبي', variant: 'secondary' },
-  PAST_DUE: { label: 'متأخر', variant: 'destructive' },
-  PENDING_PAYMENT: { label: 'بانتظار الدفع', variant: 'outline' },
-  CANCELLED: { label: 'ملغى', variant: 'secondary' },
-  SUSPENDED: { label: 'موقوف', variant: 'destructive' },
-  OWNER: { label: 'مالك', variant: 'default' },
-  ADMIN: { label: 'مدير', variant: 'secondary' },
-  MEMBER: { label: 'عضو', variant: 'outline' },
-  SUPER_ADMIN: { label: 'Super Admin', variant: 'default' },
-  USER: { label: 'مستخدم', variant: 'outline' },
-  PENDING_VERIFICATION: { label: 'بانتظار التحقق', variant: 'outline' },
-  INACTIVE: { label: 'غير نشط', variant: 'secondary' },
+const STATUS_VARIANTS: Record<string, BadgeVariant> = {
+  OPEN: 'default',
+  CLOSED: 'secondary',
+  EXPIRED: 'outline',
+  QUEUED: 'outline',
+  SENDING: 'outline',
+  SENT: 'secondary',
+  DELIVERED: 'default',
+  READ: 'default',
+  FAILED: 'destructive',
+  APPROVED: 'default',
+  PENDING: 'outline',
+  REJECTED: 'destructive',
+  PAID: 'default',
+  VOID: 'secondary',
+  DRAFT: 'secondary',
+  PAUSED: 'outline',
+  DISABLED: 'destructive',
+  CONNECTED: 'default',
+  DISCONNECTED: 'destructive',
+  GREEN: 'default',
+  YELLOW: 'outline',
+  RED: 'destructive',
+  ACTIVE: 'default',
+  TRIAL: 'secondary',
+  PAST_DUE: 'destructive',
+  PENDING_PAYMENT: 'outline',
+  CANCELLED: 'secondary',
+  SUSPENDED: 'destructive',
+  OWNER: 'default',
+  ADMIN: 'secondary',
+  MEMBER: 'outline',
+  SUPER_ADMIN: 'default',
+  USER: 'outline',
+  PENDING_VERIFICATION: 'outline',
+  INACTIVE: 'secondary',
 };
 
 interface StatusBadgeProps {
@@ -47,11 +50,14 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
-  const config = STATUS_MAP[status] ?? { label: status, variant: 'outline' as const };
+  const t = useTranslations('status');
+  const variant = STATUS_VARIANTS[status] ?? 'outline';
+  const label = t.has(status as never) ? t(status as never) : status;
+
   return (
-    <Badge variant={config.variant} className={cn('gap-1.5', className)}>
+    <Badge variant={variant} className={cn('gap-1.5', className)}>
       <span aria-hidden="true" className="size-1.5 rounded-full bg-current opacity-70" />
-      {config.label}
+      {label}
     </Badge>
   );
 }

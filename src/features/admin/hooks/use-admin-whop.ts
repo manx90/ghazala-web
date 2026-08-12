@@ -1,7 +1,8 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toastSuccess, toastApiError } from '@/components/global/toast-helpers';
+import { useTranslations } from 'next-intl';
+import { useToastI18n } from '@/hooks/use-toast-i18n';
 import { queryConfig } from '@/config/query';
 import { queryKeys } from '@/config/query-keys';
 import { adminPlansApi } from '@/features/admin/api/plans.api';
@@ -71,11 +72,14 @@ function invalidateWhop(queryClient: ReturnType<typeof useQueryClient>) {
 
 export function useSyncWhopPlan() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.whop.toast');
+
   return useMutation({
     mutationFn: (planId: string) => adminWhopApi.syncPlan(planId),
     onSuccess: () => {
       invalidateWhop(queryClient);
-      toastSuccess('تمت مزامنة الخطة مع Whop');
+      toastSuccess(t('planSynced'));
     },
     onError: toastApiError,
   });
@@ -83,11 +87,14 @@ export function useSyncWhopPlan() {
 
 export function useSyncAllWhopPlans() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.whop.toast');
+
   return useMutation({
     mutationFn: () => adminWhopApi.syncAllPlans(),
     onSuccess: (data) => {
       invalidateWhop(queryClient);
-      toastSuccess(`تمت مزامنة ${data.synced} خطة${data.failed ? ` — فشل ${data.failed}` : ''}`);
+      toastSuccess(t('plansSynced', { synced: data.synced, failed: data.failed ? ` — ${data.failed}` : '' }));
     },
     onError: toastApiError,
   });
@@ -95,6 +102,9 @@ export function useSyncAllWhopPlans() {
 
 export function useApplyWhopPlanSuggestion() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.whop.toast');
+
   return useMutation({
     mutationFn: ({
       planId,
@@ -121,7 +131,7 @@ export function useApplyWhopPlanSuggestion() {
     },
     onSuccess: () => {
       invalidateWhop(queryClient);
-      toastSuccess('تم ربط الخطة بنجاح');
+      toastSuccess(t('planLinked'));
     },
     onError: toastApiError,
   });
@@ -129,11 +139,14 @@ export function useApplyWhopPlanSuggestion() {
 
 export function useUpdateWhopPlanMapping(planId: string) {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.whop.toast');
+
   return useMutation({
     mutationFn: (payload: UpdatePlanPayload) => adminPlansApi.updatePlan(planId, payload),
     onSuccess: () => {
       invalidateWhop(queryClient);
-      toastSuccess('تم تحديث الربط');
+      toastSuccess(t('mappingUpdated'));
     },
     onError: toastApiError,
   });
@@ -141,6 +154,8 @@ export function useUpdateWhopPlanMapping(planId: string) {
 
 export function useRefundWhopPayment() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+
   return useMutation({
     mutationFn: ({ paymentId, partialAmount }: { paymentId: string; partialAmount?: number | null }) =>
       adminWhopApi.refundPayment(paymentId, partialAmount),
@@ -154,6 +169,8 @@ export function useRefundWhopPayment() {
 
 export function useRetryWhopPayment() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+
   return useMutation({
     mutationFn: (paymentId: string) => adminWhopApi.retryPayment(paymentId),
     onSuccess: (data) => {
@@ -166,6 +183,8 @@ export function useRetryWhopPayment() {
 
 export function useVoidWhopPayment() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+
   return useMutation({
     mutationFn: (paymentId: string) => adminWhopApi.voidPayment(paymentId),
     onSuccess: (data) => {
@@ -177,6 +196,9 @@ export function useVoidWhopPayment() {
 }
 
 export function useCreateWhopCheckout() {
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.whop.toast');
+
   return useMutation({
     mutationFn: ({ whopPlanId, metadata }: { whopPlanId: string; metadata?: Record<string, unknown> }) =>
       adminWhopApi.createCheckout(whopPlanId, metadata),
@@ -184,7 +206,7 @@ export function useCreateWhopCheckout() {
       if (data.purchaseUrl) {
         window.open(data.purchaseUrl, '_blank', 'noopener,noreferrer');
       }
-      toastSuccess('تم إنشاء رابط الدفع');
+      toastSuccess(t('checkoutCreated'));
     },
     onError: toastApiError,
   });
@@ -192,6 +214,8 @@ export function useCreateWhopCheckout() {
 
 export function useCancelWhopMembership() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+
   return useMutation({
     mutationFn: ({
       membershipId,
@@ -210,6 +234,8 @@ export function useCancelWhopMembership() {
 
 export function usePauseWhopMembership() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+
   return useMutation({
     mutationFn: (membershipId: string) => adminWhopApi.pauseMembership(membershipId),
     onSuccess: (data) => {
@@ -222,6 +248,8 @@ export function usePauseWhopMembership() {
 
 export function useResumeWhopMembership() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+
   return useMutation({
     mutationFn: (membershipId: string) => adminWhopApi.resumeMembership(membershipId),
     onSuccess: (data) => {
@@ -234,6 +262,8 @@ export function useResumeWhopMembership() {
 
 export function useUncancelWhopMembership() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+
   return useMutation({
     mutationFn: (membershipId: string) => adminWhopApi.uncancelMembership(membershipId),
     onSuccess: (data) => {
@@ -246,6 +276,8 @@ export function useUncancelWhopMembership() {
 
 export function useAddWhopFreeDays() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+
   return useMutation({
     mutationFn: ({ membershipId, freeDays }: { membershipId: string; freeDays: number }) =>
       adminWhopApi.addFreeDays(membershipId, freeDays),
@@ -259,11 +291,14 @@ export function useAddWhopFreeDays() {
 
 export function useCreateWhopPromoCode() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.whop.toast');
+
   return useMutation({
     mutationFn: (payload: CreateAdminWhopPromoCodePayload) => adminWhopApi.createPromoCode(payload),
     onSuccess: () => {
       invalidateWhop(queryClient);
-      toastSuccess('تم إنشاء كود الخصم');
+      toastSuccess(t('promoCreated'));
     },
     onError: toastApiError,
   });
@@ -271,11 +306,14 @@ export function useCreateWhopPromoCode() {
 
 export function useDeleteWhopPromoCode() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.whop.toast');
+
   return useMutation({
     mutationFn: (promoId: string) => adminWhopApi.deletePromoCode(promoId),
     onSuccess: () => {
       invalidateWhop(queryClient);
-      toastSuccess('تم أرشفة كود الخصم');
+      toastSuccess(t('promoArchived'));
     },
     onError: toastApiError,
   });
@@ -283,6 +321,8 @@ export function useDeleteWhopPromoCode() {
 
 export function useRegisterWhopWebhook() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+
   return useMutation({
     mutationFn: () => adminWhopApi.registerWebhook(),
     onSuccess: (data) => {

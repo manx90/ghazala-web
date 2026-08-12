@@ -6,6 +6,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { queryConfig } from '@/config/query';
 import { queryKeys } from '@/config/query-keys';
@@ -51,6 +52,7 @@ function flattenMessages(pages: { items: Message[] }[]): Message[] {
 }
 
 export function useInbox(conversationId?: string) {
+  const t = useTranslations('inbox');
   const queryClient = useQueryClient();
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization);
   const { isOnline } = useNetworkAware();
@@ -129,7 +131,7 @@ export function useInbox(conversationId?: string) {
       setOptimisticStatus(id, ConversationStatus.CLOSED);
     },
     onSuccess: (conversation) => {
-      toastSuccess('تم إغلاق المحادثة');
+      toastSuccess(t('toast.conversationClosed'));
       invalidateConversation(conversation.id);
     },
     onError: (error, id) => {
@@ -145,7 +147,7 @@ export function useInbox(conversationId?: string) {
       setOptimisticStatus(id, ConversationStatus.OPEN);
     },
     onSuccess: (conversation) => {
-      toastSuccess('تم إعادة فتح المحادثة');
+      toastSuccess(t('toast.conversationReopened'));
       invalidateConversation(conversation.id);
     },
     onError: (error, id) => {

@@ -1,6 +1,7 @@
 'use client';
 
 import { PlusIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -10,19 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { getLanguageLabel } from '@/features/templates/constants/template-filters';
+import { getFilterLabel, getLanguageLabel } from '@/features/templates/constants/template-filters';
 import type { TemplateLibraryItem } from '@/types/template.types';
-
-const USECASE_LABELS: Record<string, string> = {
-  ORDER_CONFIRMATION: 'تأكيد الطلب',
-  SHIPMENT_CONFIRMATION: 'تأكيد الشحن',
-  DELIVERY_UPDATE: 'تحديث التسليم',
-  DELIVERY_CONFIRMATION: 'تأكيد التسليم',
-  PAYMENT_CONFIRMATION: 'تأكيد الدفع',
-  PAYMENT_DUE_REMINDER: 'تذكير الدفع',
-  RETURN_CONFIRMATION: 'تأكيد الإرجاع',
-  FEEDBACK_SURVEY: 'استبيان',
-};
 
 interface TemplateLibraryTableProps {
   items: TemplateLibraryItem[];
@@ -31,15 +21,18 @@ interface TemplateLibraryTableProps {
 }
 
 export function TemplateLibraryTable({ items, onAdd, isAdding }: TemplateLibraryTableProps) {
+  const t = useTranslations('templates.table');
+  const tTemplates = useTranslations('templates');
+
   return (
     <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
-            <TableHead>الاسم</TableHead>
-            <TableHead>اللغة</TableHead>
-            <TableHead>الاستخدام</TableHead>
-            <TableHead>المحتوى</TableHead>
+            <TableHead>{t('name')}</TableHead>
+            <TableHead>{t('language')}</TableHead>
+            <TableHead>{t('usecase')}</TableHead>
+            <TableHead>{t('content')}</TableHead>
             <TableHead className="w-28" />
           </TableRow>
         </TableHeader>
@@ -53,11 +46,13 @@ export function TemplateLibraryTable({ items, onAdd, isAdding }: TemplateLibrary
               </TableCell>
               <TableCell>
                 <span dir="ltr" className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs">
-                  {getLanguageLabel(item.language)}
+                  {getLanguageLabel(item.language, tTemplates)}
                 </span>
               </TableCell>
               <TableCell className="text-sm">
-                {item.usecase ? (USECASE_LABELS[item.usecase] ?? item.usecase) : '—'}
+                {item.usecase
+                  ? getFilterLabel('usecases', item.usecase, tTemplates)
+                  : '—'}
               </TableCell>
               <TableCell className="max-w-md truncate text-sm text-muted-foreground">
                 {item.header ? `${item.header} — ` : ''}
@@ -72,7 +67,7 @@ export function TemplateLibraryTable({ items, onAdd, isAdding }: TemplateLibrary
                   onClick={() => onAdd(item)}
                 >
                   <PlusIcon data-icon="inline-start" />
-                  إضافة
+                  {t('add')}
                 </Button>
               </TableCell>
             </TableRow>

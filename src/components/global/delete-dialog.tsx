@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ConfirmDialog } from '@/components/global/confirm-dialog';
 
 interface DeleteDialogProps {
@@ -15,19 +16,22 @@ interface DeleteDialogProps {
 export function DeleteDialog({
   open,
   onOpenChange,
-  title = 'تأكيد الحذف',
-  description = 'هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء.',
-  confirmLabel = 'حذف',
+  title,
+  description,
+  confirmLabel,
   onConfirm,
   isLoading = false,
 }: DeleteDialogProps) {
+  const tDialogs = useTranslations('dialogs');
+  const tCommon = useTranslations('common');
+
   return (
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={title}
-      description={description}
-      confirmLabel={confirmLabel}
+      title={title ?? tDialogs('confirmDelete')}
+      description={description ?? tDialogs('confirmDeleteDescription')}
+      confirmLabel={confirmLabel ?? tCommon('delete')}
       onConfirm={onConfirm}
       isLoading={isLoading}
       variant="destructive"

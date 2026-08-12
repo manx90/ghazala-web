@@ -1,7 +1,8 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toastSuccess, toastApiError } from '@/components/global/toast-helpers';
+import { useTranslations } from 'next-intl';
+import { useToastI18n } from '@/hooks/use-toast-i18n';
 import { queryConfig } from '@/config/query';
 import { queryKeys } from '@/config/query-keys';
 import { adminPlansApi } from '@/features/admin/api/plans.api';
@@ -17,13 +18,15 @@ export function useAdminPlans() {
 
 export function useCreatePlan() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.toast');
 
   return useMutation({
     mutationFn: (payload: CreatePlanPayload) => adminPlansApi.createPlan(payload),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.plans.all });
       void queryClient.invalidateQueries({ queryKey: queryKeys.billing.plans });
-      toastSuccess('تم إنشاء الخطة بنجاح');
+      toastSuccess(t('planCreated'));
     },
     onError: toastApiError,
   });
@@ -31,13 +34,15 @@ export function useCreatePlan() {
 
 export function useUpdatePlan(planId: string) {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.toast');
 
   return useMutation({
     mutationFn: (payload: UpdatePlanPayload) => adminPlansApi.updatePlan(planId, payload),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.plans.all });
       void queryClient.invalidateQueries({ queryKey: queryKeys.billing.plans });
-      toastSuccess('تم تحديث الخطة بنجاح');
+      toastSuccess(t('planUpdated'));
     },
     onError: toastApiError,
   });
@@ -45,13 +50,15 @@ export function useUpdatePlan(planId: string) {
 
 export function useDisablePlan() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.toast');
 
   return useMutation({
     mutationFn: (planId: string) => adminPlansApi.disablePlan(planId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.plans.all });
       void queryClient.invalidateQueries({ queryKey: queryKeys.billing.plans });
-      toastSuccess('تم تعطيل الخطة بنجاح');
+      toastSuccess(t('planDisabled'));
     },
     onError: toastApiError,
   });

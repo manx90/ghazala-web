@@ -1,9 +1,10 @@
 'use client';
 
+import { useMemo, useState, type CSSProperties } from 'react';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link2Icon, Loader2Icon, RefreshCwIcon, ShieldCheckIcon, UnplugIcon } from 'lucide-react';
-import { useState, type CSSProperties } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,7 +13,7 @@ import { ConfirmDialog } from '@/components/global/confirm-dialog';
 import { QueryState } from '@/components/shared/query-state';
 import { ConnectionStatusPill } from '@/features/meta/components/connection-status-pill';
 import {
-  connectMetaSchema,
+  createConnectMetaSchema,
   type ConnectMetaFormValues,
 } from '@/features/settings/schemas/settings.schemas';
 import {
@@ -24,14 +25,21 @@ import {
 import { formatDateTime } from '@/utils/date';
 
 export function MetaSettingsSection() {
+  const t = useTranslations('settings.meta');
+  const tValidation = useTranslations('settings.validation');
   const { data, isLoading, isError, error, refetch } = useMetaStatus();
   const connectMeta = useConnectMeta();
   const disconnectMeta = useDisconnectMeta();
   const syncMeta = useSyncMeta();
   const [disconnectOpen, setDisconnectOpen] = useState(false);
 
+  const schema = useMemo(
+    () => createConnectMetaSchema((k) => tValidation(k)),
+    [tValidation],
+  );
+
   const form = useForm<ConnectMetaFormValues>({
-    resolver: zodResolver(connectMetaSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       wabaId: '',
       authorizationCode: '',
@@ -70,8 +78,8 @@ export function MetaSettingsSection() {
                 <ShieldCheckIcon className="size-5" aria-hidden="true" />
               </span>
               <div>
-                <CardTitle>حالة الربط</CardTitle>
-                <CardDescription>حالة تكامل Meta Business</CardDescription>
+                <CardTitle>{t('connection.title')}</CardTitle>
+                <CardDescription>{t('connection.description')}</CardDescription>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -88,7 +96,7 @@ export function MetaSettingsSection() {
                     ) : (
                       <RefreshCwIcon />
                     )}
-                    مزامنة
+                    {t('connection.sync')}
                   </Button>
                   <Button
                     variant="destructive"
@@ -96,7 +104,7 @@ export function MetaSettingsSection() {
                     disabled={disconnectMeta.isPending}
                   >
                     <UnplugIcon />
-                    فصل
+                    {t('connection.disconnect')}
                   </Button>
                 </>
               )}
@@ -104,23 +112,23 @@ export function MetaSettingsSection() {
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">معرف WABA</p>
+              <p className="text-sm text-muted-foreground">{t('fields.wabaId')}</p>
               <p className="font-mono text-sm" dir="ltr">{integration?.wabaId ?? '—'}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">معرف Meta Business</p>
+              <p className="text-sm text-muted-foreground">{t('fields.businessId')}</p>
               <p className="font-mono text-sm" dir="ltr">{integration?.metaBusinessId ?? '—'}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">آخر مزامنة</p>
+              <p className="text-sm text-muted-foreground">{t('fields.lastSync')}</p>
               <p className="text-sm">{formatDateTime(integration?.lastSyncAt)}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">تاريخ الربط</p>
+              <p className="text-sm text-muted-foreground">{t('fields.connectedAt')}</p>
               <p className="text-sm">{formatDateTime(integration?.connectedAt)}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">انتهاء التوكن</p>
+              <p className="text-sm text-muted-foreground">{t('fields.tokenExpiry')}</p>
               <p className="text-sm">{formatDateTime(integration?.tokenExpiresAt)}</p>
             </div>
           </CardContent>
@@ -137,31 +145,31 @@ export function MetaSettingsSection() {
               <Link2Icon className="size-5" aria-hidden="true" />
             </span>
             <div>
-              <CardTitle>ربط Meta</CardTitle>
-              <CardDescription>أدخل بيانات الربط من Meta Business</CardDescription>
+              <CardTitle>{t('connect.title')}</CardTitle>
+              <CardDescription>{t('connect.description')}</CardDescription>
             </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={onConnect} className="flex flex-col gap-5">
               <div className="space-y-2">
-                <Label htmlFor="wabaId">معرف WABA *</Label>
+                <Label htmlFor="wabaId">{t('connect.wabaId')}</Label>
                 <Input id="wabaId" dir="ltr" className="text-left" {...form.register('wabaId')} />
                 {form.formState.errors.wabaId && (
                   <p className="text-sm text-destructive">{form.formState.errors.wabaId.message}</p>
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="metaBusinessId">معرف Meta Business</Label>
+                <Label htmlFor="metaBusinessId">{t('connect.businessId')}</Label>
                 <Input id="metaBusinessId" dir="ltr" className="text-left" {...form.register('metaBusinessId')} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="authorizationCode">رمز التفويض</Label>
+                <Label htmlFor="authorizationCode">{t('connect.authCode')}</Label>
                 <Input id="authorizationCode" dir="ltr" className="text-left" {...form.register('authorizationCode')} />
               </div>
               <div className="flex justify-end">
                 <Button type="submit" variant="gradient" disabled={connectMeta.isPending}>
                   {connectMeta.isPending && <Loader2Icon className="animate-spin" />}
-                  ربط Meta
+                  {t('connect.title')}
                 </Button>
               </div>
             </form>
@@ -172,9 +180,9 @@ export function MetaSettingsSection() {
       <ConfirmDialog
         open={disconnectOpen}
         onOpenChange={setDisconnectOpen}
-        title="فصل Meta"
-        description="هل تريد فصل تكامل Meta؟ لن تتمكن من إرسال رسائل WhatsApp."
-        confirmLabel="فصل"
+        title={t('disconnectDialog.title')}
+        description={t('disconnectDialog.description')}
+        confirmLabel={t('disconnectDialog.confirm')}
         variant="destructive"
         onConfirm={() => void disconnectMeta.mutateAsync().then(() => setDisconnectOpen(false))}
         isLoading={disconnectMeta.isPending}

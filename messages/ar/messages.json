@@ -1,0 +1,54 @@
+{
+  "title": "الرسائل الصادرة",
+  "description": "تتبّع حالة الرسائل المرسلة من منصتك",
+  "noMessages": "لا توجد رسائل صادرة",
+  "noMessagesDescription": "ستظهر الرسائل هنا بعد إرسالها.",
+  "recipient": "المستلم",
+  "type": "النوع",
+  "status": "الحالة",
+  "createdAt": "تاريخ الإنشاء",
+  "action": "إجراء",
+  "details": "التفاصيل",
+  "retry": "إعادة المحاولة",
+  "backToMessages": "العودة للرسائل",
+  "notFound": "الرسالة غير موجودة",
+  "notFoundDescription": "تعذّر العثور على هذه الرسالة.",
+  "messageTo": "رسالة إلى {recipient}",
+  "messageId": "معرّف: {id}",
+  "detailTitle": "تفاصيل الرسالة",
+  "detailDescription": "معلومات الإرسال والمحتوى",
+  "retryCount": "عدد المحاولات",
+  "senderPhone": "رقم الإرسال (Meta)",
+  "errorMessage": "رسالة الخطأ",
+  "providerTitle": "طلب Meta (Provider)",
+  "providerDescription": "ما أُرسل فعلياً إلى Graph API — endpoint و body",
+  "lastSent": "آخر إرسال: {time}",
+  "metaResponse": "رد Meta",
+  "timelineTitle": "مسار الحالة",
+  "timelineDescription": "تتبّع مراحل إرسال الرسالة",
+  "noStatusData": "لا توجد بيانات حالة",
+  "timeline": {
+    "queued": "في الانتظار",
+    "sent": "مُرسلة",
+    "delivered": "مُسلّمة",
+    "read": "مقروءة",
+    "failed": "فشل الإرسال"
+  },
+  "types": {
+    "TEXT": "نص",
+    "TEMPLATE": "قالب",
+    "IMAGE": "صورة",
+    "VIDEO": "فيديو",
+    "DOCUMENT": "مستند",
+    "AUDIO": "صوت",
+    "STICKER": "ملصق",
+    "LOCATION": "موقع",
+    "CONTACTS": "جهات اتصال"
+  },
+  "errors": {
+    "noInternet": "لا يوجد اتصال بالإنترنت"
+  },
+  "toast": {
+    "retried": "تمت إعادة إرسال الرسالة"
+  }
+}

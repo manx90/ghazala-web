@@ -1,7 +1,8 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toastSuccess, toastApiError } from '@/components/global/toast-helpers';
+import { useTranslations } from 'next-intl';
+import { useToastI18n } from '@/hooks/use-toast-i18n';
 import { queryConfig } from '@/config/query';
 import { queryKeys } from '@/config/query-keys';
 import { adminApi } from '@/features/admin/api/admin.api';
@@ -67,6 +68,8 @@ export function useAdminOrganizationPhoneNumbers(id: string, enabled = true) {
 
 export function useUpdateOrganization() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.toast');
 
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: UpdateAdminOrganizationPayload }) =>
@@ -74,7 +77,7 @@ export function useUpdateOrganization() {
     onSuccess: (org) => {
       queryClient.setQueryData(queryKeys.admin.organizations.detail(org.id), org);
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.organizations.all });
-      toastSuccess('تم تحديث المنظمة بنجاح');
+      toastSuccess(t('organizationUpdated'));
     },
     onError: toastApiError,
   });
@@ -82,13 +85,15 @@ export function useUpdateOrganization() {
 
 export function useBulkOrganizations() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.toast');
 
   return useMutation({
     mutationFn: (payload: BulkAdminOrganizationPayload) => adminApi.bulkOrganizations(payload),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.organizations.all });
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.dashboard });
-      toastSuccess('تم تنفيذ العملية الجماعية بنجاح');
+      toastSuccess(t('bulkSuccess'));
     },
     onError: toastApiError,
   });
@@ -96,6 +101,8 @@ export function useBulkOrganizations() {
 
 export function useActivateOrganization() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.toast');
 
   return useMutation({
     mutationFn: (id: string) => adminApi.activateOrganization(id),
@@ -109,7 +116,7 @@ export function useActivateOrganization() {
       queryClient.setQueryData(queryKeys.admin.organizations.detail(org.id), org);
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.organizations.all });
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.dashboard });
-      toastSuccess('تم تفعيل المنظمة بنجاح');
+      toastSuccess(t('organizationActivated'));
     },
     onError: (error, id) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.organizations.detail(id) });
@@ -120,6 +127,8 @@ export function useActivateOrganization() {
 
 export function useSuspendOrganization() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.toast');
 
   return useMutation({
     mutationFn: (id: string) => adminApi.suspendOrganization(id),
@@ -133,7 +142,7 @@ export function useSuspendOrganization() {
       queryClient.setQueryData(queryKeys.admin.organizations.detail(org.id), org);
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.organizations.all });
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.dashboard });
-      toastSuccess('تم تعليق المنظمة بنجاح');
+      toastSuccess(t('organizationSuspended'));
     },
     onError: (error, id) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.organizations.detail(id) });
@@ -144,13 +153,15 @@ export function useSuspendOrganization() {
 
 export function useDeleteOrganization() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('admin.toast');
 
   return useMutation({
     mutationFn: (id: string) => adminApi.deleteOrganization(id),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.organizations.all });
       void queryClient.invalidateQueries({ queryKey: queryKeys.admin.dashboard });
-      toastSuccess('تم حذف المنظمة بنجاح');
+      toastSuccess(t('organizationDeleted'));
     },
     onError: toastApiError,
   });

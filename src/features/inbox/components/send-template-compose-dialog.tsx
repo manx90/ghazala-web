@@ -2,6 +2,7 @@
 
 import { Loader2Icon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { PhoneNumberSelect, usePhoneNumbers } from '@/components/shared/phone-number-select';
 import { Button } from '@/components/ui/button';
 import {
@@ -50,6 +51,9 @@ export function SendTemplateComposeDialog({
   defaultRecipient = '',
   onSent,
 }: SendTemplateComposeDialogProps) {
+  const t = useTranslations('inbox.compose');
+  const tCommon = useTranslations('common');
+  const tTemplates = useTranslations('templates');
   const [recipient, setRecipient] = useState(defaultRecipient);
   const [phoneNumberId, setPhoneNumberId] = useState('');
   const [language, setLanguage] = useState('');
@@ -142,15 +146,13 @@ export function SendTemplateComposeDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>إرسال قالب لرقم جديد</DialogTitle>
-          <DialogDescription>
-            ابدأ محادثة بإرسال قالب معتمد — لا حاجة لرسالة واردة مسبقة.
-          </DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="compose-recipient">رقم المستلم</Label>
+            <Label htmlFor="compose-recipient">{t('recipient')}</Label>
             <Input
               id="compose-recipient"
               value={recipient}
@@ -159,11 +161,11 @@ export function SendTemplateComposeDialog({
               dir="ltr"
               className="font-mono"
             />
-            <p className="text-xs text-muted-foreground">صيغة دولية بدون +</p>
+            <p className="text-xs text-muted-foreground">{t('internationalFormat')}</p>
           </div>
 
           <div className="space-y-1.5">
-            <Label>رقم الإرسال (WhatsApp Business)</Label>
+            <Label>{t('senderPhone')}</Label>
             <PhoneNumberSelect
               value={phoneNumberId}
               onChange={setPhoneNumberId}
@@ -174,28 +176,29 @@ export function SendTemplateComposeDialog({
           {templatesQuery.isLoading ? (
             <div className="flex items-center justify-center py-6 text-sm text-muted-foreground">
               <Loader2Icon className="me-2 size-4 animate-spin" />
-              جاري تحميل القوالب...
+              {t('loadingTemplates')}
             </div>
           ) : !approvedTemplates.length ? (
             <p className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-sm text-amber-900 dark:text-amber-200">
-              لا توجد قوالب جاهزة للإرسال على هذا الحساب. أضف قالباً من{' '}
-              <strong>مكتبة Meta</strong> ثم زامن — بعد اعتماد Meta يمكنك الإرسال.
+              {t('noTemplatesWarning', {
+                metaLibrary: tTemplates('metaLibrary'),
+              })}
             </p>
           ) : (
             <>
               <div className="space-y-1.5">
-                <Label>اللغة</Label>
+                <Label>{t('language')}</Label>
                 <Select value={language} onValueChange={(value) => {
                   setLanguage(value ?? '');
                   setTemplateId('');
                 }}>
                   <SelectTrigger>
-                    <SelectValue placeholder="اختر اللغة" />
+                    <SelectValue placeholder={t('selectLanguage')} />
                   </SelectTrigger>
                   <SelectContent>
                     {languages.map((code) => (
                       <SelectItem key={code} value={code}>
-                        {getLanguageLabel(code)}
+                        {getLanguageLabel(code, tTemplates)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -203,14 +206,14 @@ export function SendTemplateComposeDialog({
               </div>
 
               <div className="space-y-1.5">
-                <Label>القالب</Label>
+                <Label>{t('template')}</Label>
                 <Select
                   value={templateId}
                   onValueChange={(value) => setTemplateId(value ?? '')}
                   disabled={!language}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={language ? 'اختر القالب' : 'اختر اللغة أولاً'} />
+                    <SelectValue placeholder={language ? t('selectTemplate') : t('selectLanguageFirst')} />
                   </SelectTrigger>
                   <SelectContent>
                     {templatesForLanguage.map((template) => (
@@ -243,7 +246,7 @@ export function SendTemplateComposeDialog({
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
-            إلغاء
+            {tCommon('cancel')}
           </Button>
           <Button
             type="button"
@@ -251,7 +254,7 @@ export function SendTemplateComposeDialog({
             disabled={!canSend}
             onClick={() => void handleSend()}
           >
-            {isSending ? <Loader2Icon className="animate-spin" /> : 'إرسال القالب'}
+            {isSending ? <Loader2Icon className="animate-spin" /> : t('sendTemplate')}
           </Button>
         </DialogFooter>
       </DialogContent>

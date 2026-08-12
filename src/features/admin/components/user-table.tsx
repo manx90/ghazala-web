@@ -1,7 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { EyeIcon, MoreHorizontalIcon, ShieldOffIcon, ShieldCheckIcon, Trash2Icon } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -53,6 +54,9 @@ export function UserTable({
   onDisable,
   onDelete,
 }: UserTableProps) {
+  const t = useTranslations('admin.users');
+  const tCommon = useTranslations('admin.common');
+
   const toggleSelection = (id: string, checked: boolean) => {
     if (!onSelectionChange) return;
     onSelectionChange(checked ? [...selectedIds, id] : selectedIds.filter((x) => x !== id));
@@ -74,21 +78,22 @@ export function UserTable({
               <Checkbox
                 checked={allSelected}
                 onCheckedChange={(checked) => toggleAll(checked === true)}
-                aria-label="تحديد الكل"
+                aria-label={tCommon('selectAll')}
               />
             </TableHead>
           )}
-          <TableHead>الاسم</TableHead>
-          <TableHead>البريد</TableHead>
-          <TableHead>الدور</TableHead>
-          <TableHead>الحالة</TableHead>
-          <TableHead>آخر دخول</TableHead>
+          <TableHead>{t('columns.name')}</TableHead>
+          <TableHead>{t('columns.email')}</TableHead>
+          <TableHead>{t('columns.role')}</TableHead>
+          <TableHead>{t('columns.status')}</TableHead>
+          <TableHead>{t('columns.lastLogin')}</TableHead>
           <TableHead className="w-12" />
         </TableRow>
       </TableHeader>
       <TableBody>
         {users.map((user) => {
           const isSuperAdmin = user.role === UserRole.SUPER_ADMIN;
+          const fullName = getFullName(user);
 
           return (
             <TableRow key={user.id}>
@@ -97,7 +102,7 @@ export function UserTable({
                   <Checkbox
                     checked={selectedIds.includes(user.id)}
                     onCheckedChange={(checked) => toggleSelection(user.id, checked === true)}
-                    aria-label={`تحديد ${getFullName(user)}`}
+                    aria-label={tCommon('selectRow', { name: fullName })}
                     disabled={isSuperAdmin}
                   />
                 </TableCell>
@@ -107,7 +112,7 @@ export function UserTable({
                   <Avatar size="sm">
                     <AvatarFallback>{getInitials(user)}</AvatarFallback>
                   </Avatar>
-                  <span className="font-medium">{getFullName(user)}</span>
+                  <span className="font-medium">{fullName}</span>
                 </div>
               </TableCell>
               <TableCell className="font-mono text-xs text-muted-foreground" dir="ltr">
@@ -120,13 +125,13 @@ export function UserTable({
                 <StatusBadge status={user.status} />
               </TableCell>
               <TableCell className="text-xs text-muted-foreground">
-                {user.lastLoginAt ? formatDateTime(user.lastLoginAt) : '—'}
+                {user.lastLoginAt ? formatDateTime(user.lastLoginAt) : tCommon('notAvailable')}
               </TableCell>
             <TableCell>
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={
-                    <Button variant="ghost" size="sm" aria-label="إجراءات">
+                    <Button variant="ghost" size="sm" aria-label={tCommon('actions')}>
                       <MoreHorizontalIcon />
                     </Button>
                   }
@@ -134,18 +139,18 @@ export function UserTable({
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem render={<Link href={ROUTES.admin.user(user.id)} />}>
                     <EyeIcon data-icon="inline-start" />
-                    التفاصيل
+                    {t('actions.details')}
                   </DropdownMenuItem>
                     {!isSuperAdmin && user.status !== UserStatus.ACTIVE && onEnable && (
                       <DropdownMenuItem onClick={() => onEnable(user)}>
                         <ShieldCheckIcon />
-                        تفعيل
+                        {t('actions.enable')}
                       </DropdownMenuItem>
                     )}
                     {!isSuperAdmin && user.status !== UserStatus.DISABLED && onDisable && (
                       <DropdownMenuItem onClick={() => onDisable(user)}>
                         <ShieldOffIcon />
-                        تعطيل
+                        {t('actions.disable')}
                       </DropdownMenuItem>
                     )}
                     {!isSuperAdmin && onDelete && (
@@ -153,7 +158,7 @@ export function UserTable({
                         <DropdownMenuSeparator />
                         <DropdownMenuItem variant="destructive" onClick={() => onDelete(user)}>
                           <Trash2Icon />
-                          حذف
+                          {t('actions.delete')}
                         </DropdownMenuItem>
                       </>
                     )}

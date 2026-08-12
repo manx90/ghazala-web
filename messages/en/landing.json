@@ -1,0 +1,275 @@
+{
+  "nav": {
+    "features": "Features",
+    "product": "Product",
+    "automation": "Automation",
+    "api": "Developer API",
+    "faq": "FAQ"
+  },
+  "hero": {
+    "badge": "WhatsApp Business API platform for ambitious companies",
+    "titleBefore": "Turn ",
+    "titleHighlight": "WhatsApp",
+    "titleAfter": " conversations into real business growth",
+    "description": "Ghazala gives your team a shared inbox, smart automation, targeted broadcast campaigns, and real-time analytics — all through the official WhatsApp Business API and enterprise-grade infrastructure.",
+    "primaryCta": "Start free now",
+    "secondaryCta": "Explore features",
+    "stats": {
+      "uptime": "Service uptime",
+      "messages": "Messages per month",
+      "latency": "API response time"
+    }
+  },
+  "securityBadges": {
+    "encryption": "End-to-end encryption in transit and at rest",
+    "uptime": "99.9% infrastructure uptime",
+    "meta": "Official Meta-approved interface"
+  },
+  "trustedBy": {
+    "title": "Trusted by growth and support teams across industries",
+    "items": [
+      "Al-Ufuq Trading",
+      "Numo Tech",
+      "Wafa Stores",
+      "Al-Riyada Group",
+      "Sadeem Digital",
+      "Atheer Holdings"
+    ]
+  },
+  "featuresGrid": {
+    "eyebrow": "All-in-one platform",
+    "title": "Everything your team needs to communicate on WhatsApp",
+    "description": "Tools carefully designed to scale customer communication without losing the human touch.",
+    "items": {
+      "inbox": {
+        "title": "Shared inbox",
+        "description": "All customer conversations in one place, with smart assignment and internal team notes."
+      },
+      "automation": {
+        "title": "AI automation",
+        "description": "Instant replies to common questions and automatic routing to the right department, 24/7."
+      },
+      "broadcast": {
+        "title": "Targeted broadcasts",
+        "description": "Send approved templates to specific audience segments and measure delivery, read, and conversion rates."
+      },
+      "templates": {
+        "title": "Meta-approved templates",
+        "description": "Create and manage approved message templates with full support for buttons, media, and dynamic variables."
+      },
+      "api": {
+        "title": "Developer API",
+        "description": "Fully documented REST API with real-time webhooks for seamless integration with your internal systems."
+      },
+      "analytics": {
+        "title": "Real-time analytics",
+        "description": "Precise dashboards for team and campaign performance to help you make data-driven decisions."
+      }
+    }
+  },
+  "productShowcase": {
+    "eyebrow": "Product tour",
+    "title": "An interface built for your team's speed",
+    "description": "Everything where you expect it: conversations, campaigns, and performance in one fast, elegant dashboard.",
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "inbox": "Inbox",
+      "contacts": "Contacts",
+      "campaigns": "Campaigns",
+      "templates": "Templates",
+      "settings": "Settings"
+    },
+    "kpis": {
+      "conversations": "Conversations today",
+      "responseTime": "Avg. response time",
+      "satisfaction": "Customer satisfaction"
+    },
+    "kpiValues": {
+      "conversations": "1,284",
+      "responseTime": "42s",
+      "satisfaction": "96%"
+    },
+    "chartTitle": "Messages over the last 12 weeks",
+    "chartGrowth": "+24% growth"
+  },
+  "splitSections": {
+    "automation": {
+      "eyebrow": "Smart automation",
+      "title": "Automation that works for you, even while you sleep",
+      "description": "Design smart reply flows that answer customers instantly, collect data, and escalate complex conversations to your team at the right time.",
+      "points": [
+        "AI-powered automatic replies to frequently asked questions",
+        "Automatic routing by department, language, and priority",
+        "Event-based triggers: new message, keyword, or wait time"
+      ]
+    },
+    "inbox": {
+      "eyebrow": "Shared inbox",
+      "title": "One team, one inbox, zero distraction",
+      "description": "No more personal numbers and lost conversations. Your entire team works from a unified interface with full context for every customer.",
+      "points": [
+        "Manual or automatic conversation assignment with fair load distribution",
+        "Internal notes and mentions between team members invisible to customers",
+        "Unified customer profile combining conversation history, data, and tags"
+      ]
+    },
+    "broadcast": {
+      "eyebrow": "Broadcast campaigns",
+      "title": "Campaigns that reach the right person at the right time",
+      "description": "Launch broadcast campaigns via approved templates, target precise audience segments, and track results in real time.",
+      "points": [
+        "Targeting by tags, attributes, and customer behavior",
+        "Scheduled sending with rate control to avoid limits",
+        "Delivery, read, and engagement reports for each campaign"
+      ]
+    },
+    "api": {
+      "eyebrow": "Developer API",
+      "title": "An API developers will love",
+      "description": "Fully documented REST interface, secure access keys, and real-time webhooks that keep you informed of every event as it happens.",
+      "points": [
+        "Interactive documentation with ready examples in popular languages",
+        "Retryable webhooks with secure signature verification",
+        "Isolated sandbox environment to test integrations before launch"
+      ]
+    },
+    "analytics": {
+      "eyebrow": "Analytics",
+      "title": "Smarter decisions powered by real-time data",
+      "description": "Understand what happens in every conversation and campaign: from response rates to each team member's performance, all in clear dashboards.",
+      "points": [
+        "Team KPIs: first response time and average resolution time",
+        "Precise tracking of campaign message delivery and read rates",
+        "Export reports in multiple formats to share with management"
+      ]
+    }
+  },
+  "pricing": {
+    "eyebrow": "Flexible plans",
+    "title": "Pricing that grows with you, no surprises",
+    "description": "Start free and try all features, then move to the plan that fits your business size. No long contracts — upgrade or cancel anytime.",
+    "primaryCta": "Start your free trial",
+    "points": [
+      "No credit card required",
+      "Setup in minutes",
+      "Support in your language"
+    ]
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "Everything you want to know about Ghazala",
+    "items": [
+      {
+        "question": "Is Ghazala an official WhatsApp Business API provider?",
+        "answer": "Yes, Ghazala is built on Meta's official WhatsApp Business API, ensuring service stability, full compliance with WhatsApp policies, and protection from bans associated with unofficial solutions."
+      },
+      {
+        "question": "How long does setup and WhatsApp number connection take?",
+        "answer": "Usually just a few minutes. Register your account, create your organization, then connect your number via Meta's embedded signup without leaving the platform."
+      },
+      {
+        "question": "Can multiple agents reply from the same number?",
+        "answer": "Absolutely. The shared inbox is designed for exactly that: your whole team collaborates on one number with conversation assignment, internal notes, and per-agent performance tracking."
+      },
+      {
+        "question": "Does the platform integrate with our internal systems?",
+        "answer": "Yes, we provide a fully documented REST API and real-time webhooks, making it easy to connect Ghazala with your CRM, ERP, and e-commerce systems."
+      },
+      {
+        "question": "How are WhatsApp message costs calculated?",
+        "answer": "Conversation costs follow Meta's official pricing by template type and country. Ghazala shows you a clear breakdown for every message in the billing dashboard with no hidden fees."
+      },
+      {
+        "question": "Is my data and customer conversations secure?",
+        "answer": "We apply encryption in transit and at rest, granular role-based permissions, and full audit logs, with strict adherence to the privacy policy on our website."
+      }
+    ]
+  },
+  "footer": {
+    "description": "Enterprise WhatsApp Business API communication platform. Shared inbox, smart automation, broadcast campaigns, and real-time analytics.",
+    "columns": {
+      "product": "Product",
+      "account": "Account",
+      "legal": "Legal"
+    },
+    "links": {
+      "terms": "Terms of service",
+      "privacy": "Privacy policy"
+    },
+    "copyright": "All rights reserved."
+  },
+  "heroVisual": {
+    "channelTitle": "Official WhatsApp channel",
+    "online": "Online now",
+    "readMessages": "Read messages",
+    "chat": [
+      {
+        "from": "customer",
+        "text": "Hi, is the offer still available?",
+        "time": "10:24"
+      },
+      {
+        "from": "bot",
+        "text": "Welcome! Yes, the offer is valid until the end of the week.",
+        "time": "10:24"
+      },
+      {
+        "from": "customer",
+        "text": "Great! I'd like to complete the order please.",
+        "time": "10:25"
+      },
+      {
+        "from": "agent",
+        "text": "With pleasure, I'll prepare your order now.",
+        "time": "10:25"
+      }
+    ],
+    "senders": {
+      "bot": "Smart assistant",
+      "agent": "Support team"
+    },
+    "broadcastCampaign": "Broadcast campaign",
+    "delivered": "98% delivered",
+    "readRate": "Read rate",
+    "autoReply": "Auto-replied in 2 seconds"
+  },
+  "splitVisuals": {
+    "automation": {
+      "frameLabel": "Smart automation flow diagram",
+      "steps": ["New customer message", "Intent and language analysis", "Smart reply in 2 seconds"],
+      "autoBadge": "Automatic"
+    },
+    "inbox": {
+      "frameLabel": "Shared inbox conversation list",
+      "conversations": [
+        { "name": "Sarah Al-Otaibi", "preview": "Thanks, I received the order today", "agent": "Noura" },
+        { "name": "Mohammed Al-Harbi", "preview": "I need an update on the shipment", "agent": "Khalid" },
+        { "name": "Al-Wafa Company", "preview": "When does the subscription renew?", "agent": "Reem" }
+      ]
+    },
+    "broadcast": {
+      "frameLabel": "Broadcast campaign performance card",
+      "campaignTitle": "Weekend offers campaign",
+      "liveBadge": "Live now",
+      "metrics": [
+        { "label": "Sent", "count": "12,400" },
+        { "label": "Delivered", "count": "12,152" },
+        { "label": "Read", "count": "10,664" }
+      ]
+    },
+    "api": {
+      "frameLabel": "API code example",
+      "title": "Send template message"
+    },
+    "analytics": {
+      "frameLabel": "Performance analytics chart",
+      "firstResponse": "First response time",
+      "resolvedConversations": "Resolved conversations",
+      "weeklySatisfaction": "Weekly customer satisfaction"
+    }
+  },
+  "meta": {
+    "title": "Ghazala | Enterprise WhatsApp Business API Platform",
+    "description": "Shared inbox, smart automation, targeted broadcast campaigns, and real-time analytics via the official WhatsApp Business API."
+  }
+}

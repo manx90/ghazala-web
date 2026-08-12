@@ -1,17 +1,27 @@
 'use client';
 
-import { CheckCircle2Icon } from 'lucide-react';
+import { CheckCircle2Icon, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { SPLIT_SECTIONS } from '../data/landing-content';
+import { useLandingContent } from '../hooks/use-landing-content';
 import { Reveal } from './reveal';
 import { SPLIT_VISUALS } from './split-visuals';
 
-type SplitSectionData = (typeof SPLIT_SECTIONS)[number];
+type SplitSection = {
+  id: string;
+  icon: LucideIcon;
+  visual: keyof typeof SPLIT_VISUALS;
+  eyebrow: string;
+  title: string;
+  description: string;
+  points: string[];
+};
 
 export function SplitFeatures() {
+  const { splitSections } = useLandingContent();
+
   return (
     <div className="flex flex-col gap-20 py-20 sm:gap-24 sm:py-24">
-      {SPLIT_SECTIONS.map((section, index) => (
+      {splitSections.map((section, index) => (
         <SplitFeatureSection key={section.id} section={section} reversed={index % 2 === 1} />
       ))}
     </div>
@@ -22,7 +32,7 @@ function SplitFeatureSection({
   section,
   reversed,
 }: {
-  section: SplitSectionData;
+  section: SplitSection;
   reversed: boolean;
 }) {
   const Visual = SPLIT_VISUALS[section.visual];

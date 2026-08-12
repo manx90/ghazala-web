@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { SearchIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { memo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useUiStore } from '@/store/ui.store';
@@ -17,6 +18,7 @@ const GlobalSearchDialog = dynamic(
 function GlobalSearchTriggerComponent() {
   const isOpen = useUiStore((state) => state.isCommandPaletteOpen);
   const setOpen = useUiStore((state) => state.setCommandPaletteOpen);
+  const t = useTranslations('nav.search');
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -37,10 +39,10 @@ function GlobalSearchTriggerComponent() {
         size="sm"
         className="hidden w-56 justify-start gap-2 text-muted-foreground md:flex"
         onClick={() => setOpen(true)}
-        aria-label="بحث عام"
+        aria-label={t('ariaLabel')}
       >
         <SearchIcon />
-        <span className="flex-1 text-start">بحث...</span>
+        <span className="flex-1 text-start">{t('triggerPlaceholder')}</span>
         <kbd className="pointer-events-none hidden rounded border bg-muted px-1.5 font-mono text-[10px] font-medium lg:inline-block">
           ⌘K
         </kbd>
@@ -50,7 +52,7 @@ function GlobalSearchTriggerComponent() {
         size="icon-sm"
         className="md:hidden"
         onClick={() => setOpen(true)}
-        aria-label="بحث عام"
+        aria-label={t('ariaLabel')}
       >
         <SearchIcon />
       </Button>

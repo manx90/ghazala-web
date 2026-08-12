@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { Building2Icon, Loader2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,7 +33,12 @@ import {
 import { generateSlugFromName } from '@/features/onboarding/utils/slug';
 
 export function CreateOrganizationForm() {
+  const t = useTranslations('onboarding.createOrganization');
+  const tOnboarding = useTranslations('onboarding');
+  const tVal = useTranslations('validation');
   const createOrganization = useCreateOrganization();
+
+  const schema = useMemo(() => createOrganizationSchema((k) => tVal(k)), [tVal]);
 
   const {
     register,
@@ -41,7 +47,7 @@ export function CreateOrganizationForm() {
     watch,
     formState: { errors },
   } = useForm<CreateOrganizationFormValues>({
-    resolver: zodResolver(createOrganizationSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       name: '',
       slug: '',
@@ -71,12 +77,12 @@ export function CreateOrganizationForm() {
           <span className="bg-gradient-brand glow-brand flex size-14 items-center justify-center rounded-2xl text-primary-foreground shadow-lg">
             <Building2Icon className="size-7" aria-hidden="true" />
           </span>
-          <CardTitle className="text-xl">إنشاء منظمة</CardTitle>
-          <CardDescription>أنشئ منظمتك للبدء في استخدام غزالة</CardDescription>
+          <CardTitle className="text-xl">{t('title')}</CardTitle>
+          <CardDescription>{t('description')}</CardDescription>
         </CardHeader>
         <CardContent className="pb-8">
           <form onSubmit={onSubmit} className="flex flex-col gap-5">
-            <FormField id="name" label="اسم المنظمة" error={errors.name?.message}>
+            <FormField id="name" label={t('orgName')} error={errors.name?.message}>
               <Input
                 id="name"
                 aria-invalid={Boolean(errors.name)}
@@ -84,7 +90,7 @@ export function CreateOrganizationForm() {
               />
             </FormField>
 
-            <FormField id="slug" label="المعرف (Slug)" error={errors.slug?.message}>
+            <FormField id="slug" label={t('slug')} error={errors.slug?.message}>
               <Input
                 id="slug"
                 dir="ltr"
@@ -94,36 +100,36 @@ export function CreateOrganizationForm() {
               />
             </FormField>
 
-            <FormField id="timezone" label="المنطقة الزمنية" error={errors.timezone?.message}>
+            <FormField id="timezone" label={t('timezone')} error={errors.timezone?.message}>
               <Select
                 value={timezone}
                 onValueChange={(value) => setValue('timezone', value ?? '', { shouldValidate: true })}
               >
                 <SelectTrigger id="timezone" className="w-full">
-                  <SelectValue placeholder="اختر المنطقة الزمنية" />
+                  <SelectValue placeholder={t('selectTimezone')} />
                 </SelectTrigger>
                 <SelectContent>
                   {TIMEZONE_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
-                      {option.label}
+                      {tOnboarding(option.labelKey)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </FormField>
 
-            <FormField id="country" label="الدولة" error={errors.country?.message}>
+            <FormField id="country" label={t('country')} error={errors.country?.message}>
               <Select
                 value={country}
                 onValueChange={(value) => setValue('country', value ?? '', { shouldValidate: true })}
               >
                 <SelectTrigger id="country" className="w-full">
-                  <SelectValue placeholder="اختر الدولة" />
+                  <SelectValue placeholder={t('selectCountry')} />
                 </SelectTrigger>
                 <SelectContent>
                   {COUNTRY_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
-                      {option.label}
+                      {tOnboarding(option.labelKey)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -140,10 +146,10 @@ export function CreateOrganizationForm() {
               {createOrganization.isPending ? (
                 <>
                   <Loader2Icon className="animate-spin" />
-                  جاري الإنشاء...
+                  {t('creating')}
                 </>
               ) : (
-                'إنشاء المنظمة'
+                t('submit')
               )}
             </Button>
           </form>

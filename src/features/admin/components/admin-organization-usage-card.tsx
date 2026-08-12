@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { QueryState } from '@/components/shared/query-state';
 import { useAdminOrganizationUsage } from '@/features/admin/hooks/use-admin-organizations';
@@ -40,16 +41,17 @@ interface AdminOrganizationUsageCardProps {
 }
 
 export function AdminOrganizationUsageCard({ organizationId }: AdminOrganizationUsageCardProps) {
+  const t = useTranslations('admin.organizations.usage');
   const usageQuery = useAdminOrganizationUsage(organizationId);
 
   return (
     <Card className="animate-fade-in-up">
       <CardHeader>
-        <CardTitle className="text-base">استخدام الخطة</CardTitle>
+        <CardTitle className="text-base">{t('title')}</CardTitle>
         <CardDescription>
           {usageQuery.data?.usage
             ? `${usageQuery.data.usage.planName} — ${usageQuery.data.usage.period}`
-            : 'مقارنة الاستخدام بحدود الخطة'}
+            : t('description')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -58,16 +60,16 @@ export function AdminOrganizationUsageCard({ organizationId }: AdminOrganization
           isError={usageQuery.isError}
           error={usageQuery.error}
           isEmpty={!usageQuery.data?.hasActiveSubscription}
-          emptyTitle="لا يوجد اشتراك نشط"
+          emptyTitle={t('empty')}
           onRetry={() => usageQuery.refetch()}
           skeletonRows={4}
         >
           {usageQuery.data?.usage ? (
             <div className="flex flex-col gap-5">
-              <UsageBar label="الرسائل الشهرية" metric={usageQuery.data.usage.messages} />
-              <UsageBar label="جهات الاتصال" metric={usageQuery.data.usage.contacts} />
-              <UsageBar label="أعضاء الفريق" metric={usageQuery.data.usage.teamMembers} />
-              <UsageBar label="أرقام الهاتف" metric={usageQuery.data.usage.phoneNumbers} />
+              <UsageBar label={t('messages')} metric={usageQuery.data.usage.messages} />
+              <UsageBar label={t('contacts')} metric={usageQuery.data.usage.contacts} />
+              <UsageBar label={t('teamMembers')} metric={usageQuery.data.usage.teamMembers} />
+              <UsageBar label={t('phoneNumbers')} metric={usageQuery.data.usage.phoneNumbers} />
             </div>
           ) : null}
         </QueryState>

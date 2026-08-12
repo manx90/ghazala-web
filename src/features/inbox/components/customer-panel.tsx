@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { MailIcon, PhoneIcon, UserIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { StatusBadge } from '@/components/shared/status-badge';
@@ -15,15 +16,17 @@ interface CustomerPanelProps {
   conversation?: Conversation | null;
 }
 
-function getInitials(name?: string | null, phone?: string): string {
+function getInitials(name?: string | null, phone?: string, fallback = '?'): string {
   if (name?.trim()) {
     const parts = name.trim().split(/\s+/);
     return parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? '').join('');
   }
-  return phone?.slice(-2) ?? '؟';
+  return phone?.slice(-2) ?? fallback;
 }
 
 export function CustomerPanel({ conversation }: CustomerPanelProps) {
+  const t = useTranslations('inbox.customerPanel');
+  const tInbox = useTranslations('inbox');
   const phone = conversation?.customerPhone;
 
   const contactQuery = useQuery({
@@ -42,7 +45,7 @@ export function CustomerPanel({ conversation }: CustomerPanelProps) {
         <div className="flex size-12 items-center justify-center rounded-2xl bg-gradient-brand-soft text-primary">
           <UserIcon className="size-5" />
         </div>
-        <p className="text-sm text-muted-foreground">اختر محادثة لعرض بيانات العميل</p>
+        <p className="text-sm text-muted-foreground">{t('selectConversationHint')}</p>
       </div>
     );
   }
@@ -55,7 +58,7 @@ export function CustomerPanel({ conversation }: CustomerPanelProps) {
   return (
     <div className="flex h-full min-h-0 flex-col bg-background">
       <div className="flex h-14 shrink-0 items-center border-b border-border/60 px-4">
-        <h2 className="text-sm font-semibold">بيانات العميل</h2>
+        <h2 className="text-sm font-semibold">{tInbox('customerData')}</h2>
       </div>
 
       <div className="flex-1 space-y-4 overflow-y-auto p-4">
@@ -66,7 +69,7 @@ export function CustomerPanel({ conversation }: CustomerPanelProps) {
                 <AvatarImage src={contact.profilePhotoUrl} alt={displayName} />
               ) : null}
               <AvatarFallback className="bg-muted text-lg font-semibold text-primary">
-                {getInitials(displayName, conversation.customerPhone)}
+                {getInitials(displayName, conversation.customerPhone, tInbox('initialsFallback'))}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -91,7 +94,7 @@ export function CustomerPanel({ conversation }: CustomerPanelProps) {
                 <PhoneIcon className="size-4" />
               </div>
               <div className="min-w-0">
-                <dt className="text-xs text-muted-foreground">الهاتف</dt>
+                <dt className="text-xs text-muted-foreground">{t('phone')}</dt>
                 <dd className="truncate text-sm font-medium" dir="ltr">
                   {formatPhoneDisplay(conversation.customerPhone)}
                 </dd>
@@ -104,7 +107,7 @@ export function CustomerPanel({ conversation }: CustomerPanelProps) {
                   <MailIcon className="size-4" />
                 </div>
                 <div className="min-w-0">
-                  <dt className="text-xs text-muted-foreground">البريد</dt>
+                  <dt className="text-xs text-muted-foreground">{t('email')}</dt>
                   <dd className="truncate text-sm font-medium" dir="ltr">{contact.email}</dd>
                 </div>
               </div>
@@ -116,7 +119,7 @@ export function CustomerPanel({ conversation }: CustomerPanelProps) {
                   <UserIcon className="size-4" />
                 </div>
                 <div className="min-w-0">
-                  <dt className="text-xs text-muted-foreground">الاسم</dt>
+                  <dt className="text-xs text-muted-foreground">{t('name')}</dt>
                   <dd className="truncate text-sm font-medium">
                     {[contact.firstName, contact.lastName].filter(Boolean).join(' ')}
                   </dd>
@@ -126,7 +129,7 @@ export function CustomerPanel({ conversation }: CustomerPanelProps) {
 
             {contact?.notes && (
               <div>
-                <dt className="mb-1.5 text-xs text-muted-foreground">ملاحظات</dt>
+                <dt className="mb-1.5 text-xs text-muted-foreground">{t('notes')}</dt>
                 <dd className="rounded-xl bg-muted/60 p-3 text-sm leading-relaxed">
                   {contact.notes}
                 </dd>
@@ -134,25 +137,23 @@ export function CustomerPanel({ conversation }: CustomerPanelProps) {
             )}
 
             {!contact && !contactQuery.isLoading && (
-              <p className="text-xs text-muted-foreground">
-                لم يتم العثور على جهة اتصال مسجّلة — يُعرض رقم الهاتف فقط.
-              </p>
+              <p className="text-xs text-muted-foreground">{t('noContactFound')}</p>
             )}
           </dl>
         )}
 
         <dl className="space-y-2.5 rounded-2xl border border-border/60 bg-card p-4 text-xs shadow-2xs">
           <div className="flex items-center justify-between gap-2">
-            <dt className="text-muted-foreground">بدء المحادثة</dt>
+            <dt className="text-muted-foreground">{t('conversationStarted')}</dt>
             <dd className="font-medium">{formatDateTime(conversation.startedAt)}</dd>
           </div>
           <div className="flex items-center justify-between gap-2">
-            <dt className="text-muted-foreground">آخر رسالة</dt>
+            <dt className="text-muted-foreground">{t('lastMessage')}</dt>
             <dd className="font-medium">{formatDateTime(conversation.lastMessageAt)}</dd>
           </div>
           {conversation.closedAt && (
             <div className="flex items-center justify-between gap-2">
-              <dt className="text-muted-foreground">تاريخ الإغلاق</dt>
+              <dt className="text-muted-foreground">{t('closedAt')}</dt>
               <dd className="font-medium">{formatDateTime(conversation.closedAt)}</dd>
             </div>
           )}

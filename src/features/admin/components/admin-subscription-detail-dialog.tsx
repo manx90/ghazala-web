@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { ModalWrapper } from '@/components/global/modal-wrapper';
 import { QueryState } from '@/components/shared/query-state';
 import { StatusBadge } from '@/components/shared/status-badge';
@@ -19,11 +20,6 @@ import { BillingCycle } from '@/types/billing.types';
 import { formatCurrency } from '@/utils/currency';
 import { formatDateTime } from '@/utils/date';
 
-const BILLING_CYCLE_LABELS: Record<BillingCycle, string> = {
-  [BillingCycle.MONTHLY]: 'شهري',
-  [BillingCycle.YEARLY]: 'سنوي',
-};
-
 interface AdminSubscriptionDetailDialogProps {
   subscriptionId: string | null;
   open: boolean;
@@ -35,6 +31,10 @@ export function AdminSubscriptionDetailDialog({
   open,
   onOpenChange,
 }: AdminSubscriptionDetailDialogProps) {
+  const t = useTranslations('admin.subscriptions.detailDialog');
+  const tSubs = useTranslations('admin.subscriptions');
+  const tBilling = useTranslations('settings.billing');
+  const tCommon = useTranslations('admin.common');
   const { data, isLoading, isError, error, refetch } = useAdminSubscriptionDetail(
     subscriptionId ?? '',
     open && !!subscriptionId,
@@ -44,12 +44,12 @@ export function AdminSubscriptionDetailDialog({
     <ModalWrapper
       open={open}
       onOpenChange={onOpenChange}
-      title="تفاصيل الاشتراك"
-      description={data?.organization?.name ?? 'جاري التحميل...'}
+      title={t('title')}
+      description={data?.organization?.name ?? tCommon('loading')}
       footer={
         data?.organization ? (
           <Button variant="outline" render={<Link href={ROUTES.admin.organization(data.organization.id)} />}>
-            عرض المنظمة
+            {t('viewOrganization')}
           </Button>
         ) : null
       }
@@ -59,52 +59,52 @@ export function AdminSubscriptionDetailDialog({
         isError={isError}
         error={error}
         isEmpty={!data && !isLoading}
-        emptyTitle="الاشتراك غير موجود"
+        emptyTitle={t('notFound')}
         onRetry={() => refetch()}
       >
         {data ? (
           <div className="flex flex-col gap-5">
             <dl className="grid gap-3 text-sm sm:grid-cols-2">
               <div>
-                <dt className="text-muted-foreground">المنظمة</dt>
-                <dd className="font-medium">{data.organization?.name ?? '—'}</dd>
+                <dt className="text-muted-foreground">{tSubs('columns.organization')}</dt>
+                <dd className="font-medium">{data.organization?.name ?? tCommon('notAvailable')}</dd>
               </div>
               <div>
-                <dt className="text-muted-foreground">الخطة</dt>
-                <dd className="font-medium">{data.plan?.name ?? '—'}</dd>
+                <dt className="text-muted-foreground">{tSubs('columns.plan')}</dt>
+                <dd className="font-medium">{data.plan?.name ?? tCommon('notAvailable')}</dd>
               </div>
               <div>
-                <dt className="text-muted-foreground">الحالة</dt>
+                <dt className="text-muted-foreground">{tSubs('columns.status')}</dt>
                 <dd>
                   <StatusBadge status={data.status} />
                 </dd>
               </div>
               <div>
-                <dt className="text-muted-foreground">دورة الفوترة</dt>
-                <dd>{BILLING_CYCLE_LABELS[data.billingCycle]}</dd>
+                <dt className="text-muted-foreground">{tSubs('columns.cycle')}</dt>
+                <dd>
+                  {data.billingCycle === BillingCycle.MONTHLY
+                    ? tSubs('cycle.monthly')
+                    : tSubs('cycle.yearly')}
+                </dd>
               </div>
               <div>
-                <dt className="text-muted-foreground">تاريخ البداية</dt>
-                <dd>{formatDateTime(data.startsAt)}</dd>
-              </div>
-              <div>
-                <dt className="text-muted-foreground">تاريخ الانتهاء</dt>
-                <dd>{data.expiresAt ? formatDateTime(data.expiresAt) : '—'}</dd>
+                <dt className="text-muted-foreground">{tBilling('subscription.expiresAt')}</dt>
+                <dd>{data.expiresAt ? formatDateTime(data.expiresAt) : tCommon('notAvailable')}</dd>
               </div>
             </dl>
 
             <div className="flex flex-col gap-2">
-              <h4 className="text-sm font-semibold">سجل الفواتير</h4>
+              <h4 className="text-sm font-semibold">{t('invoices')}</h4>
               {data.invoices.length === 0 ? (
-                <p className="text-sm text-muted-foreground">لا توجد فواتير</p>
+                <p className="text-sm text-muted-foreground">{tBilling('invoices.emptyTitle')}</p>
               ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>الرقم</TableHead>
-                      <TableHead>المبلغ</TableHead>
-                      <TableHead>الحالة</TableHead>
-                      <TableHead>التاريخ</TableHead>
+                      <TableHead>{tBilling('invoices.columns.number')}</TableHead>
+                      <TableHead>{tBilling('invoices.columns.amount')}</TableHead>
+                      <TableHead>{tBilling('invoices.columns.status')}</TableHead>
+                      <TableHead>{tBilling('invoices.columns.issuedAt')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

@@ -1,5 +1,7 @@
 'use client';
 
+import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -10,7 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { FormField } from '@/components/forms/form-field';
 import {
-  planFormSchema,
+  createPlanSchema,
   type PlanFormInputValues,
   type PlanFormValues,
 } from '@/features/admin/schemas/plan.schemas';
@@ -25,10 +27,17 @@ interface PlanFormProps {
 }
 
 export function PlanForm({ mode, defaultValues, onSubmit, isLoading }: PlanFormProps) {
+  const t = useTranslations('admin.plans.form');
+  const tValidation = useTranslations('admin.plans.validation');
   const isEdit = mode === 'edit';
 
+  const schema = useMemo(
+    () => createPlanSchema((k) => tValidation(k)),
+    [tValidation],
+  );
+
   const methods = useForm<PlanFormInputValues, unknown, PlanFormValues>({
-    resolver: zodResolver(planFormSchema),
+    resolver: zodResolver(schema),
     defaultValues: isEdit
       ? {
           name: defaultValues?.name ?? '',
@@ -70,23 +79,23 @@ export function PlanForm({ mode, defaultValues, onSubmit, isLoading }: PlanFormP
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">المعلومات الأساسية</CardTitle>
-            <CardDescription>الاسم والرمز والوصف كما تظهر للعملاء</CardDescription>
+            <CardTitle className="text-base">{t('basicInfo')}</CardTitle>
+            <CardDescription>{t('codeDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-5">
-            <FormField name="name" label="اسم الخطة" required>
+            <FormField name="name" label={t('name')} required>
               {({ id, invalid }) => <Input id={id} {...register('name')} placeholder="Professional" aria-invalid={invalid} />}
             </FormField>
 
             {!isEdit ? (
-              <FormField name="code" label="الرمز" description="أحرف صغيرة وأرقام وشرطات فقط" required>
+              <FormField name="code" label={t('code')} description={t('codeDescription')} required>
                 {({ id, invalid }) => <Input id={id} {...register('code')} placeholder="pro" dir="ltr" aria-invalid={invalid} />}
               </FormField>
             ) : (
               <input type="hidden" {...register('code')} />
             )}
 
-            <FormField name="description" label="الوصف">
+            <FormField name="description" label={t('description')}>
               {({ id }) => <Textarea id={id} {...register('description')} rows={3} />}
             </FormField>
           </CardContent>
@@ -94,22 +103,21 @@ export function PlanForm({ mode, defaultValues, onSubmit, isLoading }: PlanFormP
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">التسعير</CardTitle>
-            <CardDescription>أسعار الاشتراك الشهري والسنوي</CardDescription>
+            <CardTitle className="text-base">{t('pricing')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-5 sm:grid-cols-2">
-              <FormField name="monthlyPrice" label="السعر الشهري" required>
+              <FormField name="monthlyPrice" label={t('monthlyPrice')} required>
                 {({ id, invalid }) => (
                   <Input id={id} type="number" min={0} step="0.01" dir="ltr" {...register('monthlyPrice')} aria-invalid={invalid} />
                 )}
               </FormField>
-              <FormField name="yearlyPrice" label="السعر السنوي" required>
+              <FormField name="yearlyPrice" label={t('yearlyPrice')} required>
                 {({ id, invalid }) => (
                   <Input id={id} type="number" min={0} step="0.01" dir="ltr" {...register('yearlyPrice')} aria-invalid={invalid} />
                 )}
               </FormField>
-              <FormField name="currency" label="العملة">
+              <FormField name="currency" label={t('currency')}>
                 {({ id }) => <Input id={id} maxLength={3} dir="ltr" {...register('currency')} />}
               </FormField>
             </div>
@@ -118,29 +126,28 @@ export function PlanForm({ mode, defaultValues, onSubmit, isLoading }: PlanFormP
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">حدود الخطة</CardTitle>
-            <CardDescription>اترك الحقل فارغاً لجعله غير محدود</CardDescription>
+            <CardTitle className="text-base">{t('limits')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-5 sm:grid-cols-2">
-              <FormField name="maxMessagesMonthly" label="الرسائل الشهرية">
+              <FormField name="maxMessagesMonthly" label={t('maxMessages')}>
                 {({ id }) => (
-                  <Input id={id} type="number" min={0} dir="ltr" placeholder="غير محدود" {...register('maxMessagesMonthly')} />
+                  <Input id={id} type="number" min={0} dir="ltr" placeholder={t('unlimitedPlaceholder')} {...register('maxMessagesMonthly')} />
                 )}
               </FormField>
-              <FormField name="maxContacts" label="جهات الاتصال">
+              <FormField name="maxContacts" label={t('maxContacts')}>
                 {({ id }) => (
-                  <Input id={id} type="number" min={0} dir="ltr" placeholder="غير محدود" {...register('maxContacts')} />
+                  <Input id={id} type="number" min={0} dir="ltr" placeholder={t('unlimitedPlaceholder')} {...register('maxContacts')} />
                 )}
               </FormField>
-              <FormField name="maxTeamMembers" label="أعضاء الفريق">
+              <FormField name="maxTeamMembers" label={t('maxTeamMembers')}>
                 {({ id }) => (
-                  <Input id={id} type="number" min={0} dir="ltr" placeholder="غير محدود" {...register('maxTeamMembers')} />
+                  <Input id={id} type="number" min={0} dir="ltr" placeholder={t('unlimitedPlaceholder')} {...register('maxTeamMembers')} />
                 )}
               </FormField>
-              <FormField name="maxPhoneNumbers" label="أرقام الهاتف">
+              <FormField name="maxPhoneNumbers" label={t('maxPhoneNumbers')}>
                 {({ id }) => (
-                  <Input id={id} type="number" min={0} dir="ltr" placeholder="غير محدود" {...register('maxPhoneNumbers')} />
+                  <Input id={id} type="number" min={0} dir="ltr" placeholder={t('unlimitedPlaceholder')} {...register('maxPhoneNumbers')} />
                 )}
               </FormField>
             </div>
@@ -149,17 +156,16 @@ export function PlanForm({ mode, defaultValues, onSubmit, isLoading }: PlanFormP
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Whop</CardTitle>
-            <CardDescription>معرفات خطط Whop للدفع الشهري والسنوي (plan_...)</CardDescription>
+            <CardTitle className="text-base">{t('whop')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-5 sm:grid-cols-2">
-              <FormField name="whopPlanIdMonthly" label="Whop شهري">
+              <FormField name="whopPlanIdMonthly" label={`${t('whop')} (${t('monthlyPrice')})`}>
                 {({ id }) => (
                   <Input id={id} dir="ltr" placeholder="plan_..." {...register('whopPlanIdMonthly')} />
                 )}
               </FormField>
-              <FormField name="whopPlanIdYearly" label="Whop سنوي">
+              <FormField name="whopPlanIdYearly" label={`${t('whop')} (${t('yearlyPrice')})`}>
                 {({ id }) => (
                   <Input id={id} dir="ltr" placeholder="plan_..." {...register('whopPlanIdYearly')} />
                 )}
@@ -174,8 +180,8 @@ export function PlanForm({ mode, defaultValues, onSubmit, isLoading }: PlanFormP
               {() => (
                 <div className="flex items-center justify-between rounded-xl bg-gradient-brand-soft p-4 ring-1 ring-primary/10">
                   <div className="flex flex-col gap-1">
-                    <Label htmlFor="isActive">نشطة</Label>
-                    <p className="text-xs text-muted-foreground">إظهار الخطة للعملاء</p>
+                    <Label htmlFor="isActive">{t('active')}</Label>
+                    <p className="text-xs text-muted-foreground">{t('visibleToCustomers')}</p>
                   </div>
                   <Switch
                     id="isActive"
@@ -190,7 +196,7 @@ export function PlanForm({ mode, defaultValues, onSubmit, isLoading }: PlanFormP
 
         <div className="flex justify-end">
           <Button type="submit" variant="gradient" size="lg" disabled={isLoading}>
-            {isLoading ? 'جاري الحفظ...' : isEdit ? 'حفظ التغييرات' : 'إنشاء الخطة'}
+            {isLoading ? t('saving') : isEdit ? t('saveChanges') : t('create')}
           </Button>
         </div>
       </form>

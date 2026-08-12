@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group';
 import { Input } from '@/components/ui/input';
 import type { InputHTMLAttributes } from 'react';
@@ -33,27 +34,31 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(function
   );
 });
 
-const COUNTRIES: { code: string; name: string; dial: string }[] = [
-  { code: 'SA', name: 'السعودية', dial: '+966' },
-  { code: 'AE', name: 'الإمارات', dial: '+971' },
-  { code: 'EG', name: 'مصر', dial: '+20' },
-  { code: 'KW', name: 'الكويت', dial: '+965' },
-  { code: 'QA', name: 'قطر', dial: '+974' },
-  { code: 'BH', name: 'البحرين', dial: '+973' },
-  { code: 'OM', name: 'عمان', dial: '+968' },
-  { code: 'JO', name: 'الأردن', dial: '+962' },
-  { code: 'PS', name: 'فلسطين', dial: '+970' },
-  { code: 'LB', name: 'لبنان', dial: '+961' },
-  { code: 'IQ', name: 'العراق', dial: '+964' },
-  { code: 'SY', name: 'سوريا', dial: '+963' },
-  { code: 'YE', name: 'اليمن', dial: '+967' },
-  { code: 'SD', name: 'السودان', dial: '+249' },
-  { code: 'LY', name: 'ليبيا', dial: '+218' },
-  { code: 'TN', name: 'تونس', dial: '+216' },
-  { code: 'DZ', name: 'الجزائر', dial: '+213' },
-  { code: 'MA', name: 'المغرب', dial: '+212' },
-  { code: 'MR', name: 'موريتانيا', dial: '+222' },
-];
+const COUNTRY_CODES = [
+  'SA', 'AE', 'EG', 'KW', 'QA', 'BH', 'OM', 'JO', 'PS', 'LB', 'IQ', 'SY', 'YE', 'SD', 'LY', 'TN', 'DZ', 'MA', 'MR',
+] as const;
+
+const COUNTRY_DIALS: Record<(typeof COUNTRY_CODES)[number], string> = {
+  SA: '+966',
+  AE: '+971',
+  EG: '+20',
+  KW: '+965',
+  QA: '+974',
+  BH: '+973',
+  OM: '+968',
+  JO: '+962',
+  PS: '+970',
+  LB: '+961',
+  IQ: '+964',
+  SY: '+963',
+  YE: '+967',
+  SD: '+249',
+  LY: '+218',
+  TN: '+216',
+  DZ: '+213',
+  MA: '+212',
+  MR: '+222',
+};
 
 interface CountrySelectorProps {
   value: string;
@@ -62,21 +67,24 @@ interface CountrySelectorProps {
 }
 
 export function CountrySelector({ value, onChange }: CountrySelectorProps) {
+  const t = useTranslations('common.countries');
+  const tForms = useTranslations('common.forms');
+
   return (
     <select
       className="h-8 rounded-lg border border-input bg-transparent px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      aria-label="اختر الدولة"
+      aria-label={tForms('selectCountry')}
     >
-      {COUNTRIES.map((c) => (
-        <option key={c.code} value={c.code}>
-          {c.name} ({c.dial})
+      {COUNTRY_CODES.map((code) => (
+        <option key={code} value={code}>
+          {t(code)} ({COUNTRY_DIALS[code]})
         </option>
       ))}
     </select>
   );
 }
 
-export { COUNTRIES };
+export { COUNTRY_CODES as COUNTRIES, COUNTRY_DIALS };
 export { Input as TextInput };

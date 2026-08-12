@@ -1,0 +1,17 @@
+{
+  "confirmDelete": "Confirm deletion",
+  "confirmDeleteDescription": "Are you sure? This action cannot be undone.",
+  "confirmAction": "Confirm action",
+  "deleteTitle": "Delete item",
+  "unsavedChanges": "You have unsaved changes",
+  "offline": "No internet connection",
+  "offlineDescription": "Check your connection and try again",
+  "offlineBanner": "No internet connection — some features may not work",
+  "sessionExpired": "Session expired",
+  "accessDenied": "Access denied",
+  "notFound": "Not found",
+  "serverError": "Server error",
+  "tryAgain": "Try again",
+  "continue": "Continue",
+  "done": "Done"
+}

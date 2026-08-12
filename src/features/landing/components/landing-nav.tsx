@@ -1,17 +1,21 @@
 'use client';
 
 import { AnimatePresence, motion } from 'motion/react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { LayoutDashboardIcon, MenuIcon, MessageCircleIcon, ShieldIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ThemeSwitcher } from '@/components/layout/header/theme-switcher';
+import { LanguageSwitcher } from '@/components/shared/language-switcher';
 import { ROUTES } from '@/config/routes';
 import { useLandingAuth } from '@/features/landing/hooks/use-landing-auth';
+import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
 import { cn } from '@/lib/utils';
-import { LANDING_NAV_LINKS } from '../data/landing-content';
 
 function AuthActions({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
+  const t = useTranslations('auth');
+  const tNav = useTranslations('nav');
   const { isAuthenticated, isSessionLoading, isSuperAdmin, workspaceHref, adminHref, loginHref, registerHref } =
     useLandingAuth();
 
@@ -30,7 +34,7 @@ function AuthActions({ mobile = false, onNavigate }: { mobile?: boolean; onNavig
               render={<Link href={adminHref} onClick={onNavigate} />}
             >
               <ShieldIcon data-icon="inline-start" />
-              لوحة الإدارة
+              {tNav('adminPanel')}
             </Button>
             <Button
               variant="gradient"
@@ -38,7 +42,7 @@ function AuthActions({ mobile = false, onNavigate }: { mobile?: boolean; onNavig
               render={<Link href={workspaceHref} onClick={onNavigate} />}
             >
               <LayoutDashboardIcon data-icon="inline-start" />
-              بوابة العملاء
+              {tNav('clientPortal')}
             </Button>
           </>
         ) : (
@@ -48,7 +52,7 @@ function AuthActions({ mobile = false, onNavigate }: { mobile?: boolean; onNavig
             render={<Link href={workspaceHref} onClick={onNavigate} />}
           >
             <LayoutDashboardIcon data-icon="inline-start" />
-            لوحة التحكم
+            {tNav('dashboard')}
           </Button>
         )}
       </>
@@ -62,20 +66,23 @@ function AuthActions({ mobile = false, onNavigate }: { mobile?: boolean; onNavig
         className={mobile ? 'w-full' : undefined}
         render={<Link href={loginHref} onClick={onNavigate} />}
       >
-        تسجيل الدخول
+        {t('login')}
       </Button>
       <Button
         variant="gradient"
         className={mobile ? 'w-full' : undefined}
         render={<Link href={registerHref} onClick={onNavigate} />}
       >
-        ابدأ مجاناً
+        {t('startFree')}
       </Button>
     </>
   );
 }
 
 export function LandingNav() {
+  const t = useTranslations('common');
+  const tNav = useTranslations('nav');
+  const { navLinks } = useLandingContent();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -112,16 +119,16 @@ export function LandingNav() {
         <Link
           href={ROUTES.home}
           className="relative z-10 flex items-center gap-2 text-lg font-bold tracking-tight"
-          aria-label="غزالة - الصفحة الرئيسية"
+          aria-label={tNav('homeAria')}
         >
           <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-brand text-primary-foreground shadow-md">
             <MessageCircleIcon className="size-5" />
           </span>
-          غزالة
+          {t('appName')}
         </Link>
 
-        <nav aria-label="التنقل الرئيسي" className="relative z-10 hidden items-center gap-1 lg:flex">
-          {LANDING_NAV_LINKS.map((link) => (
+        <nav aria-label={tNav('mainNav')} className="relative z-10 hidden items-center gap-1 lg:flex">
+          {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
@@ -133,16 +140,18 @@ export function LandingNav() {
         </nav>
 
         <div className="relative z-10 hidden items-center gap-2 lg:flex">
+          <LanguageSwitcher />
           <ThemeSwitcher />
           <AuthActions />
         </div>
 
         <div className="relative z-10 flex items-center gap-1 lg:hidden">
+          <LanguageSwitcher />
           <ThemeSwitcher />
           <Button
             variant="ghost"
             size="icon"
-            aria-label={mobileOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+            aria-label={mobileOpen ? tNav('closeMenu') : tNav('openMenu')}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((open) => !open)}
           >
@@ -154,7 +163,7 @@ export function LandingNav() {
       <AnimatePresence>
         {mobileOpen ? (
           <motion.nav
-            aria-label="قائمة الجوال"
+            aria-label={tNav('mobileNav')}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -162,7 +171,7 @@ export function LandingNav() {
             className="mx-4 overflow-hidden rounded-2xl border border-border/60 bg-background/90 shadow-lg backdrop-blur-xl lg:hidden"
           >
             <div className="flex flex-col gap-1 p-4">
-              {LANDING_NAV_LINKS.map((link) => (
+              {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}

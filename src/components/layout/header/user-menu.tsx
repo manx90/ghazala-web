@@ -1,8 +1,9 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { LogOutIcon, SettingsIcon, UserIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { memo } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,7 @@ function getUserInitials(firstName: string, lastName: string): string {
 
 function UserMenuComponent({ variant, orgSlug }: UserMenuProps) {
   const router = useRouter();
+  const t = useTranslations('nav.userMenu');
   const { user, isSessionLoading } = useSession();
   const logout = useLogout();
 
@@ -59,7 +61,7 @@ function UserMenuComponent({ variant, orgSlug }: UserMenuProps) {
             variant="ghost"
             size="icon-sm"
             className="rounded-full"
-            aria-label="قائمة المستخدم"
+            aria-label={t('ariaLabel')}
           />
         }
       >
@@ -81,12 +83,12 @@ function UserMenuComponent({ variant, orgSlug }: UserMenuProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem render={<Link href={settingsHref} />}>
           <UserIcon data-icon="inline-start" />
-          الملف الشخصي
+          {t('profile')}
         </DropdownMenuItem>
         {variant === 'client' && orgSlug && (
           <DropdownMenuItem render={<Link href={ROUTES.app.settings.root(orgSlug)} />}>
             <SettingsIcon data-icon="inline-start" />
-            الإعدادات
+            {t('settings')}
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
@@ -96,7 +98,7 @@ function UserMenuComponent({ variant, orgSlug }: UserMenuProps) {
           onClick={() => void handleLogout()}
         >
           <LogOutIcon data-icon="inline-start" />
-          تسجيل الخروج
+          {t('logout')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

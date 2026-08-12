@@ -52,7 +52,7 @@ export async function uploadFile(options: UploadFileOptions): Promise<UploadFile
 
       if (signal?.aborted) {
         throw new ApiError({
-          message: 'تم إلغاء الرفع',
+          message: 'Upload cancelled',
           statusCode: 0,
           code: 'UNKNOWN',
           error: 'Aborted',

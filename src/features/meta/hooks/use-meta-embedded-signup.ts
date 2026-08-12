@@ -1,7 +1,9 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { launchEmbeddedSignup } from '@/lib/meta/embedded-signup';
+import { isMetaSignupError } from '@/lib/meta/meta-signup-error';
 import type { EmbeddedSignupSession } from '@/types/meta.types';
 
 export function useMetaEmbeddedSignup(
@@ -11,12 +13,13 @@ export function useMetaEmbeddedSignup(
     metaBusinessId?: string;
   }) => Promise<void>,
 ) {
+  const t = useTranslations('settings.meta.embeddedSignup');
   const [isLaunching, setIsLaunching] = useState(false);
 
   const launch = useCallback(
     async (session: EmbeddedSignupSession) => {
       if (!session.embeddedSignupConfigId) {
-        throw new Error('Meta Embedded Signup غير مهيأ. تواصل مع الدعم.');
+        throw new Error(t('notConfigured'));
       }
 
       setIsLaunching(true);
@@ -33,11 +36,16 @@ export function useMetaEmbeddedSignup(
           wabaId: result.session.wabaId,
           metaBusinessId: result.session.metaBusinessId,
         });
+      } catch (error) {
+        if (isMetaSignupError(error)) {
+          throw new Error(t(error.code));
+        }
+        throw error;
       } finally {
         setIsLaunching(false);
       }
     },
-    [onComplete],
+    [onComplete, t],
   );
 
   return { launch, isLaunching };

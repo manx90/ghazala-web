@@ -1,7 +1,8 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { ChevronLeftIcon, ChevronRightIcon, PanelLeftIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { memo } from 'react';
 import { SidebarNav } from '@/components/layout/sidebar/sidebar-nav';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -22,8 +23,9 @@ interface SidebarProps {
 function SidebarComponent({ variant, navigation, className }: SidebarProps) {
   const isCollapsed = useUiStore((state) => state.isSidebarCollapsed);
   const toggleSidebar = useUiStore((state) => state.toggleSidebar);
+  const t = useTranslations('nav');
 
-  const portalLabel = variant === 'admin' ? 'لوحة الإدارة' : 'بوابة العملاء';
+  const portalLabel = variant === 'admin' ? t('sidebar.adminPortal') : t('sidebar.clientPortal');
 
   return (
     <aside
@@ -58,7 +60,7 @@ function SidebarComponent({ variant, navigation, className }: SidebarProps) {
           variant="ghost"
           size="icon-sm"
           onClick={toggleSidebar}
-          aria-label={isCollapsed ? 'توسيع الشريط الجانبي' : 'طي الشريط الجانبي'}
+          aria-label={isCollapsed ? t('sidebar.expandSidebar') : t('sidebar.collapseSidebar')}
           aria-expanded={!isCollapsed}
         >
           {isCollapsed ? <ChevronLeftIcon /> : <ChevronRightIcon />}
@@ -81,7 +83,7 @@ function SidebarComponent({ variant, navigation, className }: SidebarProps) {
               )}
             >
               <PanelLeftIcon data-icon="inline-start" />
-              بوابة العملاء
+              {t('sidebar.clientPortal')}
             </Link>
           </div>
         </>

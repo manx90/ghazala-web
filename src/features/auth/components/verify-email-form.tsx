@@ -1,7 +1,10 @@
 'use client';
 
-import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useMemo } from 'react';
+import { Link } from '@/i18n/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2Icon } from 'lucide-react';
@@ -9,16 +12,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ROUTES } from '@/config/routes';
 import { useResendVerification, useVerifyEmail } from '@/features/auth/hooks';
-import { verifyEmailSchema, type VerifyEmailFormValues } from '@/features/auth/schemas/auth.schemas';
+import {
+  createVerifyEmailSchema,
+  type VerifyEmailFormValues,
+} from '@/features/auth/schemas/create-auth-schemas';
 import { AuthCardLayout } from './auth-card-layout';
 import { FormField } from './form-field';
 
 export function VerifyEmailForm() {
+  const t = useTranslations('auth');
+  const tVal = useTranslations('validation');
   const router = useRouter();
   const searchParams = useSearchParams();
   const verifyEmail = useVerifyEmail();
   const resendVerification = useResendVerification();
   const emailFromQuery = searchParams.get('email') ?? '';
+
+  const schema = useMemo(() => createVerifyEmailSchema((k) => tVal(k)), [tVal]);
 
   const {
     register,
@@ -26,7 +36,7 @@ export function VerifyEmailForm() {
     getValues,
     formState: { errors },
   } = useForm<VerifyEmailFormValues>({
-    resolver: zodResolver(verifyEmailSchema),
+    resolver: zodResolver(schema),
     defaultValues: { email: emailFromQuery, otp: '' },
   });
 
@@ -46,32 +56,32 @@ export function VerifyEmailForm() {
 
   return (
     <AuthCardLayout
-      title="تأكيد البريد الإلكتروني"
-      description="أدخل رمز التحقق المرسل إلى بريدك"
+      title={t('verifyEmailTitle')}
+      description={t('verifyEmailSubtitle')}
       footer={
         <Link
           href={ROUTES.auth.login}
           className="font-semibold text-primary underline-offset-4 transition-colors hover:text-secondary hover:underline"
         >
-          العودة لتسجيل الدخول
+          {t('backToLogin')}
         </Link>
       }
     >
       <form onSubmit={onSubmit} className="space-y-5">
-        <FormField id="email" label="البريد الإلكتروني" error={errors.email?.message}>
+        <FormField id="email" label={t('email')} error={errors.email?.message}>
           <Input
             id="email"
             type="email"
             autoComplete="email"
             dir="ltr"
-            placeholder="name@company.com"
+            placeholder={t('emailPlaceholder')}
             aria-invalid={Boolean(errors.email)}
             className="h-11"
             {...register('email')}
           />
         </FormField>
 
-        <FormField id="otp" label="رمز التحقق" error={errors.otp?.message}>
+        <FormField id="otp" label={t('verificationCode')} error={errors.otp?.message}>
           <Input
             id="otp"
             inputMode="numeric"
@@ -93,10 +103,10 @@ export function VerifyEmailForm() {
           {verifyEmail.isPending ? (
             <>
               <Loader2Icon className="animate-spin" />
-              جاري التحقق...
+              {t('verifying')}
             </>
           ) : (
-            'تأكيد البريد'
+            t('confirmEmail')
           )}
         </Button>
 
@@ -110,10 +120,10 @@ export function VerifyEmailForm() {
           {resendVerification.isPending ? (
             <>
               <Loader2Icon className="animate-spin" />
-              جاري إعادة الإرسال...
+              {t('resending')}
             </>
           ) : (
-            'إعادة إرسال الرمز'
+            t('resendCode')
           )}
         </Button>
       </form>

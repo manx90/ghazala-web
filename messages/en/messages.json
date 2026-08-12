@@ -1,0 +1,54 @@
+{
+  "title": "Outbound messages",
+  "description": "Track status of messages sent from your platform",
+  "noMessages": "No outbound messages",
+  "noMessagesDescription": "Messages will appear here after they are sent.",
+  "recipient": "Recipient",
+  "type": "Type",
+  "status": "Status",
+  "createdAt": "Created at",
+  "action": "Action",
+  "details": "Details",
+  "retry": "Retry",
+  "backToMessages": "Back to messages",
+  "notFound": "Message not found",
+  "notFoundDescription": "This message could not be found.",
+  "messageTo": "Message to {recipient}",
+  "messageId": "ID: {id}",
+  "detailTitle": "Message details",
+  "detailDescription": "Sending information and content",
+  "retryCount": "Retry count",
+  "senderPhone": "Sender number (Meta)",
+  "errorMessage": "Error message",
+  "providerTitle": "Meta request (Provider)",
+  "providerDescription": "What was actually sent to Graph API — endpoint and body",
+  "lastSent": "Last sent: {time}",
+  "metaResponse": "Meta response",
+  "timelineTitle": "Status timeline",
+  "timelineDescription": "Track message delivery stages",
+  "noStatusData": "No status data",
+  "timeline": {
+    "queued": "Queued",
+    "sent": "Sent",
+    "delivered": "Delivered",
+    "read": "Read",
+    "failed": "Send failed"
+  },
+  "types": {
+    "TEXT": "Text",
+    "TEMPLATE": "Template",
+    "IMAGE": "Image",
+    "VIDEO": "Video",
+    "DOCUMENT": "Document",
+    "AUDIO": "Audio",
+    "STICKER": "Sticker",
+    "LOCATION": "Location",
+    "CONTACTS": "Contacts"
+  },
+  "errors": {
+    "noInternet": "No internet connection"
+  },
+  "toast": {
+    "retried": "Message resent"
+  }
+}

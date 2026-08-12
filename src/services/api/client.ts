@@ -75,7 +75,7 @@ async function refreshAccessToken(): Promise<AuthResponse> {
 
   if (!refreshToken) {
     throw new ApiError({
-      message: 'جلسة منتهية',
+      message: 'Session expired',
       statusCode: 401,
       code: 'UNAUTHORIZED',
       error: 'Unauthorized',

@@ -1,7 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { EyeIcon, MoreHorizontalIcon, PauseIcon, PlayIcon, Trash2Icon } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -43,6 +44,9 @@ export function OrganizationTable({
   onSuspend,
   onDelete,
 }: OrganizationTableProps) {
+  const t = useTranslations('admin.organizations');
+  const tCommon = useTranslations('admin.common');
+
   const toggleSelection = (id: string, checked: boolean) => {
     if (!onSelectionChange) return;
     onSelectionChange(checked ? [...selectedIds, id] : selectedIds.filter((x) => x !== id));
@@ -64,15 +68,15 @@ export function OrganizationTable({
               <Checkbox
                 checked={allSelected}
                 onCheckedChange={(checked) => toggleAll(checked === true)}
-                aria-label="تحديد الكل"
+                aria-label={tCommon('selectAll')}
               />
             </TableHead>
           )}
-          <TableHead>الاسم</TableHead>
-          <TableHead>المعرّف</TableHead>
-          <TableHead>البلد</TableHead>
-          <TableHead>الحالة</TableHead>
-          <TableHead>تاريخ الإنشاء</TableHead>
+          <TableHead>{t('columns.name')}</TableHead>
+          <TableHead>{t('columns.slug')}</TableHead>
+          <TableHead>{t('columns.country')}</TableHead>
+          <TableHead>{t('columns.status')}</TableHead>
+          <TableHead>{t('columns.createdAt')}</TableHead>
           <TableHead className="w-12" />
         </TableRow>
       </TableHeader>
@@ -84,14 +88,14 @@ export function OrganizationTable({
                 <Checkbox
                   checked={selectedIds.includes(org.id)}
                   onCheckedChange={(checked) => toggleSelection(org.id, checked === true)}
-                  aria-label={`تحديد ${org.name}`}
+                  aria-label={tCommon('selectRow', { name: org.name })}
                 />
               </TableCell>
             )}
             <TableCell>
               <div className="flex items-center gap-3">
                 <Avatar size="sm">
-                  <AvatarFallback>{org.name.trim().charAt(0) || '—'}</AvatarFallback>
+                  <AvatarFallback>{org.name.trim().charAt(0) || tCommon('notAvailable')}</AvatarFallback>
                 </Avatar>
                 <span className="font-medium">{org.name}</span>
               </div>
@@ -106,7 +110,7 @@ export function OrganizationTable({
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={
-                    <Button variant="ghost" size="sm" aria-label="إجراءات">
+                    <Button variant="ghost" size="sm" aria-label={tCommon('actions')}>
                       <MoreHorizontalIcon />
                     </Button>
                   }
@@ -114,18 +118,18 @@ export function OrganizationTable({
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem render={<Link href={ROUTES.admin.organization(org.id)} />}>
                     <EyeIcon data-icon="inline-start" />
-                    التفاصيل
+                    {tCommon('details')}
                   </DropdownMenuItem>
                   {org.status !== OrganizationStatus.ACTIVE && onActivate && (
                     <DropdownMenuItem onClick={() => onActivate(org)}>
                       <PlayIcon />
-                      تفعيل
+                      {tCommon('activate')}
                     </DropdownMenuItem>
                   )}
                   {org.status !== OrganizationStatus.SUSPENDED && onSuspend && (
                     <DropdownMenuItem onClick={() => onSuspend(org)}>
                       <PauseIcon />
-                      تعليق
+                      {tCommon('suspend')}
                     </DropdownMenuItem>
                   )}
                   {onDelete && (
@@ -133,7 +137,7 @@ export function OrganizationTable({
                       <DropdownMenuSeparator />
                       <DropdownMenuItem variant="destructive" onClick={() => onDelete(org)}>
                         <Trash2Icon />
-                        حذف
+                        {tCommon('delete')}
                       </DropdownMenuItem>
                     </>
                   )}

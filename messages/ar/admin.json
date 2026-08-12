@@ -1,0 +1,534 @@
+{
+  "nav": {
+    "organizations": "المنظمات",
+    "users": "المستخدمون",
+    "plans": "الخطط",
+    "subscriptions": "الاشتراكات",
+    "platform": "المنصة",
+    "auditLogs": "سجل التدقيق",
+    "system": "النظام",
+    "systemHealth": "صحة النظام",
+    "monitoring": "مراقبة النظام"
+  },
+  "common": {
+    "backToList": "العودة للقائمة",
+    "back": "العودة",
+    "refresh": "تحديث",
+    "details": "التفاصيل",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "enable": "تفعيل",
+    "disable": "تعطيل",
+    "suspend": "تعليق",
+    "activate": "تفعيل",
+    "actions": "إجراءات",
+    "selectAll": "تحديد الكل",
+    "selectRow": "تحديد {name}",
+    "view": "عرض",
+    "loading": "جاري التحميل...",
+    "notAvailable": "—",
+    "yes": "نعم",
+    "no": "لا",
+    "softDeleteNote": "(soft delete)",
+    "loadingAdmin": "جاري تحميل لوحة الإدارة..."
+  },
+  "unavailable": {
+    "apiTitle": "واجهة برمجة غير متوفرة",
+    "apiDescription": "هذه الميزة تتطلب endpoints في الـ backend قبل تفعيلها.",
+    "settings": {
+      "title": "الإعدادات العامة",
+      "description": "Branding، Email، Storage، Queue، Security، API، والحدود الافتراضية"
+    },
+    "metaConfig": {
+      "title": "إعدادات Meta",
+      "description": "إدارة Meta Apps والـ Tokens وWebhooks على مستوى المنصة"
+    },
+    "announcements": {
+      "title": "الإعلانات",
+      "description": "إنشاء ونشر وإدارة إعلانات المنصة"
+    },
+    "featureFlags": {
+      "title": "Feature Flags",
+      "description": "تفعيل وتعطيل الميزات والتحكم بالبيئات"
+    },
+    "auditLogs": {
+      "title": "سجل التدقيق",
+      "description": "عرض وتصدير سجلات النشاط"
+    },
+    "monitoring": {
+      "title": "مراقبة النظام",
+      "description": "Queue، Workers، Cron Jobs، وBackground Jobs"
+    }
+  },
+  "pages": {
+    "dashboard": {
+      "title": "لوحة Super Admin",
+      "description": "نظرة تنفيذية على المنصة والمستخدمين والمنظمات"
+    },
+    "users": {
+      "title": "المستخدمون",
+      "description": "إدارة مستخدمي المنصة"
+    },
+    "userDetail": {
+      "title": "تفاصيل المستخدم",
+      "notFound": "المستخدم غير موجود",
+      "infoTitle": "معلومات المستخدم",
+      "sendVerification": "إرسال التحقق"
+    },
+    "organizations": {
+      "title": "المنظمات",
+      "description": "إدارة منظمات المنصة — تفعيل، تعليق، وحذف"
+    },
+    "organizationDetail": {
+      "title": "تفاصيل المنظمة",
+      "notFound": "المنظمة غير موجودة",
+      "basicInfo": "معلومات أساسية"
+    },
+    "plans": {
+      "title": "الخطط",
+      "description": "إدارة خطط الاشتراك والأسعار"
+    },
+    "planNew": {
+      "title": "خطة جديدة",
+      "description": "إنشاء خطة اشتراك جديدة"
+    },
+    "planEdit": {
+      "title": "تعديل الخطة",
+      "notFound": "الخطة غير موجودة"
+    },
+    "subscriptions": {
+      "title": "الاشتراكات",
+      "description": "متابعة اشتراكات المنظمات والإيرادات والمدفوعات العالقة"
+    },
+    "systemHealth": {
+      "title": "صحة النظام",
+      "description": "مراقبة حالة الخدمات الأساسية",
+      "coreServices": "الخدمات الأساسية",
+      "autoRefresh": "الفحص يتكرر تلقائياً كل 30 ثانية",
+      "advancedUnavailableTitle": "مراقبة متقدمة غير متوفرة",
+      "advancedUnavailableDescription": "الـ backend يوفّر GET /health فقط حالياً."
+    },
+    "whop": {
+      "title": "إدارة Whop",
+      "description": "مراقبة التكامل، ربط الخطط، ومتابعة المدفوعات والعضويات"
+    }
+  },
+  "health": {
+    "checking": "جاري الفحص",
+    "checkingEllipsis": "جاري الفحص...",
+    "error": "خطأ",
+    "ok": "سليم",
+    "degraded": "متدهور",
+    "down": "متوقف",
+    "notConfigured": "غير مفعّل",
+    "unknown": "غير معروف",
+    "unavailable": "غير متاح",
+    "requiresEndpoint": "يتطلب endpoint",
+    "runningNormally": "يعمل بشكل طبيعي",
+    "available": "متاح: {size}",
+    "apiServer": "خادم API",
+    "database": "قاعدة البيانات",
+    "redis": "Redis",
+    "storage": "التخزين",
+    "storageMemory": "التخزين / الذاكرة"
+  },
+  "dashboard": {
+    "kpi": {
+      "totalOrganizations": "إجمالي المنظمات",
+      "totalUsers": "إجمالي المستخدمين",
+      "mrr": "MRR",
+      "monthlyRevenue": "إيرادات الشهر",
+      "totalMessages": "إجمالي الرسائل",
+      "monthActivity": "نشاط الشهر",
+      "wabaAccounts": "حسابات WABA",
+      "whatsappNumbers": "أرقام WhatsApp"
+    },
+    "kpiDesc": {
+      "organizations": "{active} نشطة · {suspended} معلقة",
+      "users": "{active} نشط · {disabled} معطل",
+      "activeSubscriptions": "{count} اشتراك نشط",
+      "paidInvoices": "{count} فاتورة مدفوعة",
+      "allPlatformMessages": "كل رسائل المنصة",
+      "messagesThisMonth": "رسائل هذا الشهر",
+      "waba": "{connected} متصل · {orgs} منظمة",
+      "phones": "{connected} متصل · {disconnected} مفصول"
+    },
+    "messages": {
+      "title": "إحصائيات الرسائل",
+      "description": "حسب الفترة المحددة",
+      "today": "اليوم",
+      "month": "الشهر",
+      "total": "الإجمالي",
+      "outbound": "صادرة",
+      "inbound": "واردة",
+      "failedQueued": "فاشلة / بالانتظار"
+    },
+    "subscriptions": {
+      "title": "ملخص الاشتراكات",
+      "description": "حالة كل الاشتراكات على المنصة",
+      "total": "الإجمالي",
+      "activeTrial": "نشط / تجريبي",
+      "pendingPayment": "بانتظار الدفع",
+      "cancelledExpired": "ملغي / منتهي"
+    },
+    "queue": {
+      "title": "طابور الرسائل",
+      "waiting": "بالانتظار",
+      "active": "قيد الإرسال",
+      "failed": "فاشلة",
+      "completedToday": "مكتملة اليوم"
+    },
+    "workers": {
+      "title": "Workers",
+      "defaultDescription": "حالة المعالجة الخلفية",
+      "mode": "الوضع",
+      "status": "الحالة",
+      "inProcess": "داخل API",
+      "distributed": "موزّع",
+      "running": "يعمل"
+    },
+    "chart": {
+      "title": "المنظمات والمستخدمون",
+      "description": "مقارنة الحالات على مستوى المنصة",
+      "activeOrgs": "منظمات نشطة",
+      "suspendedOrgs": "منظمات معلقة",
+      "activeUsers": "مستخدمون نشطون",
+      "disabledUsers": "مستخدمون معطلون",
+      "count": "العدد"
+    },
+    "systemStatus": {
+      "title": "حالة النظام",
+      "description": "فحص مباشر يتجدد تلقائياً",
+      "lastDataUpdate": "آخر تحديث للبيانات",
+      "totalRevenue": "إجمالي الإيرادات"
+    },
+    "activity": {
+      "title": "آخر النشاطات",
+      "description": "منظمات، مستخدمون، اشتراكات، وفواتير",
+      "empty": "لا توجد نشاطات بعد"
+    }
+  },
+  "users": {
+    "searchPlaceholder": "بحث بالاسم أو البريد...",
+    "empty": "لا يوجد مستخدمون",
+    "filters": {
+      "status": "الحالة",
+      "role": "الدور",
+      "allStatuses": "كل الحالات",
+      "allRoles": "كل الأدوار",
+      "active": "نشط",
+      "disabled": "معطل",
+      "pendingVerification": "بانتظار التحقق",
+      "superAdmin": "Super Admin",
+      "user": "مستخدم"
+    },
+    "columns": {
+      "name": "الاسم",
+      "email": "البريد",
+      "organizations": "المنظمات",
+      "role": "الدور",
+      "status": "الحالة",
+      "lastLogin": "آخر دخول"
+    },
+    "fields": {
+      "email": "البريد",
+      "emailVerified": "البريد موثّق",
+      "lastLogin": "آخر دخول",
+      "registeredAt": "تاريخ التسجيل"
+    },
+    "actions": {
+      "details": "التفاصيل",
+      "organizations": "المنظمات",
+      "enable": "تفعيل",
+      "disable": "تعطيل",
+      "delete": "حذف",
+      "deleteSelected": "حذف المحدد",
+      "viewAll": "عرض الكل"
+    },
+    "organizationsDialog": {
+      "title": "منظمات المستخدم",
+      "empty": "لا ينتمي لأي منظمة"
+    },
+    "dialogs": {
+      "enableTitle": "تفعيل المستخدم",
+      "enableDescription": "تفعيل {email}؟",
+      "disableTitle": "تعطيل المستخدم",
+      "disableDescription": "تعطيل {email}؟",
+      "deleteTitle": "حذف المستخدم",
+      "deleteDescription": "حذف {email}؟"
+    }
+  },
+  "organizations": {
+    "searchPlaceholder": "بحث بالاسم أو slug أو البلد...",
+    "empty": "لا توجد منظمات",
+    "filters": {
+      "status": "الحالة",
+      "active": "نشطة",
+      "suspended": "معلقة",
+      "inactive": "غير نشطة"
+    },
+    "columns": {
+      "name": "الاسم",
+      "slug": "المعرّف",
+      "plan": "الخطة",
+      "country": "البلد",
+      "status": "الحالة",
+      "createdAt": "تاريخ الإنشاء"
+    },
+    "fields": {
+      "country": "البلد",
+      "timezone": "المنطقة الزمنية",
+      "createdAt": "تاريخ الإنشاء",
+      "updatedAt": "آخر تحديث"
+    },
+    "bulk": {
+      "activateSelected": "تفعيل المحدد",
+      "suspendSelected": "تعليق المحدد",
+      "deleteSelected": "حذف المحدد"
+    },
+    "edit": {
+      "title": "تعديل المنظمة"
+    },
+    "subscription": {
+      "empty": "لا يوجد اشتراك"
+    },
+    "usage": {
+      "title": "استخدام الخطة",
+      "description": "مقارنة الاستخدام بحدود الخطة",
+      "empty": "لا يوجد اشتراك نشط",
+      "messages": "الرسائل الشهرية",
+      "contacts": "جهات الاتصال",
+      "teamMembers": "أعضاء الفريق",
+      "phoneNumbers": "أرقام الهاتف"
+    },
+    "members": {
+      "empty": "لا يوجد أعضاء",
+      "columns": {
+        "name": "الاسم",
+        "email": "البريد",
+        "role": "الدور",
+        "joinedAt": "تاريخ الانضمام"
+      }
+    },
+    "phones": {
+      "empty": "لا توجد أرقام",
+      "columns": {
+        "phone": "الرقم",
+        "verifiedName": "الاسم المعتمد",
+        "status": "الحالة",
+        "addedAt": "تاريخ الإضافة"
+      }
+    },
+    "dialogs": {
+      "activateTitle": "تفعيل المنظمة",
+      "activateDescription": "هل تريد تفعيل \"{name}\"؟",
+      "suspendTitle": "تعليق المنظمة",
+      "suspendDescription": "هل تريد تعليق \"{name}\"؟",
+      "deleteTitle": "حذف المنظمة",
+      "deleteDescription": "سيتم حذف \"{name}\" (soft delete)."
+    }
+  },
+  "plans": {
+    "newPlan": "خطة جديدة",
+    "searchPlaceholder": "بحث بالاسم أو الرمز...",
+    "empty": "لا توجد خطط",
+    "columns": {
+      "name": "الاسم",
+      "code": "الرمز",
+      "monthly": "شهري",
+      "yearly": "سنوي",
+      "messagesPerMonth": "الرسائل/شهر",
+      "status": "الحالة",
+      "createdAt": "تاريخ الإنشاء"
+    },
+    "form": {
+      "basicInfo": "المعلومات الأساسية",
+      "pricing": "التسعير",
+      "limits": "حدود الخطة",
+      "whop": "Whop",
+      "name": "اسم الخطة",
+      "code": "الرمز",
+      "codeDescription": "أحرف صغيرة وأرقام وشرطات فقط",
+      "description": "الوصف",
+      "monthlyPrice": "السعر الشهري",
+      "yearlyPrice": "السعر السنوي",
+      "currency": "العملة",
+      "maxMessages": "الرسائل الشهرية",
+      "maxContacts": "جهات الاتصال",
+      "maxTeamMembers": "أعضاء الفريق",
+      "maxPhoneNumbers": "أرقام الهاتف",
+      "unlimitedPlaceholder": "غير محدود",
+      "active": "نشطة",
+      "visibleToCustomers": "إظهار الخطة للعملاء",
+      "saving": "جاري الحفظ...",
+      "saveChanges": "حفظ التغييرات",
+      "create": "إنشاء الخطة"
+    },
+    "disableDialog": {
+      "title": "تعطيل الخطة",
+      "description": "تعطيل \"{name}\"؟ لن تظهر للعملاء."
+    },
+    "validation": {
+      "nameRequired": "الاسم مطلوب",
+      "codeRequired": "الرمز مطلوب",
+      "codeFormat": "أحرف صغيرة وأرقام وشرطات فقط",
+      "pricePositive": "السعر يجب أن يكون موجباً"
+    }
+  },
+  "subscriptions": {
+    "empty": "لا توجد اشتراكات",
+    "searchPlaceholder": "بحث بالمنظمة...",
+    "stats": {
+      "active": "نشط",
+      "trial": "تجريبي",
+      "pendingPayment": "بانتظار الدفع",
+      "mrr": "الإيراد الشهري (MRR)"
+    },
+    "filters": {
+      "allStatuses": "كل الحالات",
+      "allPlans": "كل الخطط",
+      "status": "الحالة",
+      "plan": "الخطة",
+      "active": "نشط",
+      "trial": "تجريبي",
+      "pendingPayment": "بانتظار الدفع",
+      "pastDue": "متأخر",
+      "cancelled": "ملغى",
+      "expired": "منتهي"
+    },
+    "cycle": {
+      "monthly": "شهري",
+      "yearly": "سنوي"
+    },
+    "columns": {
+      "organization": "المنظمة",
+      "plan": "الخطة",
+      "status": "الحالة",
+      "cycle": "الدورة",
+      "expiresAt": "ينتهي في"
+    },
+    "actions": {
+      "details": "التفاصيل",
+      "manualActivate": "تفعيل يدوي",
+      "extend": "تمديد"
+    },
+    "detailDialog": {
+      "title": "تفاصيل الاشتراك",
+      "notFound": "الاشتراك غير موجود",
+      "invoices": "سجل الفواتير",
+      "viewOrganization": "عرض المنظمة"
+    },
+    "extendDialog": {
+      "title": "تمديد الاشتراك",
+      "daysLabel": "عدد الأيام (1–365)",
+      "extending": "جاري التمديد...",
+      "confirm": "تمديد"
+    },
+    "activateDialog": {
+      "title": "تفعيل الاشتراك يدوياً",
+      "description": "تفعيل اشتراك \"{name}\" بدون دفع Whop؟ سيتم تعليم آخر فاتورة معلقة كمدفوعة.",
+      "confirm": "تفعيل"
+    }
+  },
+  "whop": {
+    "tabs": {
+      "status": "الحالة",
+      "plans": "الخطط",
+      "transactions": "المعاملات",
+      "promoCodes": "أكواد الخصم"
+    },
+    "config": {
+      "configured": "مهيأ",
+      "sandbox": "Sandbox",
+      "webhookSecret": "Webhook Secret",
+      "companyId": "Company ID",
+      "apiKey": "API Key",
+      "configuredYes": "مضبوط",
+      "configuredNo": "غير مضبوط"
+    },
+    "actions": {
+      "copyWebhook": "نسخ الرابط",
+      "registerWhop": "تسجيل في Whop",
+      "syncWhop": "مزامنة Whop",
+      "monthlyCheckout": "Checkout شهري",
+      "save": "حفظ",
+      "selectWhopPlan": "اختر خطة Whop"
+    },
+    "mapping": {
+      "notLinked": "— غير مربوط —"
+    },
+    "payments": {
+      "empty": "لا توجد مدفوعات",
+      "columns": {
+        "id": "المعرف",
+        "amount": "المبلغ",
+        "status": "الحالة",
+        "plan": "الخطة",
+        "date": "التاريخ"
+      },
+      "refund": "استرجاع",
+      "retry": "إعادة محاولة",
+      "cancel": "إلغاء"
+    },
+    "memberships": {
+      "empty": "لا توجد عضويات",
+      "columns": {
+        "id": "المعرف",
+        "status": "الحالة",
+        "product": "المنتج",
+        "member": "العضو",
+        "renewal": "التجديد"
+      },
+      "cancelEndOfPeriod": "إلغاء بنهاية الفترة",
+      "cancelImmediate": "إلغاء فوري",
+      "pause": "إيقاف مؤقت",
+      "resume": "استئناف",
+      "freeDays": "+7 أيام مجانية"
+    },
+    "events": {
+      "empty": "لا توجد أحداث",
+      "columns": {
+        "type": "النوع",
+        "eventId": "معرف الحدث",
+        "processedAt": "معالج في"
+      }
+    },
+    "promo": {
+      "empty": "لا توجد أكواد",
+      "create": "إنشاء كود خصم",
+      "percentage": "نسبة مئوية",
+      "fixedAmount": "مبلغ ثابت",
+      "newUsersOnly": "مستخدمون جدد فقط",
+      "archive": "أرشفة",
+      "enabled": "مفعّل",
+      "disabled": "معطّل",
+      "eventsCount": "{count} حدث"
+    },
+    "toast": {
+      "webhookCopied": "تم نسخ رابط Webhook",
+      "planSynced": "تمت مزامنة الخطة مع Whop",
+      "plansSynced": "تمت مزامنة {synced} خطة{failed}",
+      "planLinked": "تم ربط الخطة بنجاح",
+      "mappingUpdated": "تم تحديث الربط",
+      "checkoutCreated": "تم إنشاء رابط الدفع",
+      "promoCreated": "تم إنشاء كود الخصم",
+      "promoArchived": "تم أرشفة كود الخصم"
+    }
+  },
+  "toast": {
+    "userEnabled": "تم تفعيل المستخدم بنجاح",
+    "userDisabled": "تم تعطيل المستخدم بنجاح",
+    "userDeleted": "تم حذف المستخدم بنجاح",
+    "verificationSent": "تم إرسال بريد التحقق",
+    "organizationUpdated": "تم تحديث المنظمة بنجاح",
+    "bulkSuccess": "تم تنفيذ العملية الجماعية بنجاح",
+    "organizationActivated": "تم تفعيل المنظمة بنجاح",
+    "organizationSuspended": "تم تعليق المنظمة بنجاح",
+    "organizationDeleted": "تم حذف المنظمة بنجاح",
+    "planCreated": "تم إنشاء الخطة بنجاح",
+    "planUpdated": "تم تحديث الخطة بنجاح",
+    "planDisabled": "تم تعطيل الخطة بنجاح",
+    "subscriptionActivated": "تم تفعيل الاشتراك",
+    "subscriptionExtended": "تم تمديد الاشتراك"
+  }
+}

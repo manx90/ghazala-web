@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import {
   Select,
   SelectContent,
@@ -20,6 +21,7 @@ interface PhoneNumberSelectProps {
 }
 
 export function PhoneNumberSelect({ value, onChange, className }: PhoneNumberSelectProps) {
+  const t = useTranslations('common.forms');
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.whatsapp.phoneNumbers,
     queryFn: () => whatsappApi.listPhoneNumbers(),
@@ -31,7 +33,7 @@ export function PhoneNumberSelect({ value, onChange, className }: PhoneNumberSel
     return (
       <Select value="" disabled>
         <SelectTrigger className={className}>
-          <SelectValue placeholder="لا توجد أرقام" />
+          <SelectValue placeholder={t('noPhoneNumbers')} />
         </SelectTrigger>
       </Select>
     );
@@ -42,12 +44,12 @@ export function PhoneNumberSelect({ value, onChange, className }: PhoneNumberSel
   return (
     <Select
       value={selected}
-      onValueChange={(value) => {
-        if (value) onChange(value);
+      onValueChange={(next) => {
+        if (next) onChange(next);
       }}
     >
-      <SelectTrigger className={className} aria-label="اختيار رقم WhatsApp">
-        <SelectValue placeholder="اختر رقم" />
+      <SelectTrigger className={className} aria-label={t('selectWhatsappPhone')}>
+        <SelectValue placeholder={t('selectPhone')} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>

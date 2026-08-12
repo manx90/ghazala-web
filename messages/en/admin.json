@@ -1,0 +1,534 @@
+{
+  "nav": {
+    "organizations": "Organizations",
+    "users": "Users",
+    "plans": "Plans",
+    "subscriptions": "Subscriptions",
+    "platform": "Platform",
+    "auditLogs": "Audit logs",
+    "system": "System",
+    "systemHealth": "System health",
+    "monitoring": "Monitoring"
+  },
+  "common": {
+    "backToList": "Back to list",
+    "back": "Back",
+    "refresh": "Refresh",
+    "details": "Details",
+    "edit": "Edit",
+    "delete": "Delete",
+    "enable": "Enable",
+    "disable": "Disable",
+    "suspend": "Suspend",
+    "activate": "Activate",
+    "actions": "Actions",
+    "selectAll": "Select all",
+    "selectRow": "Select {name}",
+    "view": "View",
+    "loading": "Loading...",
+    "notAvailable": "—",
+    "yes": "Yes",
+    "no": "No",
+    "softDeleteNote": "(soft delete)",
+    "loadingAdmin": "Loading admin panel..."
+  },
+  "unavailable": {
+    "apiTitle": "API unavailable",
+    "apiDescription": "This feature requires backend endpoints before it can be enabled.",
+    "settings": {
+      "title": "Global settings",
+      "description": "Branding, Email, Storage, Queue, Security, API, and default limits"
+    },
+    "metaConfig": {
+      "title": "Meta settings",
+      "description": "Manage Meta Apps, Tokens, and Webhooks at platform level"
+    },
+    "announcements": {
+      "title": "Announcements",
+      "description": "Create, publish, and manage platform announcements"
+    },
+    "featureFlags": {
+      "title": "Feature Flags",
+      "description": "Enable and disable features and control environments"
+    },
+    "auditLogs": {
+      "title": "Audit logs",
+      "description": "View and export activity logs"
+    },
+    "monitoring": {
+      "title": "System monitoring",
+      "description": "Queue, Workers, Cron Jobs, and Background Jobs"
+    }
+  },
+  "pages": {
+    "dashboard": {
+      "title": "Super Admin Dashboard",
+      "description": "Executive overview of the platform, users, and organizations"
+    },
+    "users": {
+      "title": "Users",
+      "description": "Manage platform users"
+    },
+    "userDetail": {
+      "title": "User details",
+      "notFound": "User not found",
+      "infoTitle": "User information",
+      "sendVerification": "Send verification"
+    },
+    "organizations": {
+      "title": "Organizations",
+      "description": "Manage platform organizations — activate, suspend, and delete"
+    },
+    "organizationDetail": {
+      "title": "Organization details",
+      "notFound": "Organization not found",
+      "basicInfo": "Basic information"
+    },
+    "plans": {
+      "title": "Plans",
+      "description": "Manage subscription plans and pricing"
+    },
+    "planNew": {
+      "title": "New plan",
+      "description": "Create a new subscription plan"
+    },
+    "planEdit": {
+      "title": "Edit plan",
+      "notFound": "Plan not found"
+    },
+    "subscriptions": {
+      "title": "Subscriptions",
+      "description": "Track organization subscriptions, revenue, and pending payments"
+    },
+    "systemHealth": {
+      "title": "System health",
+      "description": "Monitor core service status",
+      "coreServices": "Core services",
+      "autoRefresh": "Checks automatically every 30 seconds",
+      "advancedUnavailableTitle": "Advanced monitoring unavailable",
+      "advancedUnavailableDescription": "Backend currently provides GET /health only."
+    },
+    "whop": {
+      "title": "Whop management",
+      "description": "Monitor integration, link plans, and track payments and memberships"
+    }
+  },
+  "health": {
+    "checking": "Checking",
+    "checkingEllipsis": "Checking...",
+    "error": "Error",
+    "ok": "Healthy",
+    "degraded": "Degraded",
+    "down": "Down",
+    "notConfigured": "Not configured",
+    "unknown": "Unknown",
+    "unavailable": "Unavailable",
+    "requiresEndpoint": "Requires endpoint",
+    "runningNormally": "Running normally",
+    "available": "Available: {size}",
+    "apiServer": "API server",
+    "database": "Database",
+    "redis": "Redis",
+    "storage": "Storage",
+    "storageMemory": "Storage / memory"
+  },
+  "dashboard": {
+    "kpi": {
+      "totalOrganizations": "Total organizations",
+      "totalUsers": "Total users",
+      "mrr": "MRR",
+      "monthlyRevenue": "Monthly revenue",
+      "totalMessages": "Total messages",
+      "monthActivity": "Monthly activity",
+      "wabaAccounts": "WABA accounts",
+      "whatsappNumbers": "WhatsApp numbers"
+    },
+    "kpiDesc": {
+      "organizations": "{active} active · {suspended} suspended",
+      "users": "{active} active · {disabled} disabled",
+      "activeSubscriptions": "{count} active subscriptions",
+      "paidInvoices": "{count} paid invoices",
+      "allPlatformMessages": "All platform messages",
+      "messagesThisMonth": "Messages this month",
+      "waba": "{connected} connected · {orgs} organizations",
+      "phones": "{connected} connected · {disconnected} disconnected"
+    },
+    "messages": {
+      "title": "Message statistics",
+      "description": "By selected period",
+      "today": "Today",
+      "month": "Month",
+      "total": "Total",
+      "outbound": "Outbound",
+      "inbound": "Inbound",
+      "failedQueued": "Failed / queued"
+    },
+    "subscriptions": {
+      "title": "Subscription summary",
+      "description": "Status of all platform subscriptions",
+      "total": "Total",
+      "activeTrial": "Active / trial",
+      "pendingPayment": "Pending payment",
+      "cancelledExpired": "Cancelled / expired"
+    },
+    "queue": {
+      "title": "Message queue",
+      "waiting": "Waiting",
+      "active": "Sending",
+      "failed": "Failed",
+      "completedToday": "Completed today"
+    },
+    "workers": {
+      "title": "Workers",
+      "defaultDescription": "Background processing status",
+      "mode": "Mode",
+      "status": "Status",
+      "inProcess": "In-process",
+      "distributed": "Distributed",
+      "running": "Running"
+    },
+    "chart": {
+      "title": "Organizations & users",
+      "description": "Status comparison at platform level",
+      "activeOrgs": "Active organizations",
+      "suspendedOrgs": "Suspended organizations",
+      "activeUsers": "Active users",
+      "disabledUsers": "Disabled users",
+      "count": "Count"
+    },
+    "systemStatus": {
+      "title": "System status",
+      "description": "Live check that refreshes automatically",
+      "lastDataUpdate": "Last data update",
+      "totalRevenue": "Total revenue"
+    },
+    "activity": {
+      "title": "Recent activity",
+      "description": "Organizations, users, subscriptions, and invoices",
+      "empty": "No activity yet"
+    }
+  },
+  "users": {
+    "searchPlaceholder": "Search by name or email...",
+    "empty": "No users",
+    "filters": {
+      "status": "Status",
+      "role": "Role",
+      "allStatuses": "All statuses",
+      "allRoles": "All roles",
+      "active": "Active",
+      "disabled": "Disabled",
+      "pendingVerification": "Pending verification",
+      "superAdmin": "Super Admin",
+      "user": "User"
+    },
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "organizations": "Organizations",
+      "role": "Role",
+      "status": "Status",
+      "lastLogin": "Last login"
+    },
+    "fields": {
+      "email": "Email",
+      "emailVerified": "Email verified",
+      "lastLogin": "Last login",
+      "registeredAt": "Registered at"
+    },
+    "actions": {
+      "details": "Details",
+      "organizations": "Organizations",
+      "enable": "Enable",
+      "disable": "Disable",
+      "delete": "Delete",
+      "deleteSelected": "Delete selected",
+      "viewAll": "View all"
+    },
+    "organizationsDialog": {
+      "title": "User organizations",
+      "empty": "Not a member of any organization"
+    },
+    "dialogs": {
+      "enableTitle": "Enable user",
+      "enableDescription": "Enable {email}?",
+      "disableTitle": "Disable user",
+      "disableDescription": "Disable {email}?",
+      "deleteTitle": "Delete user",
+      "deleteDescription": "Delete {email}?"
+    }
+  },
+  "organizations": {
+    "searchPlaceholder": "Search by name, slug, or country...",
+    "empty": "No organizations",
+    "filters": {
+      "status": "Status",
+      "active": "Active",
+      "suspended": "Suspended",
+      "inactive": "Inactive"
+    },
+    "columns": {
+      "name": "Name",
+      "slug": "Slug",
+      "plan": "Plan",
+      "country": "Country",
+      "status": "Status",
+      "createdAt": "Created"
+    },
+    "fields": {
+      "country": "Country",
+      "timezone": "Timezone",
+      "createdAt": "Created at",
+      "updatedAt": "Last updated"
+    },
+    "bulk": {
+      "activateSelected": "Activate selected",
+      "suspendSelected": "Suspend selected",
+      "deleteSelected": "Delete selected"
+    },
+    "edit": {
+      "title": "Edit organization"
+    },
+    "subscription": {
+      "empty": "No subscription"
+    },
+    "usage": {
+      "title": "Plan usage",
+      "description": "Compare usage against plan limits",
+      "empty": "No active subscription",
+      "messages": "Monthly messages",
+      "contacts": "Contacts",
+      "teamMembers": "Team members",
+      "phoneNumbers": "Phone numbers"
+    },
+    "members": {
+      "empty": "No members",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "joinedAt": "Joined"
+      }
+    },
+    "phones": {
+      "empty": "No numbers",
+      "columns": {
+        "phone": "Number",
+        "verifiedName": "Verified name",
+        "status": "Status",
+        "addedAt": "Added"
+      }
+    },
+    "dialogs": {
+      "activateTitle": "Activate organization",
+      "activateDescription": "Activate \"{name}\"?",
+      "suspendTitle": "Suspend organization",
+      "suspendDescription": "Suspend \"{name}\"?",
+      "deleteTitle": "Delete organization",
+      "deleteDescription": "\"{name}\" will be deleted (soft delete)."
+    }
+  },
+  "plans": {
+    "newPlan": "New plan",
+    "searchPlaceholder": "Search by name or code...",
+    "empty": "No plans",
+    "columns": {
+      "name": "Name",
+      "code": "Code",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "messagesPerMonth": "Messages/month",
+      "status": "Status",
+      "createdAt": "Created"
+    },
+    "form": {
+      "basicInfo": "Basic information",
+      "pricing": "Pricing",
+      "limits": "Plan limits",
+      "whop": "Whop",
+      "name": "Plan name",
+      "code": "Code",
+      "codeDescription": "Lowercase letters, numbers, and hyphens only",
+      "description": "Description",
+      "monthlyPrice": "Monthly price",
+      "yearlyPrice": "Yearly price",
+      "currency": "Currency",
+      "maxMessages": "Monthly messages",
+      "maxContacts": "Contacts",
+      "maxTeamMembers": "Team members",
+      "maxPhoneNumbers": "Phone numbers",
+      "unlimitedPlaceholder": "Unlimited",
+      "active": "Active",
+      "visibleToCustomers": "Show plan to customers",
+      "saving": "Saving...",
+      "saveChanges": "Save changes",
+      "create": "Create plan"
+    },
+    "disableDialog": {
+      "title": "Disable plan",
+      "description": "Disable \"{name}\"? It will not be visible to customers."
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "codeRequired": "Code is required",
+      "codeFormat": "Lowercase letters, numbers, and hyphens only",
+      "pricePositive": "Price must be positive"
+    }
+  },
+  "subscriptions": {
+    "empty": "No subscriptions",
+    "searchPlaceholder": "Search by organization...",
+    "stats": {
+      "active": "Active",
+      "trial": "Trial",
+      "pendingPayment": "Pending payment",
+      "mrr": "Monthly revenue (MRR)"
+    },
+    "filters": {
+      "allStatuses": "All statuses",
+      "allPlans": "All plans",
+      "status": "Status",
+      "plan": "Plan",
+      "active": "Active",
+      "trial": "Trial",
+      "pendingPayment": "Pending payment",
+      "pastDue": "Past due",
+      "cancelled": "Cancelled",
+      "expired": "Expired"
+    },
+    "cycle": {
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    },
+    "columns": {
+      "organization": "Organization",
+      "plan": "Plan",
+      "status": "Status",
+      "cycle": "Cycle",
+      "expiresAt": "Expires"
+    },
+    "actions": {
+      "details": "Details",
+      "manualActivate": "Manual activate",
+      "extend": "Extend"
+    },
+    "detailDialog": {
+      "title": "Subscription details",
+      "notFound": "Subscription not found",
+      "invoices": "Invoice history",
+      "viewOrganization": "View organization"
+    },
+    "extendDialog": {
+      "title": "Extend subscription",
+      "daysLabel": "Number of days (1–365)",
+      "extending": "Extending...",
+      "confirm": "Extend"
+    },
+    "activateDialog": {
+      "title": "Manually activate subscription",
+      "description": "Activate \"{name}\" subscription without Whop payment? The latest pending invoice will be marked as paid.",
+      "confirm": "Activate"
+    }
+  },
+  "whop": {
+    "tabs": {
+      "status": "Status",
+      "plans": "Plans",
+      "transactions": "Transactions",
+      "promoCodes": "Promo codes"
+    },
+    "config": {
+      "configured": "Configured",
+      "sandbox": "Sandbox",
+      "webhookSecret": "Webhook Secret",
+      "companyId": "Company ID",
+      "apiKey": "API Key",
+      "configuredYes": "Set",
+      "configuredNo": "Not set"
+    },
+    "actions": {
+      "copyWebhook": "Copy link",
+      "registerWhop": "Register on Whop",
+      "syncWhop": "Sync Whop",
+      "monthlyCheckout": "Monthly checkout",
+      "save": "Save",
+      "selectWhopPlan": "Select Whop plan"
+    },
+    "mapping": {
+      "notLinked": "— not linked —"
+    },
+    "payments": {
+      "empty": "No payments",
+      "columns": {
+        "id": "ID",
+        "amount": "Amount",
+        "status": "Status",
+        "plan": "Plan",
+        "date": "Date"
+      },
+      "refund": "Refund",
+      "retry": "Retry",
+      "cancel": "Cancel"
+    },
+    "memberships": {
+      "empty": "No memberships",
+      "columns": {
+        "id": "ID",
+        "status": "Status",
+        "product": "Product",
+        "member": "Member",
+        "renewal": "Renewal"
+      },
+      "cancelEndOfPeriod": "Cancel at period end",
+      "cancelImmediate": "Cancel immediately",
+      "pause": "Pause",
+      "resume": "Resume",
+      "freeDays": "+7 free days"
+    },
+    "events": {
+      "empty": "No events",
+      "columns": {
+        "type": "Type",
+        "eventId": "Event ID",
+        "processedAt": "Processed at"
+      }
+    },
+    "promo": {
+      "empty": "No promo codes",
+      "create": "Create promo code",
+      "percentage": "Percentage",
+      "fixedAmount": "Fixed amount",
+      "newUsersOnly": "New users only",
+      "archive": "Archive",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "eventsCount": "{count} events"
+    },
+    "toast": {
+      "webhookCopied": "Webhook URL copied",
+      "planSynced": "Plan synced with Whop",
+      "plansSynced": "Synced {synced} plans{failed}",
+      "planLinked": "Plan linked successfully",
+      "mappingUpdated": "Mapping updated",
+      "checkoutCreated": "Checkout link created",
+      "promoCreated": "Promo code created",
+      "promoArchived": "Promo code archived"
+    }
+  },
+  "toast": {
+    "userEnabled": "User enabled successfully",
+    "userDisabled": "User disabled successfully",
+    "userDeleted": "User deleted successfully",
+    "verificationSent": "Verification email sent",
+    "organizationUpdated": "Organization updated successfully",
+    "bulkSuccess": "Bulk operation completed successfully",
+    "organizationActivated": "Organization activated successfully",
+    "organizationSuspended": "Organization suspended successfully",
+    "organizationDeleted": "Organization deleted successfully",
+    "planCreated": "Plan created successfully",
+    "planUpdated": "Plan updated successfully",
+    "planDisabled": "Plan disabled successfully",
+    "subscriptionActivated": "Subscription activated",
+    "subscriptionExtended": "Subscription extended"
+  }
+}

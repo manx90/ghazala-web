@@ -11,8 +11,10 @@ import {
   SearchXIcon,
   UserIcon,
 } from 'lucide-react';
-import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { Link } from '@/i18n/navigation';
+import { useParams } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { EmptyState } from '@/components/global/empty-state';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -37,15 +39,16 @@ interface InboxLayoutProps {
   conversationId?: string;
 }
 
-function getInitials(name?: string | null, phone?: string): string {
+function getInitials(name?: string | null, phone?: string, fallback = '?'): string {
   if (name?.trim()) {
     const parts = name.trim().split(/\s+/);
     return parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? '').join('');
   }
-  return phone?.slice(-2) ?? '؟';
+  return phone?.slice(-2) ?? fallback;
 }
 
 export function InboxLayout({ conversationId }: InboxLayoutProps) {
+  const t = useTranslations('inbox');
   const router = useRouter();
   const params = useParams<{ orgSlug: string }>();
   const orgSlug = params.orgSlug;
@@ -160,13 +163,13 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
           <div className="flex flex-1 flex-col items-center justify-center gap-4 bg-muted/30 p-6">
             <EmptyState
               icon={<MessagesSquareIcon />}
-              title="اختر محادثة"
-              description="اختر محادثة من القائمة أو أرسل قالباً لبدء محادثة جديدة"
+              title={t('selectConversation')}
+              description={t('selectConversationDescription')}
             />
             {canSendMessages ? (
               <Button variant="gradient" onClick={() => setComposeOpen(true)}>
                 <MessagesSquareIcon data-icon="inline-start" />
-                إرسال قالب لرقم
+                {t('sendTemplateToNumber')}
               </Button>
             ) : null}
           </div>
@@ -183,7 +186,7 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
                 size="icon-sm"
                 className="md:hidden"
                 onClick={handleBackToList}
-                aria-label="العودة للقائمة"
+                aria-label={t('backToList')}
               >
                 <ArrowRightIcon />
               </Button>
@@ -193,7 +196,7 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
                   <AvatarImage src={activeContact.profilePhotoUrl} alt={displayTitle} />
                 ) : null}
                 <AvatarFallback className="bg-gradient-brand text-[11px] font-semibold text-white">
-                  {getInitials(displayTitle, conversation.customerPhone)}
+                  {getInitials(displayTitle, conversation.customerPhone, t('initialsFallback'))}
                 </AvatarFallback>
               </Avatar>
 
@@ -216,12 +219,12 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
                 {conversation.status === ConversationStatus.OPEN ? (
                   <>
                     <LockIcon />
-                    إغلاق
+                    {t('close')}
                   </>
                 ) : (
                   <>
                     <LockOpenIcon />
-                    إعادة فتح
+                    {t('reopen')}
                   </>
                 )}
               </Button>
@@ -234,7 +237,7 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
                       variant="ghost"
                       size="icon-sm"
                       className="xl:hidden"
-                      aria-label="بيانات العميل"
+                      aria-label={t('customerData')}
                     >
                       <UserIcon />
                     </Button>
@@ -242,7 +245,7 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
                 />
                 <SheetContent side="left" className="w-full sm:max-w-sm">
                   <SheetHeader>
-                    <SheetTitle>بيانات العميل</SheetTitle>
+                    <SheetTitle>{t('customerData')}</SheetTitle>
                   </SheetHeader>
                   <CustomerPanel conversation={conversation} />
                 </SheetContent>
@@ -264,11 +267,11 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
           <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-muted/30 p-6 text-center">
             <EmptyState
               icon={<SearchXIcon />}
-              title="المحادثة غير موجودة"
-              description="تعذّر العثور على هذه المحادثة"
+              title={t('conversationNotFound')}
+              description={t('conversationNotFoundDescription')}
               action={
                 <Button render={<Link href={ROUTES.app.inbox(orgSlug)} />} variant="outline">
-                  العودة لصندوق الوارد
+                  {t('backToInbox')}
                 </Button>
               }
             />
@@ -286,7 +289,7 @@ export function InboxLayout({ conversationId }: InboxLayoutProps) {
             <div className="flex size-12 items-center justify-center rounded-2xl bg-gradient-brand-soft text-primary">
               <PanelRightIcon className="size-5" />
             </div>
-            <p className="text-sm">اختر محادثة من القائمة</p>
+            <p className="text-sm">{t('selectFromList')}</p>
           </div>
         </div>
       )}

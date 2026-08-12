@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckCircle2Icon, Loader2Icon, UnplugIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/global/confirm-dialog';
 import { StatusBadge } from '@/components/shared/status-badge';
@@ -41,6 +42,7 @@ export function MetaConnectionSummary({
   isSyncing,
   isDisconnecting,
 }: MetaConnectionSummaryProps) {
+  const t = useTranslations('settings.meta');
   const [disconnectOpen, setDisconnectOpen] = useState(false);
 
   return (
@@ -52,51 +54,33 @@ export function MetaConnectionSummary({
               <CheckCircle2Icon className="size-5" aria-hidden="true" />
             </span>
             <div className="space-y-0.5">
-              <p className="text-sm font-medium">حالة الاتصال</p>
-              <p className="text-xs text-muted-foreground">تم ربط WhatsApp Business بنجاح</p>
+              <p className="text-sm font-medium">{t('connection.connectedTitle')}</p>
+              <p className="text-xs text-muted-foreground">{t('connection.connectedDescription')}</p>
             </div>
           </div>
           <ConnectionStatusPill connected />
         </div>
 
         <dl className="divide-y divide-border overflow-hidden rounded-xl border bg-card">
-          <DetailRow label="Business Name" value={businessAccount?.name ?? integration.metaBusinessId} />
+          <DetailRow label={t('summary.businessName')} value={businessAccount?.name ?? integration.metaBusinessId} />
           <DetailRow
-            label="WhatsApp Business Account"
+            label={t('summary.waba')}
             value={businessAccount?.name ?? businessAccount?.wabaId ?? integration.wabaId}
           />
+          <DetailRow label={t('summary.connectedPhone')} value={phoneNumber?.displayPhoneNumber} />
+          <DetailRow label={t('summary.displayName')} value={phoneNumber?.verifiedName} />
           <DetailRow
-            label="Connected Phone Number"
-            value={phoneNumber?.displayPhoneNumber}
+            label={t('summary.qualityRating')}
+            value={phoneNumber?.qualityRating ? <StatusBadge status={phoneNumber.qualityRating} /> : '—'}
           />
-          <DetailRow label="Display Name" value={phoneNumber?.verifiedName} />
-          <DetailRow
-            label="Quality Rating"
-            value={
-              phoneNumber?.qualityRating ? (
-                <StatusBadge status={phoneNumber.qualityRating} />
-              ) : (
-                '—'
-              )
-            }
-          />
-          <DetailRow
-            label="Verification Status"
-            value={phoneNumber?.codeVerificationStatus}
-          />
-          <DetailRow label="Last Sync" value={formatDateTime(integration.lastSyncAt)} />
+          <DetailRow label={t('summary.verificationStatus')} value={phoneNumber?.codeVerificationStatus} />
+          <DetailRow label={t('summary.lastSync')} value={formatDateTime(integration.lastSyncAt)} />
         </dl>
 
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1"
-            disabled={isSyncing}
-            onClick={onSync}
-          >
+          <Button type="button" variant="outline" className="flex-1" disabled={isSyncing} onClick={onSync}>
             {isSyncing ? <Loader2Icon className="animate-spin" /> : null}
-            Sync
+            {t('connection.sync')}
           </Button>
           <Button
             type="button"
@@ -106,7 +90,7 @@ export function MetaConnectionSummary({
             onClick={() => setDisconnectOpen(true)}
           >
             <UnplugIcon />
-            Disconnect
+            {t('connection.disconnect')}
           </Button>
         </div>
       </div>
@@ -114,9 +98,9 @@ export function MetaConnectionSummary({
       <ConfirmDialog
         open={disconnectOpen}
         onOpenChange={setDisconnectOpen}
-        title="فصل WhatsApp"
-        description="هل تريد فصل تكامل Meta؟ لن تتمكن من إرسال رسائل WhatsApp حتى إعادة الربط."
-        confirmLabel="Disconnect"
+        title={t('disconnectDialog.title')}
+        description={t('disconnectDialog.description')}
+        confirmLabel={t('disconnectDialog.confirm')}
         variant="destructive"
         onConfirm={async () => {
           await onDisconnect();

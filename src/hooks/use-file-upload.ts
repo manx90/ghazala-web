@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useNetworkAware } from '@/hooks/use-network-aware';
 import { uploadFile } from '@/services/api/upload';
 import { parseApiError } from '@/utils/error';
@@ -32,6 +33,8 @@ const ACCEPTED_TYPES = 'image/*,application/pdf,application/vnd.*,text/*';
 
 export function useFileUpload(options: UseFileUploadOptions = {}) {
   const { maxSizeMB = MAX_SIZE_MB, acceptedTypes = ACCEPTED_TYPES, maxRetries = 2 } = options;
+  const t = useTranslations('common.forms');
+  const tErrors = useTranslations('errors.network');
   const { isOnline } = useNetworkAware();
   const abortRef = useRef<AbortController | null>(null);
   const [state, setState] = useState<FileUploadState>({
@@ -56,9 +59,9 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
 
   const validateFile = useCallback(
     (file: File): Error | null => {
-      if (!isOnline) return new Error('لا يوجد اتصال بالإنترنت');
+      if (!isOnline) return new Error(tErrors('offline'));
       if (file.size > maxSizeMB * 1024 * 1024) {
-        return new Error(`الحجم الأقصى ${maxSizeMB}MB`);
+        return new Error(t('maxSize', { size: maxSizeMB }));
       }
       if (acceptedTypes !== '*') {
         const accepted = acceptedTypes.split(',').some((type) => {
@@ -66,11 +69,11 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
           if (trimmed.endsWith('/*')) return file.type.startsWith(trimmed.slice(0, -1));
           return file.type === trimmed;
         });
-        if (!accepted) return new Error('نوع الملف غير مدعوم');
+        if (!accepted) return new Error(t('fileTypeUnsupported'));
       }
       return null;
     },
-    [isOnline, maxSizeMB, acceptedTypes],
+    [isOnline, maxSizeMB, acceptedTypes, t, tErrors],
   );
 
   const selectFile = useCallback(
@@ -168,7 +171,7 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
         resolve(dataUrl);
       };
       reader.onerror = () => {
-        const error = new Error('فشل قراءة الملف');
+        const error = new Error(t('readFileFailed'));
         setState((prev) => ({ ...prev, isUploading: false, error, success: false }));
         options.onError?.(error);
         reject(error);

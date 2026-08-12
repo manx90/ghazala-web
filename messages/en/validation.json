@@ -1,0 +1,21 @@
+{
+  "emailInvalid": "Invalid email address",
+  "required": "This field is required",
+  "passwordRequired": "Password is required",
+  "passwordMin": "Password must be at least 8 characters",
+  "passwordUppercase": "Must contain an uppercase letter",
+  "passwordLowercase": "Must contain a lowercase letter",
+  "passwordNumber": "Must contain a number",
+  "firstNameMin": "First name is required",
+  "lastNameMin": "Last name is required",
+  "otpLength": "OTP must be 6 digits",
+  "phoneInvalid": "Invalid phone number",
+  "slugInvalid": "Invalid slug format",
+  "nameMin": "Name is too short",
+  "selectRequired": "Please select an option",
+  "orgNameRequired": "Organization name is required",
+  "slugMin": "Slug must be at least 3 characters",
+  "slugFormat": "Lowercase letters, numbers, and hyphens only",
+  "timezoneRequired": "Timezone is required",
+  "countryInvalid": "Invalid country code"
+}

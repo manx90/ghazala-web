@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { cn } from '@/lib/utils';
@@ -15,12 +16,12 @@ interface ConversationItemProps {
   onSelect: (conversationId: string) => void;
 }
 
-function getInitials(name?: string | null, phone?: string): string {
+function getInitials(name?: string | null, phone?: string, fallback = '?'): string {
   if (name?.trim()) {
     const parts = name.trim().split(/\s+/);
     return parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? '').join('');
   }
-  return phone?.slice(-2) ?? '؟';
+  return phone?.slice(-2) ?? fallback;
 }
 
 export function ConversationItem({
@@ -30,6 +31,7 @@ export function ConversationItem({
   isActive,
   onSelect,
 }: ConversationItemProps) {
+  const t = useTranslations('inbox');
   const displayName = contactName?.trim() || formatPhoneDisplay(conversation.customerPhone);
 
   return (
@@ -54,7 +56,7 @@ export function ConversationItem({
       <Avatar size="default" className="mt-0.5 size-10 shadow-2xs">
         {contactPhoto ? <AvatarImage src={contactPhoto} alt={displayName} /> : null}
         <AvatarFallback className="bg-gradient-brand text-xs font-semibold text-white">
-          {getInitials(contactName, conversation.customerPhone)}
+          {getInitials(contactName, conversation.customerPhone, t('initialsFallback'))}
         </AvatarFallback>
       </Avatar>
 

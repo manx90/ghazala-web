@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2Icon, PlusIcon, Trash2Icon, UsersIcon } from 'lucide-react';
@@ -28,7 +29,7 @@ import { DeleteDialog } from '@/components/global/delete-dialog';
 import { ModalWrapper } from '@/components/global/modal-wrapper';
 import { QueryState } from '@/components/shared/query-state';
 import {
-  addMemberSchema,
+  createAddTeamMemberSchema,
   type AddMemberFormValues,
 } from '@/features/settings/schemas/settings.schemas';
 import {
@@ -41,13 +42,16 @@ import { OrganizationMemberRole } from '@/types/organization.types';
 import type { OrganizationMember } from '@/types/member.types';
 import { formatDate } from '@/utils/date';
 
-const ROLE_OPTIONS = [
-  { value: OrganizationMemberRole.OWNER, label: 'مالك' },
-  { value: OrganizationMemberRole.ADMIN, label: 'مدير' },
-  { value: OrganizationMemberRole.MEMBER, label: 'عضو' },
-];
+const ROLE_VALUES = [
+  OrganizationMemberRole.OWNER,
+  OrganizationMemberRole.ADMIN,
+  OrganizationMemberRole.MEMBER,
+] as const;
 
 export function TeamMembersSection() {
+  const t = useTranslations('settings.team');
+  const tValidation = useTranslations('settings.validation');
+  const tCommon = useTranslations('common');
   const { data, isLoading, isError, error, refetch } = useTeamMembers();
   const addMember = useAddTeamMember();
   const updateMember = useUpdateTeamMember();
@@ -56,8 +60,13 @@ export function TeamMembersSection() {
   const [addOpen, setAddOpen] = useState(false);
   const [memberToRemove, setMemberToRemove] = useState<OrganizationMember | null>(null);
 
+  const schema = useMemo(
+    () => createAddTeamMemberSchema((k) => tValidation(k)),
+    [tValidation],
+  );
+
   const addForm = useForm<AddMemberFormValues>({
-    resolver: zodResolver(addMemberSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       userId: '',
       role: OrganizationMemberRole.MEMBER,
@@ -81,6 +90,10 @@ export function TeamMembersSection() {
     setMemberToRemove(null);
   };
 
+  const removeName = memberToRemove
+    ? `${memberToRemove.user.firstName} ${memberToRemove.user.lastName}`.trim()
+    : '';
+
   return (
     <>
       <Card className="stagger-in">
@@ -90,13 +103,13 @@ export function TeamMembersSection() {
               <UsersIcon className="size-5" aria-hidden="true" />
             </span>
             <div>
-              <CardTitle>أعضاء الفريق</CardTitle>
-              <CardDescription>إدارة أعضاء المنظمة وأدوارهم</CardDescription>
+              <CardTitle>{t('title')}</CardTitle>
+              <CardDescription>{t('description')}</CardDescription>
             </div>
           </div>
           <Button variant="gradient" onClick={() => setAddOpen(true)}>
             <PlusIcon />
-            إضافة عضو
+            {t('addMember')}
           </Button>
         </CardHeader>
         <CardContent>
@@ -105,12 +118,12 @@ export function TeamMembersSection() {
             isError={isError}
             error={error}
             isEmpty={!data?.items.length}
-            emptyTitle="لا يوجد أعضاء"
-            emptyDescription="أضف أعضاء للفريق للبدء"
+            emptyTitle={t('emptyTitle')}
+            emptyDescription={t('emptyDescription')}
             emptyAction={
               <Button variant="gradient" onClick={() => setAddOpen(true)}>
                 <PlusIcon />
-                إضافة عضو
+                {t('addMember')}
               </Button>
             }
             onRetry={() => void refetch()}
@@ -118,10 +131,10 @@ export function TeamMembersSection() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>الاسم</TableHead>
-                  <TableHead>البريد</TableHead>
-                  <TableHead>الدور</TableHead>
-                  <TableHead>تاريخ الانضمام</TableHead>
+                  <TableHead>{t('columns.name')}</TableHead>
+                  <TableHead>{t('columns.email')}</TableHead>
+                  <TableHead>{t('columns.role')}</TableHead>
+                  <TableHead>{t('columns.joinedAt')}</TableHead>
                   <TableHead className="w-12" />
                 </TableRow>
               </TableHeader>
@@ -157,9 +170,9 @@ export function TeamMembersSection() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {ROLE_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
+                          {ROLE_VALUES.map((role) => (
+                            <SelectItem key={role} value={role}>
+                              {t(`roles.${role.toLowerCase()}`)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -170,7 +183,7 @@ export function TeamMembersSection() {
                       <Button
                         variant="ghost"
                         size="icon-sm"
-                        aria-label="إزالة العضو"
+                        aria-label={t('removeDialog.ariaLabel')}
                         onClick={() => setMemberToRemove(member)}
                       >
                         <Trash2Icon className="text-destructive" />
@@ -187,23 +200,23 @@ export function TeamMembersSection() {
       <ModalWrapper
         open={addOpen}
         onOpenChange={setAddOpen}
-        title="إضافة عضو"
-        description="أدخل معرف المستخدم المسجل في النظام"
+        title={t('addModal.title')}
+        description={t('addModal.description')}
         footer={
           <>
             <Button variant="outline" onClick={() => setAddOpen(false)}>
-              إلغاء
+              {tCommon('cancel')}
             </Button>
             <Button variant="gradient" onClick={() => void handleAddMember()} disabled={addMember.isPending}>
               {addMember.isPending && <Loader2Icon className="animate-spin" />}
-              إضافة
+              {tCommon('add')}
             </Button>
           </>
         }
       >
         <form className="flex flex-col gap-5" onSubmit={handleAddMember}>
           <div className="space-y-2">
-            <Label htmlFor="userId">معرف المستخدم</Label>
+            <Label htmlFor="userId">{t('addModal.userId')}</Label>
             <Input
               id="userId"
               dir="ltr"
@@ -217,7 +230,7 @@ export function TeamMembersSection() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="role">الدور</Label>
+            <Label htmlFor="role">{t('addModal.role')}</Label>
             <Select
               value={addForm.watch('role')}
               onValueChange={(value) =>
@@ -228,13 +241,11 @@ export function TeamMembersSection() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {ROLE_OPTIONS.filter((r) => r.value !== OrganizationMemberRole.OWNER).map(
-                  (option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ),
-                )}
+                {ROLE_VALUES.filter((r) => r !== OrganizationMemberRole.OWNER).map((role) => (
+                  <SelectItem key={role} value={role}>
+                    {t(`roles.${role.toLowerCase()}`)}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -244,9 +255,9 @@ export function TeamMembersSection() {
       <DeleteDialog
         open={Boolean(memberToRemove)}
         onOpenChange={(open) => !open && setMemberToRemove(null)}
-        title="إزالة العضو"
-        description={`هل تريد إزالة ${memberToRemove?.user.firstName} ${memberToRemove?.user.lastName} من الفريق؟`}
-        confirmLabel="إزالة"
+        title={t('removeDialog.title')}
+        description={t('removeDialog.description', { name: removeName })}
+        confirmLabel={t('removeDialog.confirm')}
         onConfirm={() => void handleRemove()}
         isLoading={removeMember.isPending}
       />

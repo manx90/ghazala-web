@@ -2,6 +2,7 @@
 
 import type React from 'react';
 import { MessageSquareIcon, MessagesSquareIcon, PhoneIcon, FileTextIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { StatsCard, StatsGrid } from '@/components/shared/stats-card';
 import { useCountUp } from '@/features/dashboard/hooks/use-count-up';
@@ -18,6 +19,7 @@ interface DashboardKpisProps {
 const STAGGER_DELAY = 80;
 
 export function DashboardKpis({ stats, phones, templates }: DashboardKpisProps) {
+  const t = useTranslations('dashboard.kpis');
   const loading = stats.isLoading || phones.isLoading || templates.isLoading;
 
   const total = useCountUp(stats.data?.total ?? 0);
@@ -27,27 +29,31 @@ export function DashboardKpis({ stats, phones, templates }: DashboardKpisProps) 
 
   const cards = [
     {
-      title: 'إجمالي المحادثات',
+      key: 'totalConversations',
+      title: t('totalConversations'),
       value: total,
-      description: `${stats.data?.open ?? 0} مفتوحة حالياً`,
+      description: t('totalConversationsDesc', { open: stats.data?.open ?? 0 }),
       icon: MessagesSquareIcon,
     },
     {
-      title: 'محادثات مفتوحة',
+      key: 'openConversations',
+      title: t('openConversations'),
       value: open,
-      description: `${stats.data?.closed ?? 0} مغلقة`,
+      description: t('openConversationsDesc', { closed: stats.data?.closed ?? 0 }),
       icon: MessageSquareIcon,
     },
     {
-      title: 'أرقام واتساب',
+      key: 'whatsappNumbers',
+      title: t('whatsappNumbers'),
       value: phonesTotal,
-      description: 'أرقام نشطة مرتبطة',
+      description: t('whatsappNumbersDesc'),
       icon: PhoneIcon,
     },
     {
-      title: 'القوالب',
+      key: 'templates',
+      title: t('templates'),
       value: templatesTotal,
-      description: 'قوالب رسائل مسجّلة',
+      description: t('templatesDesc'),
       icon: FileTextIcon,
     },
   ] as const;
@@ -56,7 +62,7 @@ export function DashboardKpis({ stats, phones, templates }: DashboardKpisProps) 
     <StatsGrid className="gap-6">
       {cards.map((card, index) => (
         <div
-          key={card.title}
+          key={card.key}
           className="stagger-in"
           style={{ '--stagger-delay': `${index * STAGGER_DELAY}ms` } as React.CSSProperties}
         >

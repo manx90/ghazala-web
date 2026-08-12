@@ -1,14 +1,14 @@
 import { parseApiError } from '@/utils/error';
 
-const SAFE_MESSAGES: Record<string, string> = {
-  UNAUTHORIZED: 'انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى.',
-  FORBIDDEN: 'ليس لديك صلاحية لتنفيذ هذا الإجراء.',
-  NOT_FOUND: 'المورد المطلوب غير موجود.',
-  VALIDATION_ERROR: 'يرجى مراجعة البيانات المدخلة.',
-  NETWORK_ERROR: 'تعذر الاتصال بالخادم. تحقق من اتصالك.',
-  TIMEOUT: 'انتهت مهلة الطلب. حاول مرة أخرى.',
-  RATE_LIMITED: 'طلبات كثيرة. انتظر قليلاً ثم أعد المحاولة.',
-  SERVER_ERROR: 'حدث خطأ في الخادم. حاول لاحقاً.',
+const DEFAULT_SAFE_MESSAGES: Record<string, string> = {
+  UNAUTHORIZED: 'Session expired. Please sign in again.',
+  FORBIDDEN: 'You do not have permission to perform this action.',
+  NOT_FOUND: 'The requested resource was not found.',
+  VALIDATION_ERROR: 'Please review the entered data.',
+  NETWORK_ERROR: 'Could not connect to the server. Check your connection.',
+  TIMEOUT: 'Request timed out. Please try again.',
+  RATE_LIMITED: 'Too many requests. Wait a moment and try again.',
+  SERVER_ERROR: 'A server error occurred. Please try again later.',
 };
 
 const SENSITIVE_PATTERNS = [
@@ -26,11 +26,15 @@ function isSensitiveMessage(message: string): boolean {
   return SENSITIVE_PATTERNS.some((pattern) => pattern.test(message));
 }
 
-export function sanitizeErrorForDisplay(error: unknown, fallback = 'حدث خطأ غير متوقع'): string {
+export function sanitizeErrorForDisplay(
+  error: unknown,
+  fallback = 'An unexpected error occurred',
+  safeMessages: Record<string, string> = DEFAULT_SAFE_MESSAGES,
+): string {
   const parsed = parseApiError(error);
 
-  if (parsed.code in SAFE_MESSAGES) {
-    const safe = SAFE_MESSAGES[parsed.code];
+  if (parsed.code in safeMessages) {
+    const safe = safeMessages[parsed.code];
     if (parsed.isValidationError && parsed.message && !isSensitiveMessage(parsed.message)) {
       return parsed.message;
     }
@@ -48,9 +52,12 @@ export function sanitizeErrorForDisplay(error: unknown, fallback = 'حدث خط�
   return fallback;
 }
 
-export function sanitizeRuntimeError(error: Error & { digest?: string }): string {
+export function sanitizeRuntimeError(
+  error: Error & { digest?: string },
+  fallback = 'An unexpected error occurred. Please try again.',
+): string {
   if (process.env.NODE_ENV === 'development') {
-    return error.message || 'حدث خطأ غير متوقع';
+    return error.message || fallback;
   }
-  return 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.';
+  return fallback;
 }

@@ -1,25 +1,13 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toastApiError, toastSuccess } from '@/components/global/toast-helpers';
+import { useTranslations } from 'next-intl';
+import { useToastI18n } from '@/hooks/use-toast-i18n';
 import { queryKeys } from '@/config/query-keys';
 import { metaApi } from '@/features/meta/api/meta.api';
 import { whatsappApi } from '@/features/whatsapp/api/whatsapp.api';
 import type { ConnectMetaPayload } from '@/types/meta.types';
 import type { WhatsappSyncResult } from '@/types/whatsapp.types';
-
-function syncSuccessMessage(result: WhatsappSyncResult, includeWabas = false): string {
-  const parts: string[] = [];
-  if (includeWabas) {
-    parts.push(`تمت مزامنة ${result.wabasSynced} حساب و ${result.phoneNumbersSynced} رقم`);
-  } else {
-    parts.push(`تمت مزامنة ${result.phoneNumbersSynced} رقم`);
-  }
-  if (result.phoneNumbersRegistered > 0) {
-    parts.push(`وتم تسجيل ${result.phoneNumbersRegistered} رقم على Cloud API`);
-  }
-  return parts.join(' ');
-}
 
 export function useMetaStatus() {
   return useQuery({
@@ -30,13 +18,15 @@ export function useMetaStatus() {
 
 export function useConnectMeta() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('settings.toast');
 
   return useMutation({
     mutationFn: (payload: ConnectMetaPayload) => metaApi.connect(payload),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.meta.status });
       void queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.businessAccounts });
-      toastSuccess('تم ربط Meta بنجاح');
+      toastSuccess(t('metaConnected'));
     },
     onError: toastApiError,
   });
@@ -44,12 +34,14 @@ export function useConnectMeta() {
 
 export function useDisconnectMeta() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('settings.toast');
 
   return useMutation({
     mutationFn: () => metaApi.disconnect(),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.meta.status });
-      toastSuccess('تم فصل Meta');
+      toastSuccess(t('metaDisconnected'));
     },
     onError: toastApiError,
   });
@@ -57,6 +49,8 @@ export function useDisconnectMeta() {
 
 export function useSyncMeta() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('settings.toast');
 
   return useMutation({
     mutationFn: async () => {
@@ -68,7 +62,7 @@ export function useSyncMeta() {
       void queryClient.invalidateQueries({ queryKey: queryKeys.meta.status });
       void queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.businessAccounts });
       void queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.phoneNumbers });
-      toastSuccess(response.message || 'تمت المزامنة');
+      toastSuccess(response.message || t('synced'));
     },
     onError: toastApiError,
   });
@@ -88,15 +82,34 @@ export function useWhatsappPhoneNumbers() {
   });
 }
 
+function useSyncSuccessMessage() {
+  const t = useTranslations('settings.toast');
+
+  return (result: WhatsappSyncResult, includeWabas = false) => {
+    const parts: string[] = [];
+    if (includeWabas) {
+      parts.push(t('syncDetailed', { wabas: result.wabasSynced, phones: result.phoneNumbersSynced }));
+    } else {
+      parts.push(t('syncPhones', { phones: result.phoneNumbersSynced }));
+    }
+    if (result.phoneNumbersRegistered > 0) {
+      parts.push(t('syncRegistered', { count: result.phoneNumbersRegistered }));
+    }
+    return parts.join(' ');
+  };
+}
+
 export function useSyncWhatsappAccounts() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const syncMessage = useSyncSuccessMessage();
 
   return useMutation({
     mutationFn: () => whatsappApi.syncBusinessAccounts(),
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.businessAccounts });
       void queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.phoneNumbers });
-      toastSuccess(syncSuccessMessage(result, true));
+      toastSuccess(syncMessage(result, true));
     },
     onError: toastApiError,
   });
@@ -104,12 +117,14 @@ export function useSyncWhatsappAccounts() {
 
 export function useSyncWhatsappPhoneNumbers() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const syncMessage = useSyncSuccessMessage();
 
   return useMutation({
     mutationFn: () => whatsappApi.syncPhoneNumbers(),
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.phoneNumbers });
-      toastSuccess(syncSuccessMessage(result));
+      toastSuccess(syncMessage(result));
     },
     onError: toastApiError,
   });
@@ -117,12 +132,14 @@ export function useSyncWhatsappPhoneNumbers() {
 
 export function useDisconnectPhoneNumber() {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('settings.toast');
 
   return useMutation({
     mutationFn: (id: string) => whatsappApi.disconnectPhoneNumber(id),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.whatsapp.phoneNumbers });
-      toastSuccess('تم فصل رقم الهاتف');
+      toastSuccess(t('phoneDisconnected'));
     },
     onError: toastApiError,
   });

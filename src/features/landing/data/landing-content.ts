@@ -3,236 +3,101 @@ import {
   BotIcon,
   Code2Icon,
   InboxIcon,
+  LayoutDashboardIcon,
   MessageSquareTextIcon,
   RadioTowerIcon,
+  SettingsIcon,
   ShieldCheckIcon,
   UsersIcon,
   WorkflowIcon,
   ZapIcon,
 } from 'lucide-react';
 import { ROUTES } from '@/config/routes';
+import type { LucideIcon } from 'lucide-react';
 
 export const LANDING_NAV_LINKS = [
-  { href: '#features', label: 'المميزات' },
-  { href: '#product', label: 'المنتج' },
-  { href: '#automation', label: 'الأتمتة' },
-  { href: '#api', label: 'واجهة المطورين' },
-  { href: '#faq', label: 'الأسئلة الشائعة' },
+  { href: '#features', key: 'features' },
+  { href: '#product', key: 'product' },
+  { href: '#automation', key: 'automation' },
+  { href: '#api', key: 'api' },
+  { href: '#faq', key: 'faq' },
 ] as const;
 
-export const HERO_CONTENT = {
-  badge: 'منصة WhatsApp Business API للشركات الطموحة',
-  title: 'حوّل محادثات واتساب إلى نمو حقيقي لأعمالك',
-  description:
-    'غزالة تمنح فريقك صندوق وارد مشتركاً، أتمتة ذكية، حملات بث موجهة، وتحليلات لحظية — كل ذلك عبر واجهة WhatsApp Business API الرسمية وبنية تحتية بمستوى المؤسسات.',
-  primaryCta: { label: 'ابدأ الآن مجاناً', href: ROUTES.auth.register },
-  secondaryCta: { label: 'استكشف المميزات', href: '#features' },
-  stats: [
-    { value: '99.9%', label: 'جاهزية الخدمة' },
-    { value: '+2M', label: 'رسالة شهرياً' },
-    { value: '<100ms', label: 'زمن استجابة API' },
-  ],
-} as const;
+export const HERO_STATS = [
+  { value: '99.9%', labelKey: 'uptime' },
+  { value: '+2M', labelKey: 'messages' },
+  { value: '<100ms', labelKey: 'latency' },
+] as const;
 
-export const TRUSTED_BY = {
-  title: 'موثوقة من فرق النمو والدعم في مختلف القطاعات',
-  items: ['الأفق للتجارة', 'نمو التقنية', 'متاجر وفاء', 'مجموعة الريادة', 'سديم الرقمية', 'أثير القابضة'],
-} as const;
+export const FEATURE_ITEMS = [
+  { icon: InboxIcon, key: 'inbox' },
+  { icon: BotIcon, key: 'automation' },
+  { icon: RadioTowerIcon, key: 'broadcast' },
+  { icon: MessageSquareTextIcon, key: 'templates' },
+  { icon: Code2Icon, key: 'api' },
+  { icon: BarChart3Icon, key: 'analytics' },
+] as const;
 
-export const FEATURES_GRID = {
-  id: 'features',
-  eyebrow: 'منصة متكاملة',
-  title: 'كل ما يحتاجه فريقك للتواصل عبر واتساب',
-  description: 'أدوات مصممة بعناية لتوسيع التواصل مع عملائك دون فقدان اللمسة الإنسانية.',
-  items: [
-    {
-      icon: InboxIcon,
-      title: 'صندوق وارد مشترك',
-      description: 'كل محادثات العملاء في مكان واحد، مع تعيين ذكي للمحادثات وملاحظات داخلية بين أعضاء الفريق.',
-    },
-    {
-      icon: BotIcon,
-      title: 'أتمتة بالذكاء الاصطناعي',
-      description: 'ردود فورية على الأسئلة المتكررة، وتوجيه تلقائي للمحادثات إلى القسم المناسب على مدار الساعة.',
-    },
-    {
-      icon: RadioTowerIcon,
-      title: 'حملات بث موجهة',
-      description: 'أرسل قوالب معتمدة إلى شرائح محددة من جمهورك، وقِس معدلات التسليم والقراءة والتحويل.',
-    },
-    {
-      icon: MessageSquareTextIcon,
-      title: 'قوالب معتمدة من ميتا',
-      description: 'أنشئ وأدر قوالب الرسائل المعتمدة، مع دعم كامل للأزرار والوسائط والمتغيرات الديناميكية.',
-    },
-    {
-      icon: Code2Icon,
-      title: 'واجهة API للمطورين',
-      description: 'REST API موثقة بالكامل مع Webhooks لحظية لتكامل سلس مع أنظمتك الداخلية.',
-    },
-    {
-      icon: BarChart3Icon,
-      title: 'تحليلات لحظية',
-      description: 'لوحات قياس دقيقة لأداء الفريق والحملات، تساعدك على اتخاذ قرارات مبنية على البيانات.',
-    },
-  ],
-} as const;
+export const SPLIT_SECTION_CONFIG = [
+  { id: 'automation', icon: WorkflowIcon, visual: 'automation' as const, key: 'automation' },
+  { id: 'inbox', icon: UsersIcon, visual: 'inbox' as const, key: 'inbox' },
+  { id: 'broadcast', icon: ZapIcon, visual: 'broadcast' as const, key: 'broadcast' },
+  { id: 'api', icon: Code2Icon, visual: 'api' as const, key: 'api' },
+  { id: 'analytics', icon: BarChart3Icon, visual: 'analytics' as const, key: 'analytics' },
+] as const;
 
-export const SPLIT_SECTIONS = [
+export const SECURITY_BADGE_KEYS = [
+  { icon: ShieldCheckIcon, key: 'encryption' },
+  { icon: ZapIcon, key: 'uptime' },
+  { icon: BotIcon, key: 'meta' },
+] as const;
+
+export const FOOTER_LINK_GROUPS = [
   {
-    id: 'automation',
-    eyebrow: 'الأتمتة الذكية',
-    icon: WorkflowIcon,
-    title: 'أتمتة تعمل نيابة عنك، حتى وأنت نائم',
-    description:
-      'صمم تدفقات ردود ذكية تجيب على عملائك فوراً، وتجمع البيانات، وتحوّل المحادثات المعقدة إلى فريقك في الوقت المناسب.',
-    points: [
-      'ردود آلية مدعومة بالذكاء الاصطناعي على الأسئلة المتكررة',
-      'توجيه تلقائي للمحادثات حسب القسم واللغة والأولوية',
-      'مشغّلات مبنية على الأحداث: رسالة جديدة، كلمة مفتاحية، أو وقت انتظار',
+    columnKey: 'product' as const,
+    links: [
+      { labelKey: 'features', href: '#features' },
+      { labelKey: 'automation', href: '#automation' },
+      { labelKey: 'api', href: '#api' },
+      { labelKey: 'faq', href: '#faq' },
     ],
-    visual: 'automation' as const,
   },
   {
-    id: 'inbox',
-    eyebrow: 'صندوق الوارد المشترك',
-    icon: UsersIcon,
-    title: 'فريق واحد، صندوق وارد واحد، صفر تشتيت',
-    description:
-      'لا مزيد من الأرقام الشخصية والمحادثات الضائعة. يعمل فريقك كله من واجهة موحدة مع سياق كامل لكل عميل.',
-    points: [
-      'تعيين المحادثات يدوياً أو تلقائياً وفق توزيع عادل للأعباء',
-      'ملاحظات داخلية وإشارات بين أعضاء الفريق دون أن يراها العميل',
-      'ملف موحد للعميل يجمع سجل المحادثات والبيانات والوسوم',
+    columnKey: 'account' as const,
+    links: [
+      { labelKey: 'login', href: ROUTES.auth.login, auth: true },
+      { labelKey: 'register', href: ROUTES.auth.register, auth: true },
     ],
-    visual: 'inbox' as const,
   },
   {
-    id: 'broadcast',
-    eyebrow: 'حملات البث',
-    icon: ZapIcon,
-    title: 'حملات تصل في الوقت المناسب، إلى الشخص المناسب',
-    description:
-      'أطلق حملات بث عبر قوالب معتمدة، واستهدف شرائح دقيقة من جمهورك، ثم تابع النتائج لحظة بلحظة.',
-    points: [
-      'استهداف حسب الوسوم والخصائص وسلوك العملاء',
-      'جدولة الإرسال مع التحكم في السرعة لتجنب القيود',
-      'تقارير تسليم وقراءة وتفاعل لكل حملة على حدة',
+    columnKey: 'legal' as const,
+    links: [
+      { labelKey: 'terms', href: '/terms' },
+      { labelKey: 'privacy', href: '/privacy' },
     ],
-    visual: 'broadcast' as const,
-  },
-  {
-    id: 'api',
-    eyebrow: 'واجهة المطورين',
-    icon: Code2Icon,
-    title: 'API صُمم ليحبه المطورون',
-    description:
-      'واجهة REST موثقة بالكامل، مفاتيح وصول آمنة، وWebhooks لحظية تُبقيك على اطلاع بكل حدث فور حدوثه.',
-    points: [
-      'توثيق تفاعلي مع أمثلة جاهزة بكل اللغات الشائعة',
-      'Webhooks قابلة لإعادة المحاولة مع توقيع أمني للتحقق',
-      'بيئة تجريبية معزولة لاختبار التكاملات قبل الإطلاق',
-    ],
-    visual: 'api' as const,
-  },
-  {
-    id: 'analytics',
-    eyebrow: 'التحليلات',
-    icon: BarChart3Icon,
-    title: 'قرارات أدق، مبنية على بيانات لحظية',
-    description:
-      'افهم ما يحدث في كل محادثة وحملة: من معدلات الاستجابة إلى أداء كل عضو في الفريق، كل ذلك في لوحات قياس واضحة.',
-    points: [
-      'مؤشرات أداء الفريق: زمن الرد الأول ومتوسط زمن الحل',
-      'تتبع دقيق لمعدلات تسليم وقراءة رسائل الحملات',
-      'تصدير التقارير بصيغ متعددة لمشاركتها مع الإدارة',
-    ],
-    visual: 'analytics' as const,
   },
 ] as const;
 
-export const PRICING_CTA = {
-  eyebrow: 'خطط مرنة',
-  title: 'أسعار تنمو معك، دون مفاجآت',
-  description:
-    'ابدأ مجاناً وجرّب كل المميزات، ثم انتقل إلى الخطة التي تناسب حجم أعمالك. بدون عقود طويلة، ويمكنك الترقية أو الإلغاء في أي وقت.',
-  primaryCta: { label: 'ابدأ تجربتك المجانية', href: ROUTES.auth.register },
-  points: ['بدون بطاقة ائتمانية', 'إعداد خلال دقائق', 'دعم فني بالعربية'],
-} as const;
-
-export const FAQ_SECTION = {
-  id: 'faq',
-  eyebrow: 'الأسئلة الشائعة',
-  title: 'كل ما تريد معرفته عن غزالة',
-  items: [
-    {
-      question: 'هل غزالة مزود رسمي لخدمة WhatsApp Business API؟',
-      answer:
-        'نعم، تعتمد غزالة على واجهة WhatsApp Business API الرسمية من ميتا، مما يضمن استقرار الخدمة والامتثال الكامل لسياسات واتساب، ويحمي رقمك من الحظر المرتبط بالحلول غير الرسمية.',
-    },
-    {
-      question: 'كم يستغرق إعداد المنصة وربط رقم الواتساب؟',
-      answer:
-        'في الغالب لا يتجاوز الأمر بضع دقائق. تسجّل حسابك، تنشئ مؤسستك، ثم تربط رقمك عبر التسجيل المدمج من ميتا مباشرة دون مغادرة المنصة.',
-    },
-    {
-      question: 'هل يمكن لأكثر من موظف الرد على نفس الرقم؟',
-      answer:
-        'بالتأكيد. صندوق الوارد المشترك مصمم خصيصاً لذلك: يتعاون فريقك كله على رقم واحد مع تعيين المحادثات، والملاحظات الداخلية، وتتبع أداء كل عضو.',
-    },
-    {
-      question: 'هل تدعم المنصة التكامل مع أنظمتنا الداخلية؟',
-      answer:
-        'نعم، نوفر REST API موثقاً بالكامل وWebhooks لحظية، مما يتيح ربط غزالة مع أنظمة CRM وERP ومتاجرك الإلكترونية بسهولة.',
-    },
-    {
-      question: 'كيف يتم احتساب تكلفة رسائل واتساب؟',
-      answer:
-        'تعتمد تكلفة المحادثات على التسعيرة الرسمية من ميتا حسب نوع القالب والدولة، وتظهر لك غزالة تفصيلاً واضحاً لكل رسالة داخل لوحة الفوترة دون رسوم خفية.',
-    },
-    {
-      question: 'هل بياناتي ومحادثات عملائي آمنة؟',
-      answer:
-        'نطبق تشفيراً للبيانات أثناء النقل والتخزين، وصلاحيات دقيقة على مستوى الأدوار، وسجلات تدقيق كاملة، مع التزام صارم بسياسة الخصوصية الموضحة في موقعنا.',
-    },
-  ],
-} as const;
-
-export const FOOTER_CONTENT = {
-  brand: {
-    name: 'غزالة',
-    description: 'منصة تواصل المؤسسات عبر WhatsApp Business API. صندوق وارد مشترك، أتمتة ذكية، حملات بث، وتحليلات لحظية.',
-  },
-  columns: [
-    {
-      title: 'المنتج',
-      links: [
-        { label: 'المميزات', href: '#features' },
-        { label: 'الأتمتة', href: '#automation' },
-        { label: 'واجهة المطورين', href: '#api' },
-        { label: 'الأسئلة الشائعة', href: '#faq' },
-      ],
-    },
-    {
-      title: 'الحساب',
-      links: [
-        { label: 'تسجيل الدخول', href: ROUTES.auth.login },
-        { label: 'إنشاء حساب', href: ROUTES.auth.register },
-      ],
-    },
-    {
-      title: 'قانوني',
-      links: [
-        { label: 'شروط الخدمة', href: '/terms' },
-        { label: 'سياسة الخصوصية', href: '/privacy' },
-      ],
-    },
-  ],
-  copyright: `© ${new Date().getFullYear()} غزالة. جميع الحقوق محفوظة.`,
-} as const;
-
-export const SECURITY_BADGES = [
-  { icon: ShieldCheckIcon, label: 'تشفير كامل أثناء النقل والتخزين' },
-  { icon: ZapIcon, label: 'بنية تحتية بجاهزية 99.9%' },
-  { icon: BotIcon, label: 'واجهة رسمية معتمدة من ميتا' },
+export const PRODUCT_SIDEBAR_ITEMS = [
+  { icon: LayoutDashboardIcon, key: 'dashboard', active: true },
+  { icon: InboxIcon, key: 'inbox', active: false },
+  { icon: UsersIcon, key: 'contacts', active: false },
+  { icon: RadioTowerIcon, key: 'campaigns', active: false },
+  { icon: MessageSquareTextIcon, key: 'templates', active: false },
+  { icon: SettingsIcon, key: 'settings', active: false },
 ] as const;
+
+export const PRODUCT_KPI_KEYS = [
+  { key: 'conversations' },
+  { key: 'responseTime' },
+  { key: 'satisfaction' },
+] as const;
+
+export const CHART_BARS = [38, 52, 44, 66, 58, 74, 62, 84, 70, 92, 80, 96] as const;
+
+export type SplitVisualKey = (typeof SPLIT_SECTION_CONFIG)[number]['visual'];
+
+export type FeatureItemConfig = {
+  icon: LucideIcon;
+  key: string;
+};

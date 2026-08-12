@@ -1,0 +1,324 @@
+{
+  "pages": {
+    "profile": {
+      "title": "الملف الشخصي",
+      "description": "عرض معلومات حسابك"
+    },
+    "security": {
+      "title": "الأمان",
+      "description": "إدارة الجلسة وكلمة المرور"
+    },
+    "organization": {
+      "title": "إعدادات المنظمة",
+      "description": "إدارة الشعار والمنطقة الزمنية والدولة"
+    },
+    "team": {
+      "title": "إدارة الفريق",
+      "description": "إضافة وتعديل وإزالة أعضاء المنظمة"
+    },
+    "billing": {
+      "title": "الفوترة والاشتراك",
+      "description": "إدارة الخطة والفواتير"
+    },
+    "meta": {
+      "title": "إعدادات Meta",
+      "description": "ربط ومزامنة Meta Business"
+    },
+    "whatsapp": {
+      "title": "إعدادات WhatsApp",
+      "description": "حسابات WABA وأرقام الهاتف"
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "description": "إدارة webhooks للأحداث",
+      "cardTitle": "نقاط استقبال الأحداث",
+      "cardDescription": "استقبل إشعارات فورية عن الأحداث في أنظمتك",
+      "unavailableTitle": "Webhooks غير متاح",
+      "unavailableDescription": "لا يمكن إدارة webhooks حالياً لعدم توفر واجهات API."
+    },
+    "apiKeys": {
+      "title": "مفاتيح API",
+      "description": "إنشاء وإدارة مفاتيح الوصول",
+      "cardTitle": "مفاتيح الوصول",
+      "cardDescription": "أنشئ مفاتيح API لربط أنظمتك الخارجية بالمنصة",
+      "unavailableTitle": "مفاتيح API غير متاحة",
+      "unavailableDescription": "لا يمكن إدارة مفاتيح API حالياً لعدم توفر واجهات API."
+    }
+  },
+  "profile": {
+    "verifyEmail": {
+      "title": "تأكيد البريد الإلكتروني",
+      "description": "حسابك بانتظار التحقق. أكّد بريدك لتفعيل الحساب بالكامل.",
+      "enterCode": "إدخال رمز التحقق",
+      "resendCode": "إعادة إرسال الرمز"
+    },
+    "fields": {
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "status": "الحالة",
+      "emailVerified": "البريد موثّق",
+      "lastLogin": "آخر تسجيل دخول"
+    },
+    "unavailable": {
+      "title": "تحديث الملف الشخصي غير متاح",
+      "description": "لا يمكن تعديل بيانات الملف الشخصي حالياً لعدم توفر واجهة API."
+    }
+  },
+  "security": {
+    "logout": {
+      "title": "تسجيل الخروج",
+      "description": "إنهاء الجلسة الحالية على هذا الجهاز"
+    },
+    "passwordReset": {
+      "title": "استعادة كلمة المرور",
+      "description": "إذا نسيت كلمة المرور، يمكنك طلب إعادة تعيينها",
+      "button": "نسيت كلمة المرور"
+    },
+    "sessions": {
+      "unavailableTitle": "إدارة الجلسات غير متاحة",
+      "unavailableDescription": "لا يمكن عرض أو إنهاء الجلسات النشطة حالياً."
+    },
+    "changePassword": {
+      "unavailableTitle": "تغيير كلمة المرور غير متاح",
+      "unavailableDescription": "لا يمكن تغيير كلمة المرور من الإعدادات حالياً."
+    }
+  },
+  "organization": {
+    "info": {
+      "title": "معلومات المنظمة",
+      "description": "بيانات عامة للمنظمة (للقراءة فقط)",
+      "name": "الاسم",
+      "slug": "المعرّف",
+      "status": "الحالة"
+    },
+    "form": {
+      "title": "إعدادات المنظمة",
+      "description": "الشعار، المنطقة الزمنية، والدولة",
+      "logo": "رابط الشعار",
+      "logoPlaceholder": "https://example.com/logo.png",
+      "timezone": "المنطقة الزمنية",
+      "timezonePlaceholder": "اختر المنطقة الزمنية",
+      "country": "الدولة",
+      "countryPlaceholder": "اختر الدولة"
+    },
+    "timezones": {
+      "Asia/Riyadh": "الرياض (Asia/Riyadh)",
+      "Asia/Dubai": "دبي (Asia/Dubai)",
+      "Asia/Kuwait": "الكويت (Asia/Kuwait)",
+      "Asia/Qatar": "قطر (Asia/Qatar)",
+      "Asia/Bahrain": "البحرين (Asia/Bahrain)",
+      "Asia/Muscat": "مسقط (Asia/Muscat)",
+      "Africa/Cairo": "القاهرة (Africa/Cairo)",
+      "Asia/Amman": "عمان (Asia/Amman)",
+      "Asia/Beirut": "بيروت (Asia/Beirut)",
+      "Africa/Casablanca": "الدار البيضاء (Africa/Casablanca)",
+      "UTC": "UTC"
+    },
+    "countries": {
+      "SA": "السعودية",
+      "AE": "الإمارات",
+      "KW": "الكويت",
+      "QA": "قطر",
+      "BH": "البحرين",
+      "OM": "عُمان",
+      "EG": "مصر",
+      "JO": "الأردن",
+      "LB": "لبنان",
+      "MA": "المغرب",
+      "TN": "تونس"
+    }
+  },
+  "team": {
+    "title": "أعضاء الفريق",
+    "description": "إدارة أعضاء المنظمة وأدوارهم",
+    "addMember": "إضافة عضو",
+    "emptyTitle": "لا يوجد أعضاء",
+    "emptyDescription": "أضف أعضاء للفريق للبدء",
+    "columns": {
+      "name": "الاسم",
+      "email": "البريد",
+      "role": "الدور",
+      "joinedAt": "تاريخ الانضمام"
+    },
+    "roles": {
+      "owner": "مالك",
+      "admin": "مدير",
+      "member": "عضو"
+    },
+    "addModal": {
+      "title": "إضافة عضو",
+      "description": "أدخل معرف المستخدم المسجل في النظام",
+      "userId": "معرف المستخدم",
+      "role": "الدور"
+    },
+    "removeDialog": {
+      "title": "إزالة العضو",
+      "description": "هل تريد إزالة {name} من الفريق؟",
+      "confirm": "إزالة",
+      "ariaLabel": "إزالة العضو"
+    }
+  },
+  "billing": {
+    "subscription": {
+      "title": "الاشتراك الحالي",
+      "description": "تفاصيل خطتك ودورة الفوترة",
+      "cancel": "إلغاء الاشتراك",
+      "plan": "الخطة",
+      "status": "الحالة",
+      "cycle": "دورة الفوترة",
+      "expiresAt": "تاريخ الانتهاء"
+    },
+    "cycle": {
+      "monthly": "شهري",
+      "yearly": "سنوي"
+    },
+    "usage": {
+      "title": "استخدام الخطة",
+      "description": "مقارنة استخدامك بحدود خطتك الحالية",
+      "messages": "الرسائل الشهرية",
+      "contacts": "جهات الاتصال",
+      "teamMembers": "أعضاء الفريق",
+      "phoneNumbers": "أرقام الهاتف"
+    },
+    "plans": {
+      "title": "الخطط المتاحة",
+      "description": "اختر خطة أو غيّر خطتك الحالية",
+      "emptyTitle": "لا توجد خطط",
+      "current": "الحالية",
+      "perMonth": "شهرياً",
+      "currentPlan": "الخطة الحالية",
+      "changePlan": "تغيير الخطة",
+      "subscribe": "اشتراك"
+    },
+    "invoices": {
+      "title": "الفواتير",
+      "description": "سجل الفواتير السابقة",
+      "emptyTitle": "لا توجد فواتير",
+      "columns": {
+        "number": "رقم الفاتورة",
+        "amount": "المبلغ",
+        "status": "الحالة",
+        "issuedAt": "تاريخ الإصدار",
+        "paidAt": "تاريخ الدفع"
+      }
+    },
+    "changePlanDialog": {
+      "changeTitle": "تغيير الخطة",
+      "subscribeTitle": "اشتراك جديد"
+    },
+    "cancelDialog": {
+      "title": "إلغاء الاشتراك",
+      "description": "هل أنت متأكد من إلغاء الاشتراك؟ سيظل نشطاً حتى نهاية دورة الفوترة.",
+      "confirm": "إلغاء الاشتراك"
+    }
+  },
+  "meta": {
+    "connection": {
+      "title": "حالة الربط",
+      "description": "حالة تكامل Meta Business",
+      "sync": "مزامنة",
+      "disconnect": "فصل",
+      "connectedTitle": "حالة الاتصال",
+      "connectedDescription": "تم ربط WhatsApp Business بنجاح"
+    },
+    "summary": {
+      "businessName": "اسم النشاط",
+      "waba": "حساب WhatsApp Business",
+      "connectedPhone": "رقم الهاتف المتصل",
+      "displayName": "الاسم المعروض",
+      "qualityRating": "تقييم الجودة",
+      "verificationStatus": "حالة التحقق",
+      "lastSync": "آخر مزامنة"
+    },
+    "fields": {
+      "wabaId": "معرف WABA",
+      "businessId": "معرف Meta Business",
+      "lastSync": "آخر مزامنة",
+      "connectedAt": "تاريخ الربط",
+      "tokenExpiry": "انتهاء التوken"
+    },
+    "connect": {
+      "title": "ربط Meta",
+      "description": "أدخل بيانات الربط من Meta Business",
+      "wabaId": "معرف WABA *",
+      "businessId": "معرف Meta Business",
+      "authCode": "رمز التفويض"
+    },
+    "disconnectDialog": {
+      "title": "فصل Meta",
+      "description": "هل تريد فصل تكامل Meta؟ لن تتمكن من إرسال رسائل WhatsApp حتى إعادة الربط.",
+      "confirm": "فصل"
+    },
+    "embeddedSignup": {
+      "notConfigured": "Meta Embedded Signup غير مهيأ. تواصل مع الدعم.",
+      "cancelled": "تم إلغاء عملية الربط",
+      "failed": "فشلت عملية الربط مع Meta",
+      "noWabaData": "لم يتم استلام بيانات حساب WhatsApp Business",
+      "sdkUnavailable": "Facebook SDK غير متاح",
+      "noAuthCode": "لم يتم استلام رمز التفويض من Meta",
+      "sdkLoadFailed": "فشل تحميل Facebook SDK",
+      "timeout": "انتهت مهلة ربط Meta. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "whatsapp": {
+    "waba": {
+      "title": "حسابات WhatsApp Business",
+      "description": "حسابات WABA المرتبطة بالمنظمة",
+      "sync": "مزامنة الحسابات",
+      "emptyTitle": "لا توجد حسابات WABA",
+      "emptyDescription": "قم بربط Meta ثم زامن الحسابات",
+      "columns": {
+        "name": "الاسم",
+        "wabaId": "معرف WABA",
+        "status": "الحالة",
+        "timezone": "المنطقة الزمنية"
+      }
+    },
+    "phones": {
+      "title": "أرقام الهاتف",
+      "description": "أرقام WhatsApp المرتبطة — يمكنك فصل أي رقم غير مستخدم",
+      "sync": "مزامنة الأرقام",
+      "emptyTitle": "لا توجد أرقام",
+      "emptyDescription": "زامن الأرقام من Meta",
+      "columns": {
+        "phone": "الرقم",
+        "verifiedName": "الاسم المعتمد",
+        "quality": "الجودة",
+        "status": "الحالة"
+      },
+      "disconnectAria": "فصل الرقم"
+    },
+    "disconnectDialog": {
+      "title": "فصل رقم الهاتف",
+      "description": "هل تريد فصل {phone}؟",
+      "confirm": "فصل"
+    }
+  },
+  "toast": {
+    "organizationSaved": "تم حفظ إعدادات المنظمة",
+    "memberAdded": "تمت إضافة العضو",
+    "memberUpdated": "تم تحديث دور العضو",
+    "memberRemoved": "تمت إزالة العضو",
+    "subscribed": "تم الاشتراك بنجاح",
+    "planChanged": "تم تغيير الخطة",
+    "subscriptionCancelled": "تم إلغاء الاشتراك",
+    "metaConnected": "تم ربط Meta بنجاح",
+    "metaDisconnected": "تم فصل Meta",
+    "synced": "تمت المزامنة",
+    "syncDetailed": "تمت مزامنة {wabas} حساب و {phones} رقم",
+    "syncPhones": "تمت مزامنة {phones} رقم",
+    "syncRegistered": "وتم تسجيل {count} رقم على Cloud API",
+    "phoneDisconnected": "تم فصل رقم الهاتف"
+  },
+  "validation": {
+    "logoTooLong": "رابط الشعار طويل جداً",
+    "logoInvalid": "رابط الشعار غير صالح",
+    "timezoneRequired": "المنطقة الزمنية مطلوبة",
+    "countryLength": "رمز الدولة يجب أن يكون حرفين",
+    "countryInvalid": "رمز الدولة غير صالح",
+    "userIdInvalid": "معرف المستخدم غير صالح",
+    "wabaIdRequired": "معرف WABA مطلوب",
+    "planIdInvalid": "معرف الخطة غير صالح"
+  }
+}

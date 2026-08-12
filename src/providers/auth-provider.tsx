@@ -1,6 +1,7 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { useEffect, type ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { ROUTES } from '@/config/routes';
@@ -22,6 +23,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
+  const tCommon = useTranslations('common');
   const { isHydrated, isSessionLoading } = useSessionRecovery();
   const user = useAuthStore((state) => state.user);
   const currentOrganization = useOrganizationStore((state) => state.currentOrganization);
@@ -62,11 +64,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [isHydrated, isSessionLoading, user, pathname, router, currentOrganization?.slug]);
 
   if (!isHydrated) {
-    return shouldBlockRender ? <LoadingScreen label="جاري التحميل..." /> : null;
+    return shouldBlockRender ? <LoadingScreen label={tCommon('loading')} /> : null;
   }
 
   if (isSessionLoading && shouldBlockRender) {
-    return <LoadingScreen label="جاري تحميل الجلسة..." />;
+    return <LoadingScreen label={tCommon('loadingSession')} />;
   }
 
   return children;

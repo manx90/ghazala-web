@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from 'react';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import {
   ActivityIcon,
@@ -81,18 +82,18 @@ function KpiCard({ title, value, description, icon: Icon, loading, delay = 0 }: 
   );
 }
 
-function healthLabel(status?: AdminHealthStatus): string {
+function healthLabel(status: AdminHealthStatus | undefined, t: (key: string) => string): string {
   switch (status) {
     case 'ok':
-      return 'سليم';
+      return t('ok');
     case 'degraded':
-      return 'متدهور';
+      return t('degraded');
     case 'down':
-      return 'متوقف';
+      return t('down');
     case 'not_configured':
-      return 'غير مفعّل';
+      return t('notConfigured');
     default:
-      return 'غير معروف';
+      return t('unknown');
   }
 }
 
@@ -122,6 +123,7 @@ function HealthMetricCard({
   detail,
   icon: Icon,
   delay,
+  tHealth,
 }: {
   title: string;
   status?: AdminHealthStatus;
@@ -129,6 +131,7 @@ function HealthMetricCard({
   detail?: string;
   icon: LucideIcon;
   delay: number;
+  tHealth: (key: string, values?: Record<string, string | number>) => string;
 }) {
   return (
     <Card className="stagger-in card-interactive" style={{ '--stagger-delay': `${delay}ms` } as CSSProperties}>
@@ -146,7 +149,7 @@ function HealthMetricCard({
           {loading ? (
             <Skeleton className="h-6 w-16" />
           ) : (
-            <span className={cn('text-sm font-semibold', healthColor(status))}>{healthLabel(status)}</span>
+            <span className={cn('text-sm font-semibold', healthColor(status))}>{healthLabel(status, tHealth)}</span>
           )}
           {detail && <span className="truncate text-xs text-muted-foreground">{detail}</span>}
         </div>
@@ -157,6 +160,9 @@ function HealthMetricCard({
 
 export function AdminDashboardContent() {
   const [messagePeriod, setMessagePeriod] = useState<AdminMessageStatsPeriod>('month');
+  const t = useTranslations('admin.dashboard');
+  const tHealth = useTranslations('admin.health');
+  const tCommon = useTranslations('admin.common');
 
   const { data: dashboard, isLoading: dashboardLoading } = useAdminDashboard();
   const { data: health, isLoading: healthLoading } = useSystemHealth();
@@ -174,10 +180,10 @@ export function AdminDashboardContent() {
 
   const chartData = dashboard
     ? [
-        { name: 'منظمات نشطة', value: dashboard.organizations.active },
-        { name: 'منظمات معلقة', value: dashboard.organizations.suspended },
-        { name: 'مستخدمون نشطون', value: dashboard.users.active },
-        { name: 'مستخدمون معطلون', value: dashboard.users.disabled },
+        { name: t('chart.activeOrgs'), value: dashboard.organizations.active },
+        { name: t('chart.suspendedOrgs'), value: dashboard.organizations.suspended },
+        { name: t('chart.activeUsers'), value: dashboard.users.active },
+        { name: t('chart.disabledUsers'), value: dashboard.users.disabled },
       ]
     : [];
 
@@ -185,33 +191,45 @@ export function AdminDashboardContent() {
     <div className="flex flex-col gap-6">
       <StatsGrid>
         <KpiCard
-          title="إجمالي المنظمات"
+          title={t('kpi.totalOrganizations')}
           value={dashboard?.organizations.total ?? 0}
-          description={`${dashboard?.organizations.active ?? 0} نشطة · ${dashboard?.organizations.suspended ?? 0} معلقة`}
+          description={t('kpiDesc.organizations', {
+            active: dashboard?.organizations.active ?? 0,
+            suspended: dashboard?.organizations.suspended ?? 0,
+          })}
           icon={Building2Icon}
           loading={dashboardLoading}
           delay={0}
         />
         <KpiCard
-          title="إجمالي المستخدمين"
+          title={t('kpi.totalUsers')}
           value={dashboard?.users.total ?? 0}
-          description={`${dashboard?.users.active ?? 0} نشط · ${dashboard?.users.disabled ?? 0} معطل`}
+          description={t('kpiDesc.users', {
+            active: dashboard?.users.active ?? 0,
+            disabled: dashboard?.users.disabled ?? 0,
+          })}
           icon={UsersIcon}
           loading={dashboardLoading}
           delay={70}
         />
         <KpiCard
-          title="MRR"
-          value={revenue ? `${revenue.mrr} ${revenue.currency}` : '—'}
-          description={subsSummary ? `${subsSummary.active} اشتراك نشط` : undefined}
+          title={t('kpi.mrr')}
+          value={revenue ? `${revenue.mrr} ${revenue.currency}` : tCommon('notAvailable')}
+          description={
+            subsSummary
+              ? t('kpiDesc.activeSubscriptions', { count: subsSummary.active })
+              : undefined
+          }
           icon={CreditCardIcon}
           loading={revenueLoading || subsLoading}
           delay={140}
         />
         <KpiCard
-          title="إيرادات الشهر"
-          value={revenue ? `${revenue.revenueThisMonth} ${revenue.currency}` : '—'}
-          description={revenue ? `${revenue.paidInvoices} فاتورة مدفوعة` : undefined}
+          title={t('kpi.monthlyRevenue')}
+          value={revenue ? `${revenue.revenueThisMonth} ${revenue.currency}` : tCommon('notAvailable')}
+          description={
+            revenue ? t('kpiDesc.paidInvoices', { count: revenue.paidInvoices }) : undefined
+          }
           icon={CreditCardIcon}
           loading={revenueLoading}
           delay={210}
@@ -220,33 +238,47 @@ export function AdminDashboardContent() {
 
       <StatsGrid className="xl:grid-cols-4">
         <KpiCard
-          title="إجمالي الرسائل"
+          title={t('kpi.totalMessages')}
           value={dashboard?.platform.totalMessages ?? 0}
-          description="كل رسائل المنصة"
+          description={t('kpiDesc.allPlatformMessages')}
           icon={MessageSquareIcon}
           loading={dashboardLoading}
           delay={280}
         />
         <KpiCard
-          title="نشاط الشهر"
+          title={t('kpi.monthActivity')}
           value={dashboard?.platform.totalApiRequests ?? 0}
-          description="رسائل هذا الشهر"
+          description={t('kpiDesc.messagesThisMonth')}
           icon={ActivityIcon}
           loading={dashboardLoading}
           delay={350}
         />
         <KpiCard
-          title="حسابات WABA"
+          title={t('kpi.wabaAccounts')}
           value={waba?.total ?? 0}
-          description={waba ? `${waba.connected} متصل · ${waba.organizationsWithWaba} منظمة` : undefined}
+          description={
+            waba
+              ? t('kpiDesc.waba', {
+                  connected: waba.connected,
+                  orgs: waba.organizationsWithWaba,
+                })
+              : undefined
+          }
           icon={Building2Icon}
           loading={wabaLoading}
           delay={420}
         />
         <KpiCard
-          title="أرقام WhatsApp"
+          title={t('kpi.whatsappNumbers')}
           value={phones?.total ?? 0}
-          description={phones ? `${phones.connected} متصل · ${phones.disconnected} مفصول` : undefined}
+          description={
+            phones
+              ? t('kpiDesc.phones', {
+                  connected: phones.connected,
+                  disconnected: phones.disconnected,
+                })
+              : undefined
+          }
           icon={PhoneIcon}
           loading={phonesLoading}
           delay={490}
@@ -257,8 +289,8 @@ export function AdminDashboardContent() {
         <Card className="stagger-in" style={{ '--stagger-delay': '560ms' } as CSSProperties}>
           <CardHeader className="flex flex-row items-center justify-between gap-4">
             <div>
-              <CardTitle className="text-base">إحصائيات الرسائل</CardTitle>
-              <CardDescription>حسب الفترة المحددة</CardDescription>
+              <CardTitle className="text-base">{t('messages.title')}</CardTitle>
+              <CardDescription>{t('messages.description')}</CardDescription>
             </div>
             <div className="flex gap-1">
               <Button
@@ -266,14 +298,14 @@ export function AdminDashboardContent() {
                 variant={messagePeriod === 'today' ? 'default' : 'outline'}
                 onClick={() => setMessagePeriod('today')}
               >
-                اليوم
+                {t('messages.today')}
               </Button>
               <Button
                 size="xs"
                 variant={messagePeriod === 'month' ? 'default' : 'outline'}
                 onClick={() => setMessagePeriod('month')}
               >
-                الشهر
+                {t('messages.month')}
               </Button>
             </div>
           </CardHeader>
@@ -283,19 +315,19 @@ export function AdminDashboardContent() {
             ) : (
               <>
                 <div className="rounded-xl bg-muted/50 px-4 py-3">
-                  <p className="text-xs text-muted-foreground">الإجمالي</p>
+                  <p className="text-xs text-muted-foreground">{t('messages.total')}</p>
                   <p className="text-xl font-bold tabular-nums">{messages?.total ?? 0}</p>
                 </div>
                 <div className="rounded-xl bg-muted/50 px-4 py-3">
-                  <p className="text-xs text-muted-foreground">صادرة</p>
+                  <p className="text-xs text-muted-foreground">{t('messages.outbound')}</p>
                   <p className="text-xl font-bold tabular-nums">{messages?.outbound ?? 0}</p>
                 </div>
                 <div className="rounded-xl bg-muted/50 px-4 py-3">
-                  <p className="text-xs text-muted-foreground">واردة</p>
+                  <p className="text-xs text-muted-foreground">{t('messages.inbound')}</p>
                   <p className="text-xl font-bold tabular-nums">{messages?.inbound ?? 0}</p>
                 </div>
                 <div className="rounded-xl bg-muted/50 px-4 py-3">
-                  <p className="text-xs text-muted-foreground">فاشلة / بالانتظار</p>
+                  <p className="text-xs text-muted-foreground">{t('messages.failedQueued')}</p>
                   <p className="text-xl font-bold tabular-nums">
                     {messages?.failed ?? 0} / {messages?.queued ?? 0}
                   </p>
@@ -307,8 +339,8 @@ export function AdminDashboardContent() {
 
         <Card className="stagger-in" style={{ '--stagger-delay': '630ms' } as CSSProperties}>
           <CardHeader>
-            <CardTitle className="text-base">ملخص الاشتراكات</CardTitle>
-            <CardDescription>حالة كل الاشتراكات على المنصة</CardDescription>
+            <CardTitle className="text-base">{t('subscriptions.title')}</CardTitle>
+            <CardDescription>{t('subscriptions.description')}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
             {subsLoading ? (
@@ -316,21 +348,21 @@ export function AdminDashboardContent() {
             ) : (
               <>
                 <div className="rounded-xl bg-muted/50 px-4 py-3">
-                  <p className="text-xs text-muted-foreground">الإجمالي</p>
+                  <p className="text-xs text-muted-foreground">{t('subscriptions.total')}</p>
                   <p className="text-xl font-bold tabular-nums">{subsSummary?.total ?? 0}</p>
                 </div>
                 <div className="rounded-xl bg-muted/50 px-4 py-3">
-                  <p className="text-xs text-muted-foreground">نشط / تجريبي</p>
+                  <p className="text-xs text-muted-foreground">{t('subscriptions.activeTrial')}</p>
                   <p className="text-xl font-bold tabular-nums">
                     {subsSummary?.active ?? 0} / {subsSummary?.trial ?? 0}
                   </p>
                 </div>
                 <div className="rounded-xl bg-muted/50 px-4 py-3">
-                  <p className="text-xs text-muted-foreground">بانتظار الدفع</p>
+                  <p className="text-xs text-muted-foreground">{t('subscriptions.pendingPayment')}</p>
                   <p className="text-xl font-bold tabular-nums">{subsSummary?.pendingPayment ?? 0}</p>
                 </div>
                 <div className="rounded-xl bg-muted/50 px-4 py-3">
-                  <p className="text-xs text-muted-foreground">ملغي / منتهي</p>
+                  <p className="text-xs text-muted-foreground">{t('subscriptions.cancelledExpired')}</p>
                   <p className="text-xl font-bold tabular-nums">
                     {subsSummary?.cancelled ?? 0} / {subsSummary?.expired ?? 0}
                   </p>
@@ -343,32 +375,35 @@ export function AdminDashboardContent() {
 
       <StatsGrid className="xl:grid-cols-3">
         <HealthMetricCard
-          title="قاعدة البيانات"
+          title={tHealth('database')}
           status={dbHealth?.status}
           loading={dbLoading}
           detail={dbHealth?.latencyMs !== undefined ? `${dbHealth.latencyMs}ms` : undefined}
           icon={DatabaseIcon}
           delay={700}
+          tHealth={tHealth}
         />
         <HealthMetricCard
-          title="Redis"
+          title={tHealth('redis')}
           status={redisHealth?.status}
           loading={redisLoading}
           detail={redisHealth?.message}
           icon={ServerIcon}
           delay={770}
+          tHealth={tHealth}
         />
         <HealthMetricCard
-          title="التخزين / الذاكرة"
+          title={tHealth('storageMemory')}
           status={storageHealth?.status}
           loading={storageLoading}
           detail={
             storageHealth
-              ? `متاح: ${formatBytes(storageHealth.freeMemoryBytes)}`
+              ? tHealth('available', { size: formatBytes(storageHealth.freeMemoryBytes) })
               : undefined
           }
           icon={HardDriveIcon}
           delay={840}
+          tHealth={tHealth}
         />
       </StatsGrid>
 
@@ -377,7 +412,7 @@ export function AdminDashboardContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <WorkflowIcon className="size-4" />
-              طابور الرسائل
+              {t('queue.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
@@ -386,19 +421,19 @@ export function AdminDashboardContent() {
             ) : (
               <>
                 <div className="rounded-xl bg-muted/50 px-4 py-3">
-                  <p className="text-xs text-muted-foreground">بالانتظار</p>
+                  <p className="text-xs text-muted-foreground">{t('queue.waiting')}</p>
                   <p className="text-xl font-bold tabular-nums">{queue?.waiting ?? 0}</p>
                 </div>
                 <div className="rounded-xl bg-muted/50 px-4 py-3">
-                  <p className="text-xs text-muted-foreground">قيد الإرسال</p>
+                  <p className="text-xs text-muted-foreground">{t('queue.active')}</p>
                   <p className="text-xl font-bold tabular-nums">{queue?.active ?? 0}</p>
                 </div>
                 <div className="rounded-xl bg-muted/50 px-4 py-3">
-                  <p className="text-xs text-muted-foreground">فاشلة</p>
+                  <p className="text-xs text-muted-foreground">{t('queue.failed')}</p>
                   <p className="text-xl font-bold tabular-nums">{queue?.failed ?? 0}</p>
                 </div>
                 <div className="rounded-xl bg-muted/50 px-4 py-3">
-                  <p className="text-xs text-muted-foreground">مكتملة اليوم</p>
+                  <p className="text-xs text-muted-foreground">{t('queue.completedToday')}</p>
                   <p className="text-xl font-bold tabular-nums">{queue?.completedToday ?? 0}</p>
                 </div>
               </>
@@ -408,8 +443,8 @@ export function AdminDashboardContent() {
 
         <Card className="stagger-in" style={{ '--stagger-delay': '980ms' } as CSSProperties}>
           <CardHeader>
-            <CardTitle className="text-base">Workers</CardTitle>
-            <CardDescription>{workers?.message ?? 'حالة المعالجة الخلفية'}</CardDescription>
+            <CardTitle className="text-base">{t('workers.title')}</CardTitle>
+            <CardDescription>{workers?.message ?? t('workers.defaultDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
             {workersLoading ? (
@@ -417,13 +452,15 @@ export function AdminDashboardContent() {
             ) : (
               <>
                 <div className="rounded-xl bg-muted/50 px-4 py-3">
-                  <p className="text-xs text-muted-foreground">الوضع</p>
-                  <p className="text-sm font-semibold">{workers?.mode === 'in_process' ? 'داخل API' : 'موزّع'}</p>
+                  <p className="text-xs text-muted-foreground">{t('workers.mode')}</p>
+                  <p className="text-sm font-semibold">
+                    {workers?.mode === 'in_process' ? t('workers.inProcess') : t('workers.distributed')}
+                  </p>
                 </div>
                 <div className="rounded-xl bg-muted/50 px-4 py-3">
-                  <p className="text-xs text-muted-foreground">الحالة</p>
+                  <p className="text-xs text-muted-foreground">{t('workers.status')}</p>
                   <p className={cn('text-sm font-semibold', workers?.status === 'running' ? 'text-emerald-600' : '')}>
-                    {workers?.status === 'running' ? 'يعمل' : workers?.status ?? '—'}
+                    {workers?.status === 'running' ? t('workers.running') : workers?.status ?? tCommon('notAvailable')}
                   </p>
                 </div>
               </>
@@ -435,8 +472,8 @@ export function AdminDashboardContent() {
       <div className="grid gap-4 lg:grid-cols-5">
         <Card className="stagger-in lg:col-span-3" style={{ '--stagger-delay': '1050ms' } as CSSProperties}>
           <CardHeader>
-            <CardTitle className="text-base">المنظمات والمستخدمون</CardTitle>
-            <CardDescription>مقارنة الحالات على مستوى المنصة</CardDescription>
+            <CardTitle className="text-base">{t('chart.title')}</CardTitle>
+            <CardDescription>{t('chart.description')}</CardDescription>
           </CardHeader>
           <CardContent>
             {dashboardLoading ? (
@@ -461,7 +498,7 @@ export function AdminDashboardContent() {
                       background: 'var(--card)',
                       fontSize: 12,
                     }}
-                    formatter={(value) => [value ?? 0, 'العدد']}
+                    formatter={(value) => [value ?? 0, t('chart.count')]}
                   />
                   <Bar dataKey="value" fill={`url(#${CHART_GRADIENT_ID})`} radius={[6, 6, 0, 0]} maxBarSize={48} />
                 </BarChart>
@@ -472,8 +509,8 @@ export function AdminDashboardContent() {
 
         <Card className="stagger-in lg:col-span-2" style={{ '--stagger-delay': '1120ms' } as CSSProperties}>
           <CardHeader>
-            <CardTitle className="text-base">حالة النظام</CardTitle>
-            <CardDescription>فحص مباشر يتجدد تلقائياً</CardDescription>
+            <CardTitle className="text-base">{t('systemStatus.title')}</CardTitle>
+            <CardDescription>{t('systemStatus.description')}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex items-center justify-between rounded-xl bg-gradient-brand-soft px-4 py-3 ring-1 ring-primary/10">
@@ -489,7 +526,7 @@ export function AdminDashboardContent() {
                     )}
                   />
                 </span>
-                <span className="text-sm font-medium">خادم API</span>
+                <span className="text-sm font-medium">{tHealth('apiServer')}</span>
               </div>
               <span
                 className={cn(
@@ -497,19 +534,23 @@ export function AdminDashboardContent() {
                   healthLoading ? 'text-muted-foreground' : health?.status === 'ok' ? 'text-emerald-600' : 'text-destructive',
                 )}
               >
-                {healthLoading ? 'جاري الفحص...' : health?.status === 'ok' ? 'يعمل بشكل طبيعي' : 'غير متاح'}
+                {healthLoading
+                  ? tHealth('checkingEllipsis')
+                  : health?.status === 'ok'
+                    ? tHealth('runningNormally')
+                    : tHealth('unavailable')}
               </span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">آخر تحديث للبيانات</span>
+              <span className="text-muted-foreground">{t('systemStatus.lastDataUpdate')}</span>
               <span className="font-mono text-xs font-medium" dir="ltr">
-                {dashboard ? formatDateTime(dashboard.generatedAt) : '—'}
+                {dashboard ? formatDateTime(dashboard.generatedAt) : tCommon('notAvailable')}
               </span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">إجمالي الإيرادات</span>
+              <span className="text-muted-foreground">{t('systemStatus.totalRevenue')}</span>
               <span className="font-mono text-xs font-medium" dir="ltr">
-                {revenue ? `${revenue.totalRevenue} ${revenue.currency}` : '—'}
+                {revenue ? `${revenue.totalRevenue} ${revenue.currency}` : tCommon('notAvailable')}
               </span>
             </div>
           </CardContent>
@@ -518,8 +559,8 @@ export function AdminDashboardContent() {
 
       <Card className="stagger-in" style={{ '--stagger-delay': '1190ms' } as CSSProperties}>
         <CardHeader>
-          <CardTitle className="text-base">آخر النشاطات</CardTitle>
-          <CardDescription>منظمات، مستخدمون، اشتراكات، وفواتير</CardDescription>
+          <CardTitle className="text-base">{t('activity.title')}</CardTitle>
+          <CardDescription>{t('activity.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           {activityLoading ? (
@@ -548,7 +589,7 @@ export function AdminDashboardContent() {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">لا توجد نشاطات بعد</p>
+            <p className="text-sm text-muted-foreground">{t('activity.empty')}</p>
           )}
         </CardContent>
       </Card>

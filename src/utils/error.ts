@@ -20,9 +20,9 @@ function mapStatusToCode(status: number): ApiErrorCode {
 
 export function createNetworkError(isOffline = false): ApiError {
   return new ApiError({
-    message: isOffline ? 'لا يوجد اتصال بالإنترنت' : 'فشل الاتصال بالخادم',
+    message: isOffline ? 'No internet connection' : 'Failed to connect to server',
     statusCode: 0,
-    code: isOffline ? 'NETWORK_ERROR' : 'NETWORK_ERROR',
+    code: 'NETWORK_ERROR',
     error: 'Network Error',
     isOffline,
   });
@@ -30,7 +30,7 @@ export function createNetworkError(isOffline = false): ApiError {
 
 export function createTimeoutError(): ApiError {
   return new ApiError({
-    message: 'انتهت مهلة الطلب',
+    message: 'Request timed out',
     statusCode: 408,
     code: 'TIMEOUT',
     error: 'Request Timeout',
@@ -57,7 +57,7 @@ export function parseApiError(error: unknown): ApiError {
     const messages = normalizeMessages(data?.message ?? error.message);
 
     return new ApiError({
-      message: messages[0] ?? 'حدث خطأ غير متوقع',
+      message: messages[0] ?? 'An unexpected error occurred',
       statusCode: status,
       code: mapStatusToCode(status),
       error: data?.error ?? error.response.statusText,
@@ -78,14 +78,14 @@ export function parseApiError(error: unknown): ApiError {
   }
 
   return new ApiError({
-    message: 'حدث خطأ غير متوقع',
+    message: 'An unexpected error occurred',
     statusCode: 500,
     code: 'UNKNOWN',
     error: 'Unknown Error',
   });
 }
 
-export function getErrorMessage(error: unknown, fallback = 'حدث خطأ غير متوقع'): string {
+export function getErrorMessage(error: unknown, fallback = 'An unexpected error occurred'): string {
   return parseApiError(error).message || fallback;
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckCheckIcon, CheckIcon, ClockIcon, AlertCircleIcon, RefreshCwIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useRetryMessage } from '@/features/messages/hooks/use-messages';
@@ -15,24 +16,26 @@ interface MessageBubbleProps {
 }
 
 function MessageStatusTicks({ status }: { status: MessageStatus }) {
+  const t = useTranslations('inbox.bubble');
+
   if (status === MessageStatus.FAILED) {
-    return <AlertCircleIcon className="size-3.5 text-red-300" aria-label="فشل الإرسال" />;
+    return <AlertCircleIcon className="size-3.5 text-red-300" aria-label={t('sendFailed')} />;
   }
 
   if (status === MessageStatus.QUEUED || status === MessageStatus.SENDING) {
-    return <ClockIcon className="size-3.5 opacity-70" aria-label="قيد الإرسال" />;
+    return <ClockIcon className="size-3.5 opacity-70" aria-label={t('sending')} />;
   }
 
   if (status === MessageStatus.SENT) {
-    return <CheckIcon className="size-3.5 opacity-70" aria-label="مُرسلة" />;
+    return <CheckIcon className="size-3.5 opacity-70" aria-label={t('sent')} />;
   }
 
   if (status === MessageStatus.DELIVERED) {
-    return <CheckCheckIcon className="size-3.5 opacity-70" aria-label="مُسلّمة" />;
+    return <CheckCheckIcon className="size-3.5 opacity-70" aria-label={t('delivered')} />;
   }
 
   if (status === MessageStatus.READ) {
-    return <CheckCheckIcon className="size-3.5 text-sky-300" aria-label="مقروءة" />;
+    return <CheckCheckIcon className="size-3.5 text-sky-300" aria-label={t('read')} />;
   }
 
   return null;
@@ -44,13 +47,15 @@ function MediaPreview({ url, type, caption, filename }: {
   caption?: string;
   filename?: string;
 }) {
+  const t = useTranslations('inbox.bubble');
+
   if (type === MessageType.IMAGE || type === MessageType.STICKER) {
     return (
       <div className="space-y-1.5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={url}
-          alt={caption ?? 'صورة'}
+          alt={caption ?? t('image')}
           className="max-h-56 rounded-xl object-cover ring-1 ring-black/10"
         />
         {caption && <p className="text-sm whitespace-pre-wrap">{caption}</p>}
@@ -66,7 +71,7 @@ function MediaPreview({ url, type, caption, filename }: {
         rel="noopener noreferrer"
         className="inline-flex items-center gap-1.5 rounded-lg bg-black/10 px-2.5 py-1.5 text-sm font-medium transition-colors hover:bg-black/15"
       >
-        {filename ?? 'فتح المرفق'}
+        {filename ?? t('openAttachment')}
       </a>
       {caption && <p className="text-sm whitespace-pre-wrap">{caption}</p>}
     </div>
@@ -86,6 +91,7 @@ function TemplateMessageContent({
   fallbackText?: string;
   isOutbound: boolean;
 }) {
+  const t = useTranslations('inbox.bubble');
   const labelClass = isOutbound ? 'text-white/75' : 'text-muted-foreground';
   const buttonClass = isOutbound
     ? 'border-white/20 text-white/90 hover:bg-white/10'
@@ -95,8 +101,10 @@ function TemplateMessageContent({
     <div className="space-y-1.5">
       {templateName && (
         <p className={cn('text-[11px] font-medium', labelClass)}>
-          قالب: {templateName}
-          {templateLanguage ? ` · ${templateLanguage}` : ''}
+          {t('templateLabel', {
+            name: templateName,
+            language: templateLanguage ? ` · ${templateLanguage}` : '',
+          })}
         </p>
       )}
 
@@ -132,6 +140,8 @@ function TemplateMessageContent({
 }
 
 export function MessageBubble({ message }: MessageBubbleProps) {
+  const t = useTranslations('inbox.bubble');
+  const tMessages = useTranslations('messages');
   const isOutbound = message.direction === MessageDirection.OUTBOUND;
   const content = getMessageContent(message);
   const retryMutation = useRetryMessage();
@@ -176,7 +186,12 @@ export function MessageBubble({ message }: MessageBubbleProps) {
             filename={content.filename}
           />
         ) : (
-          <p className="whitespace-pre-wrap break-words">{content.text ?? '—'}</p>
+          <p className="whitespace-pre-wrap break-words">
+            {content.text ??
+              (message.messageType === MessageType.LOCATION
+                ? tMessages('types.LOCATION')
+                : '—')}
+          </p>
         )}
 
         <div
@@ -208,7 +223,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
             onClick={handleRetry}
           >
             <RefreshCwIcon className={cn('size-3.5', retryMutation.isPending && 'animate-spin')} />
-            إعادة الإرسال
+            {t('retrySend')}
           </Button>
         )}
       </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { buildPaginationMeta } from '@/types/pagination.types';
@@ -12,14 +13,18 @@ interface PaginationControlsProps {
 }
 
 export function PaginationControls({ page, limit, total, onPageChange }: PaginationControlsProps) {
+  const t = useTranslations('common.pagination');
   const meta = buildPaginationMeta(page, limit, total);
 
   if (total === 0) return null;
 
+  const from = (page - 1) * limit + 1;
+  const to = Math.min(page * limit, total);
+
   return (
     <div className="flex items-center justify-between gap-4 pt-4">
       <p className="text-sm text-muted-foreground">
-        عرض {(page - 1) * limit + 1}–{Math.min(page * limit, total)} من {total}
+        {t('range', { from, to, total })}
       </p>
       <div className="flex items-center gap-2">
         <Button
@@ -27,22 +32,22 @@ export function PaginationControls({ page, limit, total, onPageChange }: Paginat
           size="sm"
           disabled={!meta.hasPreviousPage}
           onClick={() => onPageChange(page - 1)}
-          aria-label="الصفحة السابقة"
+          aria-label={t('previousAria')}
         >
           <ChevronRightIcon data-icon="inline-start" />
-          السابق
+          {t('previous')}
         </Button>
         <span className="text-sm font-medium tabular-nums text-muted-foreground">
-          {page} / {meta.totalPages}
+          {t('pageOf', { page, totalPages: meta.totalPages })}
         </span>
         <Button
           variant="outline"
           size="sm"
           disabled={!meta.hasNextPage}
           onClick={() => onPageChange(page + 1)}
-          aria-label="الصفحة التالية"
+          aria-label={t('nextAria')}
         >
-          التالي
+          {t('next')}
           <ChevronLeftIcon data-icon="inline-end" />
         </Button>
       </div>

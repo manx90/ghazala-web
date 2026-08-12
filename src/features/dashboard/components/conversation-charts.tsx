@@ -2,6 +2,7 @@
 
 import type React from 'react';
 import type { UseQueryResult } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import {
   Bar,
   BarChart,
@@ -21,7 +22,6 @@ import type { ConversationStatistics } from '@/types/conversation.types';
 
 const CHART_COLORS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-5)'];
 
-// تدرجات العلامة التجارية لتعبئة الأعمدة والشرائح
 function ChartGradientDefs({ prefix }: { prefix: string }) {
   return (
     <defs>
@@ -61,14 +61,6 @@ interface ConversationChartsProps {
   stats: UseQueryResult<ConversationStatistics>;
 }
 
-function buildChartData(stats: ConversationStatistics) {
-  return [
-    { name: 'مفتوحة', value: stats.open, key: 'open' },
-    { name: 'مغلقة', value: stats.closed, key: 'closed' },
-    { name: 'منتهية', value: stats.expired, key: 'expired' },
-  ];
-}
-
 function ChartsSkeleton() {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
@@ -79,9 +71,17 @@ function ChartsSkeleton() {
 }
 
 export function ConversationCharts({ stats }: ConversationChartsProps) {
+  const t = useTranslations('dashboard.charts');
+
   if (stats.isLoading) return <ChartsSkeleton />;
 
-  const chartData = stats.data ? buildChartData(stats.data) : [];
+  const chartData = stats.data
+    ? [
+        { name: t('open'), value: stats.data.open, key: 'open' },
+        { name: t('closed'), value: stats.data.closed, key: 'closed' },
+        { name: t('expired'), value: stats.data.expired, key: 'expired' },
+      ]
+    : [];
   const isEmpty = chartData.every((item) => item.value === 0);
 
   return (
@@ -90,8 +90,8 @@ export function ConversationCharts({ stats }: ConversationChartsProps) {
       isError={stats.isError}
       error={stats.error}
       isEmpty={isEmpty}
-      emptyTitle="لا توجد بيانات محادثات"
-      emptyDescription="ستظهر الإحصائيات عند بدء استقبال المحادثات."
+      emptyTitle={t('emptyTitle')}
+      emptyDescription={t('emptyDescription')}
       onRetry={() => void stats.refetch()}
       skeletonRows={2}
     >
@@ -102,8 +102,8 @@ export function ConversationCharts({ stats }: ConversationChartsProps) {
         >
           <Card className="h-full">
             <CardHeader>
-              <CardTitle className="tracking-tight">توزيع المحادثات</CardTitle>
-              <CardDescription>نسبة المحادثات حسب الحالة</CardDescription>
+              <CardTitle className="tracking-tight">{t('distributionTitle')}</CardTitle>
+              <CardDescription>{t('distributionDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={260}>
@@ -130,7 +130,7 @@ export function ConversationCharts({ stats }: ConversationChartsProps) {
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value) => [value ?? 0, 'عدد']}
+                    formatter={(value) => [value ?? 0, t('count')]}
                     contentStyle={TOOLTIP_STYLE}
                     labelStyle={TOOLTIP_LABEL_STYLE}
                     itemStyle={{ color: 'var(--popover-foreground)' }}
@@ -158,8 +158,8 @@ export function ConversationCharts({ stats }: ConversationChartsProps) {
         >
           <Card className="h-full">
             <CardHeader>
-              <CardTitle className="tracking-tight">إحصائيات المحادثات</CardTitle>
-              <CardDescription>مقارنة حسب الحالة</CardDescription>
+              <CardTitle className="tracking-tight">{t('statsTitle')}</CardTitle>
+              <CardDescription>{t('statsDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={260}>
@@ -185,7 +185,7 @@ export function ConversationCharts({ stats }: ConversationChartsProps) {
                     width={28}
                   />
                   <Tooltip
-                    formatter={(value) => [value ?? 0, 'عدد']}
+                    formatter={(value) => [value ?? 0, t('count')]}
                     contentStyle={TOOLTIP_STYLE}
                     labelStyle={TOOLTIP_LABEL_STYLE}
                     itemStyle={{ color: 'var(--popover-foreground)' }}

@@ -1,0 +1,324 @@
+{
+  "pages": {
+    "profile": {
+      "title": "Profile",
+      "description": "View your account information"
+    },
+    "security": {
+      "title": "Security",
+      "description": "Manage session and password"
+    },
+    "organization": {
+      "title": "Organization settings",
+      "description": "Manage logo, timezone, and country"
+    },
+    "team": {
+      "title": "Team management",
+      "description": "Add, edit, and remove organization members"
+    },
+    "billing": {
+      "title": "Billing & subscription",
+      "description": "Manage plan and invoices"
+    },
+    "meta": {
+      "title": "Meta settings",
+      "description": "Connect and sync Meta Business"
+    },
+    "whatsapp": {
+      "title": "WhatsApp settings",
+      "description": "WABA accounts and phone numbers"
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "description": "Manage event webhooks",
+      "cardTitle": "Event endpoints",
+      "cardDescription": "Receive real-time notifications about events in your systems",
+      "unavailableTitle": "Webhooks unavailable",
+      "unavailableDescription": "Webhooks cannot be managed yet because API endpoints are not available."
+    },
+    "apiKeys": {
+      "title": "API keys",
+      "description": "Create and manage access keys",
+      "cardTitle": "Access keys",
+      "cardDescription": "Create API keys to connect your external systems to the platform",
+      "unavailableTitle": "API keys unavailable",
+      "unavailableDescription": "API keys cannot be managed yet because API endpoints are not available."
+    }
+  },
+  "profile": {
+    "verifyEmail": {
+      "title": "Verify email",
+      "description": "Your account is pending verification. Confirm your email to fully activate your account.",
+      "enterCode": "Enter verification code",
+      "resendCode": "Resend code"
+    },
+    "fields": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "status": "Status",
+      "emailVerified": "Email verified",
+      "lastLogin": "Last login"
+    },
+    "unavailable": {
+      "title": "Profile update unavailable",
+      "description": "Profile data cannot be edited currently because the API is not available."
+    }
+  },
+  "security": {
+    "logout": {
+      "title": "Sign out",
+      "description": "End the current session on this device"
+    },
+    "passwordReset": {
+      "title": "Password recovery",
+      "description": "If you forgot your password, you can request a reset",
+      "button": "Forgot password"
+    },
+    "sessions": {
+      "unavailableTitle": "Session management unavailable",
+      "unavailableDescription": "Active sessions cannot be viewed or terminated currently."
+    },
+    "changePassword": {
+      "unavailableTitle": "Password change unavailable",
+      "unavailableDescription": "Password cannot be changed from settings currently."
+    }
+  },
+  "organization": {
+    "info": {
+      "title": "Organization info",
+      "description": "General organization data (read-only)",
+      "name": "Name",
+      "slug": "Slug",
+      "status": "Status"
+    },
+    "form": {
+      "title": "Organization settings",
+      "description": "Logo, timezone, and country",
+      "logo": "Logo URL",
+      "logoPlaceholder": "https://example.com/logo.png",
+      "timezone": "Timezone",
+      "timezonePlaceholder": "Select timezone",
+      "country": "Country",
+      "countryPlaceholder": "Select country"
+    },
+    "timezones": {
+      "Asia/Riyadh": "Riyadh (Asia/Riyadh)",
+      "Asia/Dubai": "Dubai (Asia/Dubai)",
+      "Asia/Kuwait": "Kuwait (Asia/Kuwait)",
+      "Asia/Qatar": "Qatar (Asia/Qatar)",
+      "Asia/Bahrain": "Bahrain (Asia/Bahrain)",
+      "Asia/Muscat": "Muscat (Asia/Muscat)",
+      "Africa/Cairo": "Cairo (Africa/Cairo)",
+      "Asia/Amman": "Amman (Asia/Amman)",
+      "Asia/Beirut": "Beirut (Asia/Beirut)",
+      "Africa/Casablanca": "Casablanca (Africa/Casablanca)",
+      "UTC": "UTC"
+    },
+    "countries": {
+      "SA": "Saudi Arabia",
+      "AE": "United Arab Emirates",
+      "KW": "Kuwait",
+      "QA": "Qatar",
+      "BH": "Bahrain",
+      "OM": "Oman",
+      "EG": "Egypt",
+      "JO": "Jordan",
+      "LB": "Lebanon",
+      "MA": "Morocco",
+      "TN": "Tunisia"
+    }
+  },
+  "team": {
+    "title": "Team members",
+    "description": "Manage organization members and roles",
+    "addMember": "Add member",
+    "emptyTitle": "No members",
+    "emptyDescription": "Add team members to get started",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "joinedAt": "Joined"
+    },
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "member": "Member"
+    },
+    "addModal": {
+      "title": "Add member",
+      "description": "Enter the registered user ID",
+      "userId": "User ID",
+      "role": "Role"
+    },
+    "removeDialog": {
+      "title": "Remove member",
+      "description": "Remove {name} from the team?",
+      "confirm": "Remove",
+      "ariaLabel": "Remove member"
+    }
+  },
+  "billing": {
+    "subscription": {
+      "title": "Current subscription",
+      "description": "Your plan and billing cycle details",
+      "cancel": "Cancel subscription",
+      "plan": "Plan",
+      "status": "Status",
+      "cycle": "Billing cycle",
+      "expiresAt": "Expires at"
+    },
+    "cycle": {
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    },
+    "usage": {
+      "title": "Plan usage",
+      "description": "Compare your usage against current plan limits",
+      "messages": "Monthly messages",
+      "contacts": "Contacts",
+      "teamMembers": "Team members",
+      "phoneNumbers": "Phone numbers"
+    },
+    "plans": {
+      "title": "Available plans",
+      "description": "Choose a plan or change your current plan",
+      "emptyTitle": "No plans",
+      "current": "Current",
+      "perMonth": "per month",
+      "currentPlan": "Current plan",
+      "changePlan": "Change plan",
+      "subscribe": "Subscribe"
+    },
+    "invoices": {
+      "title": "Invoices",
+      "description": "Previous invoice history",
+      "emptyTitle": "No invoices",
+      "columns": {
+        "number": "Invoice #",
+        "amount": "Amount",
+        "status": "Status",
+        "issuedAt": "Issued",
+        "paidAt": "Paid"
+      }
+    },
+    "changePlanDialog": {
+      "changeTitle": "Change plan",
+      "subscribeTitle": "New subscription"
+    },
+    "cancelDialog": {
+      "title": "Cancel subscription",
+      "description": "Are you sure you want to cancel? It will remain active until the end of the billing cycle.",
+      "confirm": "Cancel subscription"
+    }
+  },
+  "meta": {
+    "connection": {
+      "title": "Connection status",
+      "description": "Meta Business integration status",
+      "sync": "Sync",
+      "disconnect": "Disconnect",
+      "connectedTitle": "Connection status",
+      "connectedDescription": "WhatsApp Business connected successfully"
+    },
+    "summary": {
+      "businessName": "Business name",
+      "waba": "WhatsApp Business account",
+      "connectedPhone": "Connected phone number",
+      "displayName": "Display name",
+      "qualityRating": "Quality rating",
+      "verificationStatus": "Verification status",
+      "lastSync": "Last sync"
+    },
+    "fields": {
+      "wabaId": "WABA ID",
+      "businessId": "Meta Business ID",
+      "lastSync": "Last sync",
+      "connectedAt": "Connected at",
+      "tokenExpiry": "Token expiry"
+    },
+    "connect": {
+      "title": "Connect Meta",
+      "description": "Enter connection details from Meta Business",
+      "wabaId": "WABA ID *",
+      "businessId": "Meta Business ID",
+      "authCode": "Authorization code"
+    },
+    "disconnectDialog": {
+      "title": "Disconnect Meta",
+      "description": "Do you want to disconnect Meta integration? You will not be able to send WhatsApp messages until you reconnect.",
+      "confirm": "Disconnect"
+    },
+    "embeddedSignup": {
+      "notConfigured": "Meta Embedded Signup is not configured. Contact support.",
+      "cancelled": "Connection was cancelled",
+      "failed": "Meta connection failed",
+      "noWabaData": "WhatsApp Business account data was not received",
+      "sdkUnavailable": "Facebook SDK is unavailable",
+      "noAuthCode": "Authorization code was not received from Meta",
+      "sdkLoadFailed": "Failed to load Facebook SDK",
+      "timeout": "Meta connection timed out. Please try again."
+    }
+  },
+  "whatsapp": {
+    "waba": {
+      "title": "WhatsApp Business accounts",
+      "description": "WABA accounts linked to the organization",
+      "sync": "Sync accounts",
+      "emptyTitle": "No WABA accounts",
+      "emptyDescription": "Connect Meta then sync accounts",
+      "columns": {
+        "name": "Name",
+        "wabaId": "WABA ID",
+        "status": "Status",
+        "timezone": "Timezone"
+      }
+    },
+    "phones": {
+      "title": "Phone numbers",
+      "description": "Linked WhatsApp numbers — disconnect any unused number",
+      "sync": "Sync numbers",
+      "emptyTitle": "No numbers",
+      "emptyDescription": "Sync numbers from Meta",
+      "columns": {
+        "phone": "Number",
+        "verifiedName": "Verified name",
+        "quality": "Quality",
+        "status": "Status"
+      },
+      "disconnectAria": "Disconnect number"
+    },
+    "disconnectDialog": {
+      "title": "Disconnect phone number",
+      "description": "Disconnect {phone}?",
+      "confirm": "Disconnect"
+    }
+  },
+  "toast": {
+    "organizationSaved": "Organization settings saved",
+    "memberAdded": "Member added",
+    "memberUpdated": "Member role updated",
+    "memberRemoved": "Member removed",
+    "subscribed": "Subscribed successfully",
+    "planChanged": "Plan changed",
+    "subscriptionCancelled": "Subscription cancelled",
+    "metaConnected": "Meta connected successfully",
+    "metaDisconnected": "Meta disconnected",
+    "synced": "Synced successfully",
+    "syncDetailed": "Synced {wabas} accounts and {phones} numbers",
+    "syncPhones": "Synced {phones} numbers",
+    "syncRegistered": "and registered {count} numbers on Cloud API",
+    "phoneDisconnected": "Phone number disconnected"
+  },
+  "validation": {
+    "logoTooLong": "Logo URL is too long",
+    "logoInvalid": "Logo URL is invalid",
+    "timezoneRequired": "Timezone is required",
+    "countryLength": "Country code must be 2 characters",
+    "countryInvalid": "Invalid country code",
+    "userIdInvalid": "Invalid user ID",
+    "wabaIdRequired": "WABA ID is required",
+    "planIdInvalid": "Invalid plan ID"
+  }
+}

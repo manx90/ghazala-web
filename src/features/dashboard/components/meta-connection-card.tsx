@@ -2,7 +2,8 @@
 
 import type { UseQueryResult } from '@tanstack/react-query';
 import { Link2Icon } from 'lucide-react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { buttonVariants } from '@/components/ui/button';
 import { QueryState } from '@/components/shared/query-state';
@@ -18,6 +19,7 @@ interface MetaConnectionCardProps {
 }
 
 export function MetaConnectionCard({ meta, orgSlug }: MetaConnectionCardProps) {
+  const t = useTranslations('dashboard.metaConnection');
   const integration = meta.data?.integration;
   const status = integration?.status ?? (meta.data?.isConnected ? 'CONNECTED' : 'DISCONNECTED');
   const isConnected = status === 'CONNECTED';
@@ -29,9 +31,9 @@ export function MetaConnectionCard({ meta, orgSlug }: MetaConnectionCardProps) {
           <span className="flex size-8 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
             <Link2Icon className="size-4" aria-hidden="true" />
           </span>
-          اتصال Meta
+          {t('title')}
         </CardTitle>
-        <CardDescription>حالة ربط حساب Meta Business</CardDescription>
+        <CardDescription>{t('description')}</CardDescription>
       </CardHeader>
       <CardContent>
         <QueryState
@@ -39,13 +41,13 @@ export function MetaConnectionCard({ meta, orgSlug }: MetaConnectionCardProps) {
           isError={meta.isError}
           error={meta.error}
           isEmpty={!meta.data}
-          emptyTitle="لا توجد بيانات اتصال"
-          emptyDescription="تعذّر جلب حالة الاتصال."
+          emptyTitle={t('emptyTitle')}
+          emptyDescription={t('emptyDescription')}
           onRetry={() => void meta.refetch()}
         >
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2.5">
-              <span className="text-sm text-muted-foreground">الحالة</span>
+              <span className="text-sm text-muted-foreground">{t('status')}</span>
               <span className="flex items-center gap-2">
                 <span
                   className={cn(
@@ -60,18 +62,18 @@ export function MetaConnectionCard({ meta, orgSlug }: MetaConnectionCardProps) {
             {integration && (
               <div className="divide-y divide-border/60 rounded-lg border border-border/60">
                 <div className="flex items-center justify-between gap-2 px-3 py-2.5 text-sm">
-                  <span className="text-muted-foreground">WABA ID</span>
+                  <span className="text-muted-foreground">{t('wabaId')}</span>
                   <span className="font-mono text-xs" dir="ltr">{integration.wabaId}</span>
                 </div>
                 {integration.connectedAt && (
                   <div className="flex items-center justify-between gap-2 px-3 py-2.5 text-sm">
-                    <span className="text-muted-foreground">تاريخ الربط</span>
+                    <span className="text-muted-foreground">{t('connectedAt')}</span>
                     <span>{formatDateTime(integration.connectedAt)}</span>
                   </div>
                 )}
                 {integration.lastSyncAt && (
                   <div className="flex items-center justify-between gap-2 px-3 py-2.5 text-sm">
-                    <span className="text-muted-foreground">آخر مزامنة</span>
+                    <span className="text-muted-foreground">{t('lastSyncAt')}</span>
                     <span>{formatDateTime(integration.lastSyncAt)}</span>
                   </div>
                 )}
@@ -82,7 +84,7 @@ export function MetaConnectionCard({ meta, orgSlug }: MetaConnectionCardProps) {
               href={ROUTES.app.settings.meta(orgSlug)}
               className={cn(buttonVariants({ variant: 'gradient', size: 'sm' }), 'w-full')}
             >
-              إدارة الاتصال
+              {t('manageConnection')}
             </Link>
           </div>
         </QueryState>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 interface ConnectionStatusPillProps {
@@ -11,10 +12,14 @@ interface ConnectionStatusPillProps {
 
 export function ConnectionStatusPill({
   connected,
-  connectedLabel = 'متصل',
-  disconnectedLabel = 'غير متصل',
+  connectedLabel,
+  disconnectedLabel,
   className,
 }: ConnectionStatusPillProps) {
+  const t = useTranslations('common');
+  const onlineLabel = connectedLabel ?? t('online');
+  const offlineLabel = disconnectedLabel ?? t('offline');
+
   return (
     <span
       className={cn(
@@ -32,7 +37,7 @@ export function ConnectionStatusPill({
           connected ? 'animate-glow-pulse bg-success' : 'bg-muted-foreground/50',
         )}
       />
-      {connected ? connectedLabel : disconnectedLabel}
+      {connected ? onlineLabel : offlineLabel}
     </span>
   );
 }

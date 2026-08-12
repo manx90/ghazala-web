@@ -1,6 +1,7 @@
 'use client';
 
 import { MonitorIcon, MoonIcon, SunIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { memo, useSyncExternalStore } from 'react';
 import { Button } from '@/components/ui/button';
@@ -24,12 +25,13 @@ function getServerSnapshot() {
 }
 
 function ThemeSwitcherComponent() {
+  const t = useTranslations('theme');
   const { theme, setTheme } = useTheme();
   const mounted = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon-sm" aria-label="تغيير المظهر" disabled>
+      <Button variant="ghost" size="icon-sm" aria-label={t('label')} disabled>
         <SunIcon />
       </Button>
     );
@@ -41,7 +43,7 @@ function ThemeSwitcherComponent() {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" size="icon-sm" aria-label="تغيير المظهر" />
+          <Button variant="ghost" size="icon-sm" aria-label={t('label')} />
         }
       >
         <Icon />
@@ -49,15 +51,15 @@ function ThemeSwitcherComponent() {
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme('light')}>
           <SunIcon data-icon="inline-start" />
-          فاتح
+          {t('light')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('dark')}>
           <MoonIcon data-icon="inline-start" />
-          داكن
+          {t('dark')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('system')}>
           <MonitorIcon data-icon="inline-start" />
-          النظام
+          {t('system')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

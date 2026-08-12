@@ -1,6 +1,7 @@
 'use client';
 
 import { type ReactNode, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   flexRender,
   getCoreRowModel,
@@ -76,13 +77,17 @@ export function DataTable<TData>({
   isRowSelectable,
   columnVisibility,
   onColumnVisibilityChange,
-  emptyTitle = 'لا توجد بيانات',
+  emptyTitle,
   emptyDescription,
   emptyAction,
   toolbar,
   bulkActions,
   className,
 }: DataTableProps<TData>) {
+  const tCommon = useTranslations('common');
+  const tErrors = useTranslations('errors.api');
+
+  const resolvedEmptyTitle = emptyTitle ?? tCommon('noData');
   const selectableColumns = useMemo(() => {
     if (!onRowSelectionChange) return columns;
     const selectCol: ColumnDef<TData, unknown> = {
@@ -93,7 +98,7 @@ export function DataTable<TData>({
           checked={table.getIsAllRowsSelected()}
           indeterminate={table.getIsSomeRowsSelected()}
           onCheckedChange={(checked) => table.toggleAllRowsSelected(checked === true)}
-          aria-label="تحديد الكل"
+          aria-label={tCommon('table.selectAll')}
         />
       ),
       cell: ({ row }) => {
@@ -103,7 +108,7 @@ export function DataTable<TData>({
             checked={row.getIsSelected()}
             disabled={!selectable}
             onCheckedChange={(checked) => row.toggleSelected(checked === true)}
-            aria-label="تحديد الصف"
+            aria-label={tCommon('table.selectRow')}
           />
         );
       },
@@ -154,7 +159,7 @@ export function DataTable<TData>({
       {bulkActions && selectedIds.length > 0 && (
         <div className="animate-fade-in-down flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary/20 bg-gradient-brand-soft px-3 py-2 shadow-2xs">
           <span className="text-sm font-medium">
-            {selectedIds.length} محدد
+            {tCommon('selectedCount', { count: selectedIds.length })}
           </span>
           <div className="flex flex-wrap items-center gap-2">
             {bulkActions(selectedIds)}
@@ -169,8 +174,8 @@ export function DataTable<TData>({
           errorView ?? (
             <div className="p-6">
               <EmptyState
-                title="تعذر تحميل البيانات"
-                description="حدث خطأ أثناء جلب البيانات"
+                title={tErrors('title')}
+                description={tErrors('fetchFailed')}
                 action={
                   onRetry ? (
                     <button
@@ -178,7 +183,7 @@ export function DataTable<TData>({
                       onClick={onRetry}
                       className="text-sm font-medium text-primary hover:underline"
                     >
-                      إعادة المحاولة
+                      {tCommon('retry')}
                     </button>
                   ) : undefined
                 }
@@ -187,7 +192,7 @@ export function DataTable<TData>({
           )
         ) : data.length === 0 ? (
           <div className="p-6">
-            <EmptyState title={emptyTitle} description={emptyDescription} action={emptyAction} />
+            <EmptyState title={resolvedEmptyTitle} description={emptyDescription} action={emptyAction} />
           </div>
         ) : (
           <Table>

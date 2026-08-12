@@ -9,6 +9,7 @@ import {
   SmileIcon,
 } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -44,6 +45,8 @@ interface MessageComposerProps {
 type AttachmentKind = 'image' | 'document';
 
 export function MessageComposer({ conversation, disabled }: MessageComposerProps) {
+  const t = useTranslations('inbox');
+  const tCommon = useTranslations('common');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [body, setBody] = useState('');
   const [attachmentOpen, setAttachmentOpen] = useState(false);
@@ -134,7 +137,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
   if (disabled) {
     return (
       <div className="border-t border-border/60 bg-muted/40 px-4 py-3.5 text-center text-sm text-muted-foreground">
-        ليس لديك صلاحية إرسال الرسائل
+        {t('noSendPermission')}
       </div>
     );
   }
@@ -142,7 +145,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
   if (conversation.status !== ConversationStatus.OPEN) {
     return (
       <div className="border-t border-border/60 bg-muted/40 px-4 py-3.5 text-center text-sm text-muted-foreground">
-        المحادثة مغلقة — أعد فتحها لإرسال رسائل جديدة
+        {t('conversationClosed')}
       </div>
     );
   }
@@ -158,7 +161,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
                 variant="ghost"
                 size="icon-sm"
                 className="rounded-full text-muted-foreground hover:text-foreground"
-                aria-label="إدراج إيموجي"
+                aria-label={t('insertEmoji')}
               >
                 <SmileIcon />
               </Button>
@@ -185,7 +188,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
           variant="ghost"
           size="icon-sm"
           className="rounded-full text-muted-foreground hover:text-foreground"
-          aria-label="اختيار قالب"
+          aria-label={t('pickTemplate')}
           onClick={() => setTemplatePickerOpen(true)}
         >
           <FileIcon />
@@ -204,7 +207,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
           variant="ghost"
           size="icon-sm"
           className="rounded-full text-muted-foreground hover:text-foreground"
-          aria-label="إرفاق ملف برابط"
+          aria-label={t('attachByUrl')}
           onClick={() => setAttachmentOpen(true)}
         >
           <PaperclipIcon />
@@ -214,7 +217,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
           ref={textareaRef}
           value={body}
           onChange={(event) => setBody(event.target.value)}
-          placeholder="اكتب رسالتك..."
+          placeholder={t('writeMessage')}
           rows={1}
           className="min-h-9 max-h-32 flex-1 resize-none border-0 bg-transparent px-2 shadow-none focus-visible:border-transparent focus-visible:ring-0"
           onKeyDown={(event) => {
@@ -230,7 +233,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
           variant="gradient"
           size="icon-sm"
           className="rounded-full transition-transform duration-200 hover:scale-105 active:scale-95"
-          aria-label="إرسال"
+          aria-label={t('send')}
           disabled={!body.trim() || isSending}
           onClick={() => void handleSendText()}
         >
@@ -241,19 +244,15 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
       <Dialog open={attachmentOpen} onOpenChange={setAttachmentOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>إرفاق ملف برابط</DialogTitle>
+            <DialogTitle>{t('attachDialog.title')}</DialogTitle>
             <DialogDescription>
-              أدخل رابطًا عامًا للملف. رفع الملفات غير متاح حاليًا — نقطة API
-              {' '}
-              <code className="text-xs">POST /media/upload</code>
-              {' '}
-              غير موجودة بعد.
+              {t('attachDialog.description', { endpoint: 'POST /media/upload' })}
             </DialogDescription>
           </DialogHeader>
 
           <Alert>
             <AlertDescription className="text-xs">
-              يجب أن يكون الرابط متاحًا للوصول العام حتى يتمكن WhatsApp من جلب الملف.
+              {t('attachDialog.urlMustBePublic')}
             </AlertDescription>
           </Alert>
 
@@ -266,7 +265,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
                 onClick={() => setAttachmentKind('image')}
               >
                 <ImageIcon />
-                صورة
+                {t('attachDialog.image')}
               </Button>
               <Button
                 type="button"
@@ -275,12 +274,12 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
                 onClick={() => setAttachmentKind('document')}
               >
                 <FileIcon />
-                مستند
+                {t('attachDialog.document')}
               </Button>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="attachment-url">رابط الملف</Label>
+              <Label htmlFor="attachment-url">{t('attachDialog.fileUrl')}</Label>
               <Input
                 id="attachment-url"
                 value={attachmentUrl}
@@ -292,7 +291,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
 
             {attachmentKind === 'document' && (
               <div className="space-y-1.5">
-                <Label htmlFor="attachment-filename">اسم الملف (اختياري)</Label>
+                <Label htmlFor="attachment-filename">{t('attachDialog.filenameOptional')}</Label>
                 <Input
                   id="attachment-filename"
                   value={attachmentFilename}
@@ -304,19 +303,19 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
             )}
 
             <div className="space-y-1.5">
-              <Label htmlFor="attachment-caption">تعليق (اختياري)</Label>
+              <Label htmlFor="attachment-caption">{t('attachDialog.captionOptional')}</Label>
               <Input
                 id="attachment-caption"
                 value={attachmentCaption}
                 onChange={(event) => setAttachmentCaption(event.target.value)}
-                placeholder="وصف المرفق"
+                placeholder={t('attachDialog.captionPlaceholder')}
               />
             </div>
           </div>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setAttachmentOpen(false)}>
-              إلغاء
+              {tCommon('cancel')}
             </Button>
             <Button
               type="button"
@@ -324,7 +323,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
               disabled={!attachmentUrl.trim() || isSending}
               onClick={() => void handleSendAttachment()}
             >
-              {isSending ? <Loader2Icon className="animate-spin" /> : 'إرسال'}
+              {isSending ? <Loader2Icon className="animate-spin" /> : t('send')}
             </Button>
           </DialogFooter>
         </DialogContent>

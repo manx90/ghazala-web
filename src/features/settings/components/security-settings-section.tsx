@@ -1,7 +1,8 @@
 'use client';
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
+import { useRouter } from '@/i18n/navigation';
 import type { CSSProperties } from 'react';
 import { KeyRoundIcon, LogOutIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { ROUTES } from '@/config/routes';
 import { useLogout } from '@/features/auth/hooks/use-auth';
 
 export function SecuritySettingsSection() {
+  const t = useTranslations('settings.security');
   const router = useRouter();
   const logout = useLogout();
 
@@ -28,15 +30,15 @@ export function SecuritySettingsSection() {
               <LogOutIcon className="size-5" aria-hidden="true" />
             </span>
             <div>
-              <CardTitle>تسجيل الخروج</CardTitle>
-              <CardDescription>إنهاء الجلسة الحالية على هذا الجهاز</CardDescription>
+              <CardTitle>{t('logout.title')}</CardTitle>
+              <CardDescription>{t('logout.description')}</CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <Button variant="destructive" onClick={() => void handleLogout()} disabled={logout.isPending}>
             <LogOutIcon />
-            تسجيل الخروج
+            {t('logout.title')}
           </Button>
         </CardContent>
       </Card>
@@ -47,30 +49,30 @@ export function SecuritySettingsSection() {
             <KeyRoundIcon className="size-5" aria-hidden="true" />
           </span>
           <div>
-            <CardTitle>استعادة كلمة المرور</CardTitle>
-            <CardDescription>إذا نسيت كلمة المرور، يمكنك طلب إعادة تعيينها</CardDescription>
+            <CardTitle>{t('passwordReset.title')}</CardTitle>
+            <CardDescription>{t('passwordReset.description')}</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
           <Button variant="outline" render={<Link href={ROUTES.auth.forgotPassword} />}>
             <KeyRoundIcon />
-            نسيت كلمة المرور
+            {t('passwordReset.button')}
           </Button>
         </CardContent>
       </Card>
 
       <div className="stagger-in" style={{ '--stagger-delay': '160ms' } as CSSProperties}>
         <UnavailableFeatureAlert
-          title="إدارة الجلسات غير متاحة"
-          description="لا يمكن عرض أو إنهاء الجلسات النشطة حالياً."
+          title={t('sessions.unavailableTitle')}
+          description={t('sessions.unavailableDescription')}
           requiredEndpoints={['GET /auth/sessions', 'DELETE /auth/sessions/:id']}
         />
       </div>
 
       <div className="stagger-in" style={{ '--stagger-delay': '240ms' } as CSSProperties}>
         <UnavailableFeatureAlert
-          title="تغيير كلمة المرور غير متاح"
-          description="لا يمكن تغيير كلمة المرور من الإعدادات حالياً."
+          title={t('changePassword.unavailableTitle')}
+          description={t('changePassword.unavailableDescription')}
           requiredEndpoints={['PATCH /auth/me/password']}
         />
       </div>

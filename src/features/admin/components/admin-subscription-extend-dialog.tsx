@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { ModalWrapper } from '@/components/global/modal-wrapper';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +20,9 @@ export function AdminSubscriptionExtendDialog({
   open,
   onOpenChange,
 }: AdminSubscriptionExtendDialogProps) {
+  const t = useTranslations('admin.subscriptions.extendDialog');
+  const tCommon = useTranslations('common');
+  const tAdminCommon = useTranslations('admin.common');
   const [days, setDays] = useState('30');
   const extendMutation = useExtendAdminSubscription();
 
@@ -41,25 +45,25 @@ export function AdminSubscriptionExtendDialog({
     <ModalWrapper
       open={open}
       onOpenChange={onOpenChange}
-      title="تمديد الاشتراك"
+      title={t('title')}
       description={
         subscription
-          ? `${subscription.organization?.name ?? '—'} — ${subscription.plan?.name ?? '—'}`
+          ? `${subscription.organization?.name ?? tAdminCommon('notAvailable')} — ${subscription.plan?.name ?? tAdminCommon('notAvailable')}`
           : undefined
       }
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={extendMutation.isPending}>
-            إلغاء
+            {tCommon('cancel')}
           </Button>
           <Button onClick={() => void handleSubmit()} disabled={extendMutation.isPending}>
-            {extendMutation.isPending ? 'جاري التمديد...' : 'تمديد'}
+            {extendMutation.isPending ? t('extending') : t('confirm')}
           </Button>
         </>
       }
     >
       <div className="flex flex-col gap-2">
-        <Label htmlFor="extend-days">عدد الأيام (1–365)</Label>
+        <Label htmlFor="extend-days">{t('daysLabel')}</Label>
         <Input
           id="extend-days"
           type="number"

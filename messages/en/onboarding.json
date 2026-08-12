@@ -1,0 +1,89 @@
+{
+  "steps": {
+    "ariaLabel": "Onboarding steps",
+    "createOrganization": "Create organization",
+    "connectWhatsapp": "Connect WhatsApp",
+    "selectPlan": "Select plan"
+  },
+  "createOrganization": {
+    "title": "Create organization",
+    "description": "Create your organization to start using Ghazala",
+    "orgName": "Organization name",
+    "slug": "Slug",
+    "timezone": "Timezone",
+    "country": "Country",
+    "selectTimezone": "Select timezone",
+    "selectCountry": "Select country",
+    "creating": "Creating...",
+    "submit": "Create organization",
+    "success": "Organization created successfully"
+  },
+  "selectPlan": {
+    "title": "Choose your plan",
+    "description": "Select the plan that fits your organization's needs",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "unlimited": "Unlimited",
+    "messagesPerMonth": "{count} messages / month",
+    "contacts": "{count} contacts",
+    "teamMembers": "{count} team members",
+    "phoneNumbers": "{count} phone numbers",
+    "perMonth": "per month",
+    "perYear": "per year",
+    "noPlans": "No plans available",
+    "noPlansDescription": "Contact support for assistance",
+    "selected": "Selected",
+    "select": "Select",
+    "subscribing": "Subscribing...",
+    "subscribeNow": "Subscribe now",
+    "success": "Successfully subscribed to plan"
+  },
+  "connectWhatsapp": {
+    "title": "Connect WhatsApp Business",
+    "description": "Connect your WhatsApp Business account via Meta Embedded Signup to start sending messages",
+    "howItWorks": "How does connection work?",
+    "steps": [
+      "Click Connect with WhatsApp to go to Meta",
+      "Sign in and select or create a WhatsApp Business account",
+      "After approval, your account will be linked automatically without entering any codes"
+    ],
+    "continueToPlan": "Continue to plan selection",
+    "connecting": "Completing connection...",
+    "embeddedNotConfigured": "Meta Embedded Signup is not configured. Ensure the app is set up in Meta Developer Console.",
+    "connectSuccess": "WhatsApp Business connected successfully",
+    "disconnectSuccess": "WhatsApp Business disconnected",
+    "syncSuccess": "Synced successfully",
+    "loadingDetails": "Loading connection details...",
+    "detailsLoadFailed": "Connected successfully. Some details are unavailable — you can sync later from settings."
+  },
+  "billingCallback": {
+    "paymentFailed": "Payment failed",
+    "paymentFailedDescription": "Payment was not completed. You can try again.",
+    "backToPlans": "Back to plan selection",
+    "billingSettings": "Billing settings",
+    "confirmingPayment": "Confirming payment",
+    "confirmingPaymentDescription": "Please wait while we confirm your payment.",
+    "confirmingPaymentTimeout": "Payment is being processed. It may take a minute. Refresh the page or check billing settings.",
+    "retry": "Try again",
+    "subscriptionActivated": "Subscription activated",
+    "redirectingToDashboard": "Redirecting you to the dashboard..."
+  },
+  "timezones": {
+    "riyadh": "Riyadh (Asia/Riyadh)",
+    "dubai": "Dubai (Asia/Dubai)",
+    "kuwait": "Kuwait (Asia/Kuwait)",
+    "qatar": "Qatar (Asia/Qatar)",
+    "cairo": "Cairo (Africa/Cairo)",
+    "utc": "UTC"
+  },
+  "countries": {
+    "SA": "Saudi Arabia",
+    "AE": "United Arab Emirates",
+    "KW": "Kuwait",
+    "QA": "Qatar",
+    "BH": "Bahrain",
+    "OM": "Oman",
+    "EG": "Egypt",
+    "JO": "Jordan"
+  }
+}

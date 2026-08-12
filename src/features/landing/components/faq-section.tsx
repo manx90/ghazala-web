@@ -4,27 +4,28 @@ import { AnimatePresence, motion } from 'motion/react';
 import { PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { FAQ_SECTION } from '../data/landing-content';
+import { useLandingContent } from '../hooks/use-landing-content';
 import { SectionHeading } from './section-heading';
 import { StaggerGroup, StaggerItem } from './reveal';
 
 export function FaqSection() {
+  const { faq } = useLandingContent();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id={FAQ_SECTION.id} className="scroll-mt-24 bg-muted/40 py-20 sm:py-24">
+    <section id={faq.id} className="scroll-mt-24 bg-muted/40 py-20 sm:py-24">
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
-        <SectionHeading eyebrow={FAQ_SECTION.eyebrow} title={FAQ_SECTION.title} />
+        <SectionHeading eyebrow={faq.eyebrow} title={faq.title} />
 
         <StaggerGroup className="mt-12 space-y-3">
-          {FAQ_SECTION.items.map((item, index) => {
+          {faq.items.map((item, index) => {
             const isOpen = openIndex === index;
             return (
               <StaggerItem key={item.question}>
                 <div
                   className={cn(
                     'overflow-hidden rounded-2xl border bg-card transition-colors',
-                    isOpen ? 'border-secondary/40 shadow-md' : 'border-border/60'
+                    isOpen ? 'border-secondary/40 shadow-md' : 'border-border/60',
                   )}
                 >
                   <button
@@ -40,7 +41,9 @@ export function FaqSection() {
                       transition={{ duration: 0.25 }}
                       className={cn(
                         'flex size-7 shrink-0 items-center justify-center rounded-full border transition-colors',
-                        isOpen ? 'border-secondary bg-secondary text-secondary-foreground' : 'border-border text-muted-foreground'
+                        isOpen
+                          ? 'border-secondary bg-secondary text-secondary-foreground'
+                          : 'border-border text-muted-foreground',
                       )}
                     >
                       <PlusIcon className="size-4" aria-hidden />

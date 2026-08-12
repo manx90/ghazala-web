@@ -121,26 +121,18 @@ export function canSubmitLibraryTemplate(input: {
   name: string;
   urlBase?: string;
   phoneNumber?: string;
-}): { ok: boolean; reason?: string } {
+}): { ok: true } | { ok: false; code: string } {
   if (!input.name.trim()) {
-    return { ok: false, reason: 'اسم القالب مطلوب' };
+    return { ok: false, code: 'nameRequired' };
   }
 
   if (!/^[a-z0-9_]+$/.test(input.name.trim())) {
-    return {
-      ok: false,
-      reason: 'اسم القالب يجب أن يكون lowercase مع underscore فقط',
-    };
+    return { ok: false, code: 'nameFormat' };
   }
 
   const unsupported = getUnsupportedLibraryButtons(input.item);
   if (unsupported.length) {
-    return {
-      ok: false,
-      reason: `هذا القالب يحتوي أزرار غير مدعومة حالياً: ${unsupported
-        .map((button) => button.type)
-        .join(', ')}`,
-    };
+    return { ok: false, code: 'unsupportedButtons' };
   }
 
   if (isAuthenticationLibraryItem(input.item)) {
@@ -150,11 +142,11 @@ export function canSubmitLibraryTemplate(input: {
   const required = getRequiredConfigurableButtons(input.item);
 
   if (required.url && !input.urlBase?.trim()) {
-    return { ok: false, reason: 'رابط الزر مطلوب' };
+    return { ok: false, code: 'urlRequired' };
   }
 
   if (required.phone && !input.phoneNumber?.trim()) {
-    return { ok: false, reason: 'رقم الهاتف مطلوب' };
+    return { ok: false, code: 'phoneRequired' };
   }
 
   return { ok: true };

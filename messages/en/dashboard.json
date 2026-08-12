@@ -1,0 +1,72 @@
+{
+  "page": {
+    "title": "Dashboard",
+    "description": "Overview of conversation and message activity",
+    "refresh": "Refresh"
+  },
+  "kpis": {
+    "totalConversations": "Total conversations",
+    "totalConversationsDesc": "{open} currently open",
+    "openConversations": "Open conversations",
+    "openConversationsDesc": "{closed} closed",
+    "whatsappNumbers": "WhatsApp numbers",
+    "whatsappNumbersDesc": "Active linked numbers",
+    "templates": "Templates",
+    "templatesDesc": "Registered message templates"
+  },
+  "quickActions": {
+    "title": "Quick actions",
+    "description": "Jump directly to main sections",
+    "inbox": "Inbox",
+    "contacts": "Contacts",
+    "templates": "Templates",
+    "messages": "Messages",
+    "whatsappSettings": "WhatsApp settings"
+  },
+  "metaConnection": {
+    "title": "Meta connection",
+    "description": "Meta Business account connection status",
+    "emptyTitle": "No connection data",
+    "emptyDescription": "Failed to fetch connection status.",
+    "status": "Status",
+    "wabaId": "WABA ID",
+    "connectedAt": "Connected at",
+    "lastSyncAt": "Last sync",
+    "manageConnection": "Manage connection"
+  },
+  "phoneHealth": {
+    "title": "WhatsApp number health",
+    "description": "Number status and messaging quality",
+    "emptyTitle": "No numbers",
+    "emptyDescription": "Connect a WhatsApp number from settings."
+  },
+  "templateSummary": {
+    "title": "Template summary",
+    "description": "Template distribution by status",
+    "emptyTitle": "No templates",
+    "emptyDescription": "Create or sync WhatsApp templates from the templates page.",
+    "total": "Total: {count} templates"
+  },
+  "recentConversations": {
+    "title": "Recent conversations",
+    "description": "Last 5 active conversations",
+    "viewAll": "View all",
+    "emptyTitle": "No conversations",
+    "emptyDescription": "Conversations will appear here when new messages arrive.",
+    "customerPhone": "Customer phone",
+    "status": "Status",
+    "lastMessage": "Last message"
+  },
+  "charts": {
+    "emptyTitle": "No conversation data",
+    "emptyDescription": "Statistics will appear when conversations start coming in.",
+    "distributionTitle": "Conversation distribution",
+    "distributionDescription": "Conversation ratio by status",
+    "statsTitle": "Conversation statistics",
+    "statsDescription": "Comparison by status",
+    "open": "Open",
+    "closed": "Closed",
+    "expired": "Expired",
+    "count": "Count"
+  }
+}

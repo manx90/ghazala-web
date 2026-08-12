@@ -1,7 +1,8 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { MessageSquarePlusIcon, UserPlusIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { memo } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,6 +24,7 @@ interface QuickActionsProps {
 
 function QuickActionsComponent({ variant, orgSlug }: QuickActionsProps) {
   const { can } = usePermissions();
+  const t = useTranslations('nav.quickActions');
 
   if (variant !== 'client' || !orgSlug) {
     return null;
@@ -39,25 +41,25 @@ function QuickActionsComponent({ variant, orgSlug }: QuickActionsProps) {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="default" size="sm" className="hidden sm:inline-flex" aria-label="إجراءات سريعة" />
+          <Button variant="default" size="sm" className="hidden sm:inline-flex" aria-label={t('ariaLabel')} />
         }
       >
         <MessageSquarePlusIcon data-icon="inline-start" />
-        إجراء سريع
+        {t('button')}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>إجراءات سريعة</DropdownMenuLabel>
+          <DropdownMenuLabel>{t('title')}</DropdownMenuLabel>
           {canSend && (
             <DropdownMenuItem render={<Link href={ROUTES.app.inbox(orgSlug)} />}>
               <MessageSquarePlusIcon data-icon="inline-start" />
-              إرسال رسالة
+              {t('sendMessage')}
             </DropdownMenuItem>
           )}
           {canManageContacts && (
             <DropdownMenuItem render={<Link href={ROUTES.app.contacts(orgSlug)} />}>
               <UserPlusIcon data-icon="inline-start" />
-              جهة اتصال جديدة
+              {t('newContact')}
             </DropdownMenuItem>
           )}
         </DropdownMenuGroup>

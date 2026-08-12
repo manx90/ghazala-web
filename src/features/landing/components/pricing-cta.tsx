@@ -1,21 +1,27 @@
 'use client';
 
 import { motion, useReducedMotion } from 'motion/react';
-import Link from 'next/link';
-import { ArrowLeftIcon, CheckIcon } from 'lucide-react';
-import { PRICING_CTA } from '../data/landing-content';
+import { Link } from '@/i18n/navigation';
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useLandingAuth } from '../hooks/use-landing-auth';
+import { useLandingContent } from '../hooks/use-landing-content';
 import { Reveal } from './reveal';
 
 export function PricingCta() {
   const reduceMotion = useReducedMotion();
+  const locale = useLocale();
+  const tNav = useTranslations('nav');
+  const { pricing } = useLandingContent();
   const { isAuthenticated, isSuperAdmin, workspaceHref, adminHref } = useLandingAuth();
 
   const primaryCta = isAuthenticated
     ? isSuperAdmin
-      ? { label: 'لوحة الإدارة', href: adminHref }
-      : { label: 'الذهاب للمنصة', href: workspaceHref }
-    : PRICING_CTA.primaryCta;
+      ? { label: tNav('adminPanel'), href: adminHref }
+      : { label: tNav('goToPlatform'), href: workspaceHref }
+    : pricing.primaryCta;
+
+  const CtaArrow = locale === 'ar' ? ArrowLeftIcon : ArrowRightIcon;
 
   return (
     <section className="py-20 sm:py-28">
@@ -33,12 +39,12 @@ export function PricingCta() {
               className="absolute -top-24 start-1/3 size-72 rounded-full bg-white/15 blur-[100px]"
             />
 
-            <p className="relative text-sm font-semibold text-white/80">{PRICING_CTA.eyebrow}</p>
+            <p className="relative text-sm font-semibold text-white/80">{pricing.eyebrow}</p>
             <h2 className="relative mt-3 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
-              {PRICING_CTA.title}
+              {pricing.title}
             </h2>
             <p className="relative mx-auto mt-4 max-w-xl leading-8 text-white/80 text-pretty">
-              {PRICING_CTA.description}
+              {pricing.description}
             </p>
 
             <motion.div
@@ -51,12 +57,12 @@ export function PricingCta() {
                 className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-8 text-sm font-bold text-primary shadow-lg transition-shadow hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 {primaryCta.label}
-                <ArrowLeftIcon className="size-4" aria-hidden />
+                <CtaArrow className="size-4" aria-hidden />
               </Link>
             </motion.div>
 
             <ul className="relative mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-white/75">
-              {PRICING_CTA.points.map((point) => (
+              {pricing.points.map((point) => (
                 <li key={point} className="flex items-center gap-1.5">
                   <CheckIcon className="size-4" aria-hidden />
                   {point}

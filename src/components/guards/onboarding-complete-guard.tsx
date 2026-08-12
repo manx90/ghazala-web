@@ -1,7 +1,8 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from '@/i18n/navigation';
 import { useEffect, type ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import { LoadingScreen } from '@/components/global/loading-screen';
 import { useOnboardingStatus } from '@/features/onboarding/hooks/use-onboarding-status';
 import { useSession } from '@/features/auth/hooks/use-session';
@@ -14,6 +15,7 @@ interface OnboardingCompleteGuardProps {
 }
 
 export function OnboardingCompleteGuard({ children }: OnboardingCompleteGuardProps) {
+  const t = useTranslations('common');
   const router = useRouter();
   const pathname = usePathname();
   const { isSessionLoading, currentOrganization } = useSession();
@@ -35,7 +37,7 @@ export function OnboardingCompleteGuard({ children }: OnboardingCompleteGuardPro
   }, [isResolving, state, router]);
 
   if (isResolving) {
-    return <LoadingScreen label="جاري التحقق من إعداد الحساب..." />;
+    return <LoadingScreen label={t('loading')} />;
   }
 
   if (state && !isOnboardingComplete(state)) {

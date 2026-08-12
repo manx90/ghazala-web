@@ -1,0 +1,17 @@
+{
+  "confirmDelete": "تأكيد الحذف",
+  "confirmDeleteDescription": "هل أنت متأكد؟ لا يمكن التراجع عن هذا الإجراء.",
+  "confirmAction": "تأكيد الإجراء",
+  "deleteTitle": "حذف العنصر",
+  "unsavedChanges": "لديك تغييرات غير محفوظة",
+  "offline": "لا يوجد اتصال بالإنترنت",
+  "offlineDescription": "تحقق من اتصالك وحاول مرة أخرى",
+  "offlineBanner": "لا يوجد اتصال بالإنترنت — بعض الميزات قد لا تعمل",
+  "sessionExpired": "انتهت الجلسة",
+  "accessDenied": "تم رفض الوصول",
+  "notFound": "غير موجود",
+  "serverError": "خطأ في الخادم",
+  "tryAgain": "حاول مرة أخرى",
+  "continue": "متابعة",
+  "done": "تم"
+}

@@ -1,7 +1,8 @@
 'use client';
 
 import { motion, useReducedMotion } from 'motion/react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { MessageCircleIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import {
@@ -21,11 +22,12 @@ interface AuthCardLayoutProps {
 }
 
 export function AuthCardLayout({ title, description, children, footer }: AuthCardLayoutProps) {
+  const tCommon = useTranslations('common');
+  const tNav = useTranslations('nav');
   const reduceMotion = useReducedMotion();
 
   return (
     <div className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden px-4 py-12">
-      {/* خلفية فاخرة: شبكة + توهجات ناعمة */}
       <div
         aria-hidden
         className="absolute inset-0 bg-grid-pattern [mask-image:radial-gradient(ellipse_70%_60%_at_50%_40%,black,transparent)]"
@@ -48,12 +50,12 @@ export function AuthCardLayout({ title, description, children, footer }: AuthCar
         <Link
           href={ROUTES.home}
           className="mb-8 flex items-center gap-3"
-          aria-label="غزالة - الصفحة الرئيسية"
+          aria-label={tNav('homeAria')}
         >
           <span className="flex size-12 items-center justify-center rounded-2xl bg-gradient-brand text-white shadow-md glow-brand">
             <MessageCircleIcon className="size-6" aria-hidden />
           </span>
-          <span className="text-xl font-bold tracking-tight">غزالة</span>
+          <span className="text-xl font-bold tracking-tight">{tCommon('appName')}</span>
         </Link>
 
         <Card className="glass-strong w-full rounded-2xl shadow-xl ring-0">

@@ -6,7 +6,7 @@ export function toastSuccess(message: string): void {
   toast.success(message);
 }
 
-export function toastError(error: unknown, fallback = 'حدث خطأ غير متوقع'): void {
+export function toastError(error: unknown, fallback = 'An unexpected error occurred'): void {
   toast.error(getErrorMessage(error, fallback));
 }
 
@@ -19,17 +19,17 @@ export function toastApiError(error: unknown): void {
   const parsed = error instanceof ApiError ? error : null;
 
   if (parsed?.isForbidden) {
-    toast.error(parsed.message || 'ليس لديك صلاحية لتنفيذ هذا الإجراء');
+    toast.error(parsed.message || 'You do not have permission to perform this action');
     return;
   }
 
   if (parsed?.code === 'CONFLICT') {
-    toast.error(parsed.message || 'تعارض في البيانات');
+    toast.error(parsed.message || 'Data conflict');
     return;
   }
 
   if (parsed?.isOffline) {
-    toast.error('لا يوجد اتصال بالإنترنت');
+    toast.error('No internet connection');
     return;
   }
 

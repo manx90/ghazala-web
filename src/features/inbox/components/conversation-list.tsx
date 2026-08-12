@@ -2,6 +2,7 @@
 
 import { PlusIcon, SearchIcon } from 'lucide-react';
 import type { CSSProperties } from 'react';
+import { useTranslations } from 'next-intl';
 import { QueryState } from '@/components/shared/query-state';
 import { PhoneNumberSelect } from '@/components/shared/phone-number-select';
 import { Button } from '@/components/ui/button';
@@ -27,11 +28,11 @@ interface ConversationListProps {
   canCompose?: boolean;
 }
 
-const STATUS_TABS: { value: InboxStatusFilter; label: string }[] = [
-  { value: 'ALL', label: 'الكل' },
-  { value: ConversationStatus.OPEN, label: 'مفتوحة' },
-  { value: ConversationStatus.CLOSED, label: 'مغلقة' },
-  { value: ConversationStatus.EXPIRED, label: 'منتهية' },
+const STATUS_TAB_VALUES: InboxStatusFilter[] = [
+  'ALL',
+  ConversationStatus.OPEN,
+  ConversationStatus.CLOSED,
+  ConversationStatus.EXPIRED,
 ];
 
 export function ConversationList({
@@ -48,14 +49,21 @@ export function ConversationList({
   onNewTemplate,
   canCompose,
 }: ConversationListProps) {
+  const t = useTranslations('inbox');
+  const tCommon = useTranslations('common');
+  const tStatus = useTranslations('status');
+
+  const getTabLabel = (value: InboxStatusFilter) =>
+    value === 'ALL' ? tCommon('all') : tStatus(value);
+
   return (
     <div className="flex h-full min-h-0 flex-col border-e border-border/60 bg-card">
       <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border/60 px-4">
-        <h2 className="text-sm font-semibold">الرسائل الواردة</h2>
+        <h2 className="text-sm font-semibold">{t('title')}</h2>
         {canCompose && onNewTemplate ? (
           <Button type="button" variant="gradient" size="sm" onClick={onNewTemplate}>
             <PlusIcon data-icon="inline-start" />
-            قالب جديد
+            {t('newTemplate')}
           </Button>
         ) : null}
       </div>
@@ -66,9 +74,9 @@ export function ConversationList({
           onValueChange={(value) => onFiltersChange({ status: value as InboxStatusFilter })}
         >
           <TabsList className="w-full">
-            {STATUS_TABS.map((tab) => (
-              <TabsTrigger key={tab.value} value={tab.value} className="flex-1 text-xs">
-                {tab.label}
+            {STATUS_TAB_VALUES.map((value) => (
+              <TabsTrigger key={value} value={value} className="flex-1 text-xs">
+                {getTabLabel(value)}
               </TabsTrigger>
             ))}
           </TabsList>
@@ -79,7 +87,7 @@ export function ConversationList({
           <Input
             value={filters.customerPhone ?? ''}
             onChange={(event) => onFiltersChange({ customerPhone: event.target.value })}
-            placeholder="بحث برقم العميل..."
+            placeholder={t('searchByPhone')}
             className="rounded-xl bg-muted/50 pr-9 shadow-none"
             dir="ltr"
           />
@@ -98,13 +106,13 @@ export function ConversationList({
           isError={isError}
           error={error}
           isEmpty={!conversations.length}
-          emptyTitle="لا توجد محادثات"
-          emptyDescription="أرسل قالباً لرقم جديد أو انتظر رسائل العملاء"
+          emptyTitle={t('noConversations')}
+          emptyDescription={t('noConversationsDescription')}
           emptyAction={
             canCompose && onNewTemplate ? (
               <Button variant="gradient" onClick={onNewTemplate}>
                 <PlusIcon data-icon="inline-start" />
-                إرسال قالب لرقم
+                {t('sendTemplateToNumber')}
               </Button>
             ) : undefined
           }

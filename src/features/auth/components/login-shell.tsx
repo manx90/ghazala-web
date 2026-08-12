@@ -2,17 +2,19 @@
 
 import { motion, useReducedMotion } from 'motion/react';
 import { BotIcon, CheckCheckIcon, MessageCircleIcon, ShieldCheckIcon, ZapIcon } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
+import { LanguageSwitcher } from '@/components/shared/language-switcher';
 import { ROUTES } from '@/config/routes';
 
-const PANEL_POINTS = [
-  { icon: ZapIcon, label: 'ردود آلية خلال ثوانٍ' },
-  { icon: ShieldCheckIcon, label: 'واجهة رسمية معتمدة من ميتا' },
-  { icon: CheckCheckIcon, label: 'معدلات تسليم تتجاوز 98%' },
-] as const;
+const PANEL_POINT_KEYS = ['autoReply', 'metaOfficial', 'deliveryRate'] as const;
+const PANEL_ICONS = [ZapIcon, ShieldCheckIcon, CheckCheckIcon] as const;
 
 function VisualPanel() {
+  const t = useTranslations('auth.shell');
+  const tCommon = useTranslations('common');
+  const tNav = useTranslations('nav');
   const reduceMotion = useReducedMotion();
 
   const float = (delay: number) =>
@@ -25,7 +27,6 @@ function VisualPanel() {
 
   return (
     <div className="relative hidden overflow-hidden bg-gradient-brand lg:flex lg:w-[52%] lg:flex-col lg:justify-between lg:p-12">
-      {/* شبكة وتوهجات */}
       <div
         aria-hidden
         className="absolute inset-0 bg-[linear-gradient(to_left,rgb(255_255_255/0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgb(255_255_255/0.05)_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_70%_70%_at_50%_40%,black,transparent)]"
@@ -46,15 +47,14 @@ function VisualPanel() {
       <Link
         href={ROUTES.home}
         className="relative flex items-center gap-2 text-lg font-bold text-white"
-        aria-label="غزالة - الصفحة الرئيسية"
+        aria-label={tNav('homeAria')}
       >
         <span className="flex size-9 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/25 backdrop-blur-md">
           <MessageCircleIcon className="size-5" aria-hidden />
         </span>
-        غزالة
+        {tCommon('appName')}
       </Link>
 
-      {/* بطاقات عائمة */}
       <div className="relative mx-auto w-full max-w-md">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -67,14 +67,14 @@ function VisualPanel() {
               <BotIcon className="size-5 text-white" aria-hidden />
             </span>
             <div className="rounded-2xl rounded-ss-sm bg-white/15 px-4 py-3 text-sm leading-7 text-white">
-              مرحباً بعودتك! فريقك أنجز اليوم 1,284 محادثة بمتوسط رد 42 ثانية.
+              {t('botMessage')}
             </div>
           </motion.div>
           <motion.div {...float(1.2)} className="mt-4 flex justify-end">
             <div className="rounded-2xl rounded-se-sm bg-white px-4 py-3 text-sm font-medium leading-7 text-primary shadow-lg">
-              أداء رائع، لنكمل من حيث توقفنا.
+              {t('userReply')}
               <span className="mt-1 flex items-center justify-end gap-1 text-[0.65rem] text-muted-foreground">
-                10:26
+                {t('messageTime')}
                 <CheckCheckIcon className="size-3 text-success" aria-hidden />
               </span>
             </div>
@@ -87,20 +87,21 @@ function VisualPanel() {
           transition={{ delay: 0.5, duration: 0.8 }}
           className="mt-8 text-center"
         >
-          <p className="text-lg leading-9 font-medium text-white/90">
-            «قلّصنا زمن الاستجابة لعملائنا من ساعات إلى ثوانٍ خلال الأسبوع الأول.»
-          </p>
-          <footer className="mt-3 text-sm text-white/60">فريق تجربة العملاء — شركة الأفق للتجارة</footer>
+          <p className="text-lg leading-9 font-medium text-white/90">{t('testimonialQuote')}</p>
+          <footer className="mt-3 text-sm text-white/60">{t('testimonialFooter')}</footer>
         </motion.blockquote>
       </div>
 
       <ul className="relative flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-white/75">
-        {PANEL_POINTS.map((point) => (
-          <li key={point.label} className="flex items-center gap-2">
-            <point.icon className="size-4" aria-hidden />
-            {point.label}
-          </li>
-        ))}
+        {PANEL_POINT_KEYS.map((key, index) => {
+          const Icon = PANEL_ICONS[index];
+          return (
+            <li key={key} className="flex items-center gap-2">
+              <Icon className="size-4" aria-hidden />
+              {t(`panelPoints.${key}`)}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
@@ -108,10 +109,12 @@ function VisualPanel() {
 
 export function LoginShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-svh">
+    <div className="relative flex min-h-svh">
+      <div className="absolute end-4 top-4 z-20">
+        <LanguageSwitcher />
+      </div>
       <VisualPanel />
       <div className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12 sm:px-8">
-        {/* خلفية جانب النموذج */}
         <div
           aria-hidden
           className="absolute inset-0 bg-grid-pattern [mask-image:radial-gradient(ellipse_80%_70%_at_50%_45%,black,transparent)]"

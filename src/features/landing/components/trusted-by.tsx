@@ -1,17 +1,18 @@
 'use client';
 
 import { motion, useReducedMotion } from 'motion/react';
-import { TRUSTED_BY } from '../data/landing-content';
+import { useLandingContent } from '../hooks/use-landing-content';
 import { Reveal } from './reveal';
 
 export function TrustedBy() {
   const reduceMotion = useReducedMotion();
-  const loop = [...TRUSTED_BY.items, ...TRUSTED_BY.items];
+  const { trustedBy } = useLandingContent();
+  const loop = [...trustedBy.items, ...trustedBy.items];
 
   return (
-    <section aria-label={TRUSTED_BY.title} className="border-y border-border/60 bg-muted/40 py-10">
+    <section aria-label={trustedBy.title} className="border-y border-border/60 bg-muted/40 py-10">
       <Reveal>
-        <p className="text-center text-sm font-medium text-muted-foreground">{TRUSTED_BY.title}</p>
+        <p className="text-center text-sm font-medium text-muted-foreground">{trustedBy.title}</p>
       </Reveal>
 
       <div className="relative mt-8 overflow-hidden [mask-image:linear-gradient(to_left,transparent,black_15%,black_85%,transparent)]">

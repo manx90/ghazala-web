@@ -1,7 +1,8 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import type { UseQueryResult } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { buttonVariants } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -26,17 +27,18 @@ interface RecentConversationsTableProps {
 }
 
 export function RecentConversationsTable({ conversations, orgSlug }: RecentConversationsTableProps) {
+  const t = useTranslations('dashboard.recentConversations');
   const items = conversations.data?.items ?? [];
 
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <CardTitle className="tracking-tight">أحدث المحادثات</CardTitle>
-          <CardDescription>آخر 5 محادثات نشطة</CardDescription>
+          <CardTitle className="tracking-tight">{t('title')}</CardTitle>
+          <CardDescription>{t('description')}</CardDescription>
         </div>
         <Link href={ROUTES.app.inbox(orgSlug)} className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}>
-          عرض الكل
+          {t('viewAll')}
         </Link>
       </CardHeader>
       <CardContent>
@@ -45,17 +47,17 @@ export function RecentConversationsTable({ conversations, orgSlug }: RecentConve
           isError={conversations.isError}
           error={conversations.error}
           isEmpty={items.length === 0}
-          emptyTitle="لا توجد محادثات"
-          emptyDescription="ستظهر المحادثات هنا عند استقبال رسائل جديدة."
+          emptyTitle={t('emptyTitle')}
+          emptyDescription={t('emptyDescription')}
           onRetry={() => void conversations.refetch()}
         >
           <div className="overflow-hidden rounded-xl border border-border/60">
             <Table>
               <TableHeader className="bg-muted/50">
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="px-3">رقم العميل</TableHead>
-                  <TableHead className="px-3">الحالة</TableHead>
-                  <TableHead className="px-3">آخر رسالة</TableHead>
+                  <TableHead className="px-3">{t('customerPhone')}</TableHead>
+                  <TableHead className="px-3">{t('status')}</TableHead>
+                  <TableHead className="px-3">{t('lastMessage')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

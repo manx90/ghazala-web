@@ -9,15 +9,7 @@ import {
   TrendingUpIcon,
 } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
-
-const CHAT_SCRIPT = [
-  { from: 'customer', text: 'مرحباً، هل العرض ما زال متاحاً؟', time: '10:24' },
-  { from: 'bot', text: 'أهلاً بك! نعم، العرض ساري حتى نهاية الأسبوع.', time: '10:24' },
-  { from: 'customer', text: 'رائع! أريد إتمام الطلب من فضلك.', time: '10:25' },
-  { from: 'agent', text: 'بكل سرور، سأجهز طلبك الآن.', time: '10:25' },
-] as const;
-
-const SENDER_LABEL = { customer: 'عميل', bot: 'المساعد الذكي', agent: 'فريق الدعم' } as const;
+import { useLandingContent } from '../hooks/use-landing-content';
 
 function FloatingCard({
   className,
@@ -50,6 +42,7 @@ function FloatingCard({
 
 export function HeroVisual() {
   const reduceMotion = useReducedMotion();
+  const { heroVisual } = useLandingContent();
   const [visibleCount, setVisibleCount] = useState(1);
 
   const mouseX = useMotionValue(0);
@@ -62,12 +55,12 @@ export function HeroVisual() {
   useEffect(() => {
     if (reduceMotion) return;
     const timer = setInterval(() => {
-      setVisibleCount((count) => (count >= CHAT_SCRIPT.length + 1 ? 1 : count + 1));
+      setVisibleCount((count) => (count >= heroVisual.chat.length + 1 ? 1 : count + 1));
     }, 2200);
     return () => clearInterval(timer);
-  }, [reduceMotion]);
+  }, [reduceMotion, heroVisual.chat.length]);
 
-  const shownCount = reduceMotion ? CHAT_SCRIPT.length : visibleCount;
+  const shownCount = reduceMotion ? heroVisual.chat.length : visibleCount;
 
   return (
     <div
@@ -84,7 +77,6 @@ export function HeroVisual() {
         mouseY.set(0);
       }}
     >
-      {/* توهج خلفي */}
       <div
         aria-hidden
         className="absolute -inset-8 rounded-[2.5rem] bg-gradient-to-br from-primary/30 via-secondary/20 to-success/20 blur-3xl"
@@ -97,25 +89,30 @@ export function HeroVisual() {
         transition={{ duration: 0.8, ease: 'easeOut' }}
         className="relative rounded-3xl border border-border/60 bg-card/70 p-4 shadow-2xl backdrop-blur-xl sm:p-5"
       >
-        {/* ترويسة المحادثة */}
         <div className="flex items-center gap-3 border-b border-border/60 pb-3">
           <div className="flex size-10 items-center justify-center rounded-full bg-gradient-brand text-primary-foreground">
             <BotIcon className="size-5" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold">قناة واتساب الرسمية</p>
+            <p className="text-sm font-semibold">{heroVisual.channelTitle}</p>
             <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <span className="size-1.5 rounded-full bg-success" />
-              متصل الآن
+              {heroVisual.online}
             </p>
           </div>
-          <CheckCheckIcon className="size-4 text-success" aria-label="رسائل مقروءة" />
+          <CheckCheckIcon className="size-4 text-success" aria-label={heroVisual.readMessages} />
         </div>
 
-        {/* الرسائل */}
         <div className="mt-4 flex min-h-56 flex-col justify-end gap-2.5" aria-live="polite">
-          {CHAT_SCRIPT.slice(0, shownCount).map((message, index) => {
+          {heroVisual.chat.slice(0, shownCount).map((message, index) => {
             const incoming = message.from === 'customer';
+            const senderLabel =
+              message.from === 'bot'
+                ? heroVisual.senders.bot
+                : message.from === 'agent'
+                  ? heroVisual.senders.agent
+                  : null;
+
             return (
               <motion.div
                 key={`${index}-${message.text}`}
@@ -131,13 +128,13 @@ export function HeroVisual() {
                       : 'rounded-se-sm bg-gradient-brand text-primary-foreground'
                   }`}
                 >
-                  {!incoming ? (
-                    <p className="mb-0.5 text-[0.65rem] font-medium opacity-80">
-                      {SENDER_LABEL[message.from]}
-                    </p>
+                  {senderLabel ? (
+                    <p className="mb-0.5 text-[0.65rem] font-medium opacity-80">{senderLabel}</p>
                   ) : null}
                   <p>{message.text}</p>
-                  <p className={`mt-1 flex items-center justify-end gap-1 text-[0.65rem] ${incoming ? 'text-muted-foreground' : 'opacity-80'}`}>
+                  <p
+                    className={`mt-1 flex items-center justify-end gap-1 text-[0.65rem] ${incoming ? 'text-muted-foreground' : 'opacity-80'}`}
+                  >
                     {message.time}
                     {!incoming ? <CheckCheckIcon className="size-3" /> : null}
                   </p>
@@ -148,15 +145,14 @@ export function HeroVisual() {
         </div>
       </motion.div>
 
-      {/* بطاقات عائمة */}
       <FloatingCard className="absolute -start-4 top-16 z-10 hidden sm:block md:-start-12" delay={0.4}>
         <div className="flex items-center gap-2.5 p-3.5">
           <span className="flex size-9 items-center justify-center rounded-xl bg-success/15 text-success">
             <RadioTowerIcon className="size-4" />
           </span>
           <div>
-            <p className="text-xs text-muted-foreground">حملة البث</p>
-            <p className="text-sm font-semibold">تم التسليم 98%</p>
+            <p className="text-xs text-muted-foreground">{heroVisual.broadcastCampaign}</p>
+            <p className="text-sm font-semibold">{heroVisual.delivered}</p>
           </div>
         </div>
       </FloatingCard>
@@ -167,7 +163,7 @@ export function HeroVisual() {
             <BarChart3Icon className="size-4" />
           </span>
           <div>
-            <p className="text-xs text-muted-foreground">معدل القراءة</p>
+            <p className="text-xs text-muted-foreground">{heroVisual.readRate}</p>
             <p className="flex items-center gap-1 text-sm font-semibold">
               +42%
               <TrendingUpIcon className="size-3.5 text-success" />
@@ -179,7 +175,7 @@ export function HeroVisual() {
       <FloatingCard className="absolute -top-6 end-8 z-10 hidden md:block" delay={1}>
         <div className="flex items-center gap-2 px-3.5 py-2.5">
           <BotIcon className="size-4 text-secondary" />
-          <p className="text-xs font-medium">تم الرد تلقائياً خلال ثانيتين</p>
+          <p className="text-xs font-medium">{heroVisual.autoReply}</p>
         </div>
       </FloatingCard>
     </div>

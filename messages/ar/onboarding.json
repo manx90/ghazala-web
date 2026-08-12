@@ -1,0 +1,89 @@
+{
+  "steps": {
+    "ariaLabel": "خطوات التسجيل",
+    "createOrganization": "إنشاء المنظمة",
+    "connectWhatsapp": "ربط واتساب",
+    "selectPlan": "اختيار الخطة"
+  },
+  "createOrganization": {
+    "title": "إنشاء منظمة",
+    "description": "أنشئ منظمتك للبدء في استخدام غزالة",
+    "orgName": "اسم المنظمة",
+    "slug": "المعرف (Slug)",
+    "timezone": "المنطقة الزمنية",
+    "country": "الدولة",
+    "selectTimezone": "اختر المنطقة الزمنية",
+    "selectCountry": "اختر الدولة",
+    "creating": "جاري الإنشاء...",
+    "submit": "إنشاء المنظمة",
+    "success": "تم إنشاء المنظمة بنجاح"
+  },
+  "selectPlan": {
+    "title": "اختر خطتك",
+    "description": "اختر الخطة المناسبة لاحتياجات منظمتك",
+    "monthly": "شهري",
+    "yearly": "سنوي",
+    "unlimited": "غير محدود",
+    "messagesPerMonth": "{count} رسالة / شهر",
+    "contacts": "{count} جهة اتصال",
+    "teamMembers": "{count} عضو فريق",
+    "phoneNumbers": "{count} رقم هاتف",
+    "perMonth": "شهرياً",
+    "perYear": "سنوياً",
+    "noPlans": "لا توجد خطط متاحة",
+    "noPlansDescription": "تواصل مع الدعم للحصول على المساعدة",
+    "selected": "محددة",
+    "select": "اختيار",
+    "subscribing": "جاري الاشتراك...",
+    "subscribeNow": "اشتراك الآن",
+    "success": "تم الاشتراك في الخطة بنجاح"
+  },
+  "connectWhatsapp": {
+    "title": "ربط WhatsApp Business",
+    "description": "اربط حساب WhatsApp Business عبر Meta Embedded Signup للبدء في إرسال الرسائل",
+    "howItWorks": "كيف يعمل الربط؟",
+    "steps": [
+      "اضغط Connect with WhatsApp للانتقال إلى Meta",
+      "سجّل الدخول واختر أو أنشئ حساب WhatsApp Business",
+      "بعد الموافقة، سيتم ربط حسابك تلقائياً دون إدخال أي رموز"
+    ],
+    "continueToPlan": "المتابعة لاختيار الخطة",
+    "connecting": "جاري إكمال الربط...",
+    "embeddedNotConfigured": "Meta Embedded Signup غير مهيأ. تأكد من إعداد التطبيق في Meta Developer Console.",
+    "connectSuccess": "تم ربط WhatsApp Business بنجاح",
+    "disconnectSuccess": "تم فصل WhatsApp Business",
+    "syncSuccess": "تمت المزامنة",
+    "loadingDetails": "جاري تحميل تفاصيل الاتصال...",
+    "detailsLoadFailed": "تم الربط بنجاح. بعض التفاصيل غير متاحة حالياً — يمكنك المزامنة لاحقاً من الإعدادات."
+  },
+  "billingCallback": {
+    "paymentFailed": "فشل الدفع",
+    "paymentFailedDescription": "لم تكتمل عملية الدفع. يمكنك المحاولة مرة أخرى.",
+    "backToPlans": "العودة لاختيار الخطة",
+    "billingSettings": "إعدادات الفوترة",
+    "confirmingPayment": "جاري تأكيد الدفع",
+    "confirmingPaymentDescription": "يرجى الانتظار بينما نؤكد عملية الدفع.",
+    "confirmingPaymentTimeout": "الدفع قيد المعالجة. قد يستغرق الأمر دقيقة. حدّث الصفحة أو تحقق من إعدادات الفوترة.",
+    "retry": "إعادة المحاولة",
+    "subscriptionActivated": "تم تفعيل الاشتراك",
+    "redirectingToDashboard": "جاري تحويلك إلى لوحة التحكم..."
+  },
+  "timezones": {
+    "riyadh": "الرياض (Asia/Riyadh)",
+    "dubai": "دبي (Asia/Dubai)",
+    "kuwait": "الكويت (Asia/Kuwait)",
+    "qatar": "قطر (Asia/Qatar)",
+    "cairo": "القاهرة (Africa/Cairo)",
+    "utc": "UTC"
+  },
+  "countries": {
+    "SA": "السعودية",
+    "AE": "الإمارات",
+    "KW": "الكويت",
+    "QA": "قطر",
+    "BH": "البحرين",
+    "OM": "عُمان",
+    "EG": "مصر",
+    "JO": "الأردن"
+  }
+}

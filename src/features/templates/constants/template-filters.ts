@@ -1,45 +1,82 @@
-export const TEMPLATE_LANGUAGE_OPTIONS = [
-  { value: 'ar', label: 'العربية (ar)' },
-  { value: 'en_US', label: 'English US (en_US)' },
-  { value: 'en_GB', label: 'English UK (en_GB)' },
-  { value: 'fr', label: 'Français (fr)' },
-  { value: 'es', label: 'Español (es)' },
-  { value: 'de', label: 'Deutsch (de)' },
-  { value: 'it', label: 'Italiano (it)' },
-  { value: 'pt_BR', label: 'Português BR (pt_BR)' },
-  { value: 'tr', label: 'Türkçe (tr)' },
-  { value: 'ur', label: 'اردو (ur)' },
+export const TEMPLATE_LANGUAGE_CODES = [
+  'ar',
+  'en_US',
+  'en_GB',
+  'fr',
+  'es',
+  'de',
+  'it',
+  'pt_BR',
+  'tr',
+  'ur',
 ] as const;
 
-export function getLanguageLabel(code: string): string {
-  return TEMPLATE_LANGUAGE_OPTIONS.find((item) => item.value === code)?.label ?? code;
-}
+export const TEMPLATE_LANGUAGE_OPTIONS = TEMPLATE_LANGUAGE_CODES.map((value) => ({ value }));
 
 export const LIBRARY_TOPIC_OPTIONS = [
-  { value: 'ALL', label: 'كل المواضيع' },
-  { value: 'ORDER_MANAGEMENT', label: 'إدارة الطلبات' },
-  { value: 'PAYMENTS', label: 'المدفوعات' },
-  { value: 'ACCOUNT_UPDATE', label: 'تحديثات الحساب' },
-  { value: 'CUSTOMER_FEEDBACK', label: 'تقييم العملاء' },
+  { value: 'ALL' },
+  { value: 'ORDER_MANAGEMENT' },
+  { value: 'PAYMENTS' },
+  { value: 'ACCOUNT_UPDATE' },
+  { value: 'CUSTOMER_FEEDBACK' },
 ] as const;
 
 export const LIBRARY_USECASE_OPTIONS = [
-  { value: 'ALL', label: 'كل الاستخدامات' },
-  { value: 'ORDER_CONFIRMATION', label: 'تأكيد الطلب' },
-  { value: 'ORDER_DELAY', label: 'تأخير الطلب' },
-  { value: 'ORDER_PICK_UP', label: 'استلام الطلب' },
-  { value: 'SHIPMENT_CONFIRMATION', label: 'تأكيد الشحن' },
-  { value: 'DELIVERY_UPDATE', label: 'تحديث التسليم' },
-  { value: 'DELIVERY_CONFIRMATION', label: 'تأكيد التسليم' },
-  { value: 'DELIVERY_FAILED', label: 'فشل التسليم' },
-  { value: 'PAYMENT_CONFIRMATION', label: 'تأكيد الدفع' },
-  { value: 'PAYMENT_DUE_REMINDER', label: 'تذكير الدفع' },
-  { value: 'RETURN_CONFIRMATION', label: 'تأكيد الإرجاع' },
-  { value: 'FEEDBACK_SURVEY', label: 'استبيان رضا' },
+  { value: 'ALL' },
+  { value: 'ORDER_CONFIRMATION' },
+  { value: 'ORDER_DELAY' },
+  { value: 'ORDER_PICK_UP' },
+  { value: 'SHIPMENT_CONFIRMATION' },
+  { value: 'DELIVERY_UPDATE' },
+  { value: 'DELIVERY_CONFIRMATION' },
+  { value: 'DELIVERY_FAILED' },
+  { value: 'PAYMENT_CONFIRMATION' },
+  { value: 'PAYMENT_DUE_REMINDER' },
+  { value: 'RETURN_CONFIRMATION' },
+  { value: 'FEEDBACK_SURVEY' },
 ] as const;
 
 export const LIBRARY_INDUSTRY_OPTIONS = [
-  { value: 'ALL', label: 'كل القطاعات' },
-  { value: 'E_COMMERCE', label: 'تجارة إلكترونية' },
-  { value: 'FINANCIAL_SERVICES', label: 'خدمات مالية' },
+  { value: 'ALL' },
+  { value: 'E_COMMERCE' },
+  { value: 'FINANCIAL_SERVICES' },
+] as const;
+
+type TemplatesTranslate = (
+  key: string,
+  values?: Record<string, string | number>,
+) => string;
+
+export function getLanguageLabel(code: string, t: TemplatesTranslate): string {
+  if ((TEMPLATE_LANGUAGE_CODES as readonly string[]).includes(code)) {
+    return t(`filters.languages.${code}`);
+  }
+  return code;
+}
+
+export function getFilterLabel(
+  group: 'topics' | 'usecases' | 'industries',
+  value: string,
+  t: TemplatesTranslate,
+): string {
+  const options =
+    group === 'topics'
+      ? LIBRARY_TOPIC_OPTIONS
+      : group === 'usecases'
+        ? LIBRARY_USECASE_OPTIONS
+        : LIBRARY_INDUSTRY_OPTIONS;
+  if (options.some((item) => item.value === value)) {
+    return t(`filters.${group}.${value}`);
+  }
+  return value;
+}
+
+export const TEMPLATE_STATUS_FILTER_VALUES = [
+  'ALL',
+  'APPROVED',
+  'PENDING',
+  'REJECTED',
+  'DRAFT',
+  'PAUSED',
+  'DISABLED',
 ] as const;

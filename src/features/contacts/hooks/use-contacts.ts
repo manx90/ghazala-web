@@ -1,6 +1,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { toastSuccess, toastApiError } from '@/components/global/toast-helpers';
 import { queryKeys } from '@/config/query-keys';
 import { contactsApi } from '@/features/contacts/api/contacts.api';
@@ -27,19 +28,21 @@ export function useContact(contactId: string, enabled = true) {
 }
 
 export function useCreateContact() {
+  const t = useTranslations('contacts');
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: CreateContactPayload) => contactsApi.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all });
-      toastSuccess('تم إنشاء جهة الاتصال بنجاح');
+      toastSuccess(t('toast.created'));
     },
     onError: toastApiError,
   });
 }
 
 export function useUpdateContact(contactId: string) {
+  const t = useTranslations('contacts');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -47,26 +50,28 @@ export function useUpdateContact(contactId: string) {
     onSuccess: (contact) => {
       queryClient.setQueryData(queryKeys.contacts.detail(contactId), contact);
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all });
-      toastSuccess('تم تحديث جهة الاتصال بنجاح');
+      toastSuccess(t('toast.updated'));
     },
     onError: toastApiError,
   });
 }
 
 export function useDeleteContact() {
+  const t = useTranslations('contacts');
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (contactId: string) => contactsApi.delete(contactId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all });
-      toastSuccess('تم حذف جهة الاتصال بنجاح');
+      toastSuccess(t('toast.deleted'));
     },
     onError: toastApiError,
   });
 }
 
 export function useMergeContacts() {
+  const t = useTranslations('contacts');
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -74,7 +79,7 @@ export function useMergeContacts() {
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all });
       queryClient.setQueryData(queryKeys.contacts.detail(result.contact.id), result.contact);
-      toastSuccess(`تم دمج جهات الاتصال (${result.transferredConversations} محادثة)`);
+      toastSuccess(t('toast.merged', { count: result.transferredConversations }));
     },
     onError: toastApiError,
   });

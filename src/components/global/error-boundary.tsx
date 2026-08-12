@@ -34,7 +34,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (this.state.error) {
       return (
         <ErrorScreen
-          title={this.props.fallbackTitle ?? 'حدث خطأ غير متوقع'}
+          title={this.props.fallbackTitle}
           message={sanitizeRuntimeError(this.state.error)}
           onRetry={this.handleReset}
         />

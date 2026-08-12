@@ -1,6 +1,7 @@
 'use client';
 
 import { type ReactNode, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { CheckIcon, ChevronDownIcon, SearchIcon, XIcon } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
@@ -27,13 +28,15 @@ export function MultiSelect({
   options,
   value,
   onChange,
-  placeholder = 'اختر...',
+  placeholder,
   className,
   disabled,
   maxDisplay = 3,
 }: MultiSelectProps) {
+  const t = useTranslations('common');
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const displayPlaceholder = placeholder ?? t('choose');
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -60,7 +63,7 @@ export function MultiSelect({
         }
       >
         {selected.length === 0 ? (
-          <span className="text-muted-foreground">{placeholder}</span>
+          <span className="text-muted-foreground">{displayPlaceholder}</span>
         ) : (
           <span className="flex flex-wrap items-center gap-1">
             {selected.slice(0, maxDisplay).map((o) => (
@@ -73,7 +76,7 @@ export function MultiSelect({
                     toggle(o.value);
                   }}
                   className="text-muted-foreground hover:text-foreground"
-                  aria-label={`إزالة ${o.label}`}
+                  aria-label={t('forms.removeOption', { label: o.label })}
                 >
                   <XIcon className="size-3" />
                 </button>
@@ -92,7 +95,7 @@ export function MultiSelect({
             <SearchIcon className="absolute start-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
               className="h-7 ps-7 text-xs"
-              placeholder="بحث..."
+              placeholder={t('searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -100,7 +103,7 @@ export function MultiSelect({
         </div>
         <div className="max-h-60 overflow-y-auto p-1">
           {filtered.length === 0 ? (
-            <p className="py-4 text-center text-xs text-muted-foreground">لا توجد نتائج</p>
+            <p className="py-4 text-center text-xs text-muted-foreground">{t('noResults')}</p>
           ) : (
             filtered.map((opt) => {
               const checked = value.includes(opt.value);
@@ -147,17 +150,21 @@ export function AsyncSelect<T>({
   getOptionLabel,
   value,
   onChange,
-  placeholder = 'اختر...',
-  loadingMessage = 'جاري التحميل...',
-  noOptionsMessage = 'لا توجد نتائج',
+  placeholder,
+  loadingMessage,
+  noOptionsMessage,
   className,
   disabled,
 }: AsyncSelectProps<T>) {
+  const t = useTranslations('common');
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<T[]>([]);
   const [fetched, setFetched] = useState(false);
+  const displayPlaceholder = placeholder ?? t('choose');
+  const displayLoading = loadingMessage ?? t('loading');
+  const displayEmpty = noOptionsMessage ?? t('noResults');
 
   const handleOpen = (next: boolean) => {
     setOpen(next);
@@ -183,8 +190,8 @@ export function AsyncSelect<T>({
   const selected = items.find((i) => getOptionValue(i) === value);
 
   let content: ReactNode = null;
-  if (loading) content = <p className="py-4 text-center text-xs text-muted-foreground">{loadingMessage}</p>;
-  else if (items.length === 0) content = <p className="py-4 text-center text-xs text-muted-foreground">{noOptionsMessage}</p>;
+  if (loading) content = <p className="py-4 text-center text-xs text-muted-foreground">{displayLoading}</p>;
+  else if (items.length === 0) content = <p className="py-4 text-center text-xs text-muted-foreground">{displayEmpty}</p>;
   else {
     content = items.map((item) => {
       const val = getOptionValue(item);
@@ -216,7 +223,7 @@ export function AsyncSelect<T>({
           />
         }
       >
-        <span className={cn(!selected && 'text-muted-foreground')}>{selected ? getOptionLabel(selected) : placeholder}</span>
+        <span className={cn(!selected && 'text-muted-foreground')}>{selected ? getOptionLabel(selected) : displayPlaceholder}</span>
         <ChevronDownIcon className="ms-auto size-4 text-muted-foreground" />
       </PopoverTrigger>
       <PopoverContent className="w-(--anchor-width) p-0" align="start">
@@ -225,7 +232,7 @@ export function AsyncSelect<T>({
             <SearchIcon className="absolute start-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
               className="h-7 ps-7 text-xs"
-              placeholder="بحث..."
+              placeholder={t('searchPlaceholder')}
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
             />

@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import { ADMIN_NAVIGATION, getClientNavigation } from '@/config/navigation';
+import { useTranslations } from 'next-intl';
+import { getAdminNavigation, getClientNavigation } from '@/config/navigation';
 import { usePermissions } from '@/features/auth/hooks/use-permissions';
 import { useConversationStats } from '@/features/shell/hooks/use-conversation-stats';
 import type { NavGroup, NavItem, ShellVariant } from '@/types/navigation.types';
@@ -42,13 +43,15 @@ function applyInboxBadge(groups: NavGroup[], openCount: number): NavGroup[] {
 export function useShellNavigation(variant: ShellVariant, orgSlug?: string) {
   const { can } = usePermissions();
   const { data: stats } = useConversationStats();
+  const tNav = useTranslations('nav');
+  const tAdmin = useTranslations('admin');
 
   const navigation = useMemo(() => {
     const base =
       variant === 'admin'
-        ? ADMIN_NAVIGATION
+        ? getAdminNavigation((key) => tNav(key), (key) => tAdmin(key))
         : orgSlug
-          ? getClientNavigation(orgSlug)
+          ? getClientNavigation(orgSlug, (key) => tNav(key))
           : [];
 
     const filtered = filterNavGroups(base, can);
@@ -58,7 +61,7 @@ export function useShellNavigation(variant: ShellVariant, orgSlug?: string) {
     }
 
     return filtered;
-  }, [variant, orgSlug, can, stats?.open]);
+  }, [variant, orgSlug, can, stats?.open, tNav, tAdmin]);
 
   return navigation;
 }

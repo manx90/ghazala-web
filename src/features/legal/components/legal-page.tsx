@@ -1,7 +1,8 @@
 'use client';
 
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { motion, useReducedMotion } from 'motion/react';
-import Link from 'next/link';
 import { ArrowRightIcon, CalendarDaysIcon, ListIcon, MessageCircleIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ThemeSwitcher } from '@/components/layout/header/theme-switcher';
@@ -11,24 +12,27 @@ import { cn } from '@/lib/utils';
 import type { LegalDocument } from '../data/legal-content';
 
 function LegalHeader() {
+  const t = useTranslations('legal');
+  const tCommon = useTranslations('common');
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/75 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5 sm:px-6">
         <Link
           href={ROUTES.home}
           className="flex items-center gap-2 text-base font-bold"
-          aria-label="غزالة - الصفحة الرئيسية"
+          aria-label={t('homeAriaLabel')}
         >
           <span className="flex size-8 items-center justify-center rounded-lg bg-gradient-brand text-primary-foreground shadow-sm">
             <MessageCircleIcon className="size-4" aria-hidden />
           </span>
-          غزالة
+          {tCommon('brandName')}
         </Link>
         <div className="flex items-center gap-1">
           <ThemeSwitcher />
           <Button variant="ghost" size="sm" render={<Link href={ROUTES.home} />}>
             <ArrowRightIcon data-icon="inline-start" aria-hidden />
-            العودة للرئيسية
+            {tCommon('backToHome')}
           </Button>
         </div>
       </div>
@@ -37,6 +41,7 @@ function LegalHeader() {
 }
 
 export function LegalPage({ document }: { document: LegalDocument }) {
+  const t = useTranslations('legal');
   const [activeId, setActiveId] = useState(document.sections[0]?.id ?? '');
   const reduceMotion = useReducedMotion();
 
@@ -47,7 +52,7 @@ export function LegalPage({ document }: { document: LegalDocument }) {
           if (entry.isIntersecting) setActiveId(entry.target.id);
         }
       },
-      { rootMargin: '-20% 0px -70% 0px' }
+      { rootMargin: '-20% 0px -70% 0px' },
     );
     document.sections.forEach((section) => {
       const el = window.document.getElementById(section.id);
@@ -60,7 +65,6 @@ export function LegalPage({ document }: { document: LegalDocument }) {
     <div className="flex min-h-svh flex-col bg-background">
       <LegalHeader />
 
-      {/* ترويسة الصفحة */}
       <div className="relative overflow-hidden border-b border-border/60">
         <div
           aria-hidden
@@ -77,21 +81,20 @@ export function LegalPage({ document }: { document: LegalDocument }) {
           <p className="mt-3 max-w-2xl text-muted-foreground">{document.subtitle}</p>
           <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
             <CalendarDaysIcon className="size-3.5" aria-hidden />
-            آخر تحديث: {document.lastUpdated}
+            {t('lastUpdated', { date: document.lastUpdated })}
           </p>
         </motion.div>
       </div>
 
       <div className="mx-auto flex w-full max-w-6xl flex-1 gap-10 px-4 py-12 sm:px-6">
-        {/* فهرس المحتويات */}
         <aside className="hidden w-60 shrink-0 lg:block">
           <nav
-            aria-label="فهرس المحتويات"
+            aria-label={t('tocAriaLabel')}
             className="sticky top-24 rounded-2xl border border-border/60 bg-card/60 p-4 backdrop-blur-md"
           >
             <p className="flex items-center gap-2 px-2 pb-3 text-xs font-semibold text-muted-foreground">
               <ListIcon className="size-3.5" aria-hidden />
-              محتويات الصفحة
+              {t('tocTitle')}
             </p>
             <ul className="space-y-0.5">
               {document.sections.map((section) => (
@@ -103,7 +106,7 @@ export function LegalPage({ document }: { document: LegalDocument }) {
                       'block rounded-lg border-s-2 px-3 py-2 text-xs leading-5 transition-colors',
                       activeId === section.id
                         ? 'border-secondary bg-secondary/10 font-semibold text-primary'
-                        : 'border-transparent text-muted-foreground hover:bg-accent hover:text-foreground'
+                        : 'border-transparent text-muted-foreground hover:bg-accent hover:text-foreground',
                     )}
                   >
                     {section.title}
@@ -114,7 +117,6 @@ export function LegalPage({ document }: { document: LegalDocument }) {
           </nav>
         </aside>
 
-        {/* المحتوى */}
         <motion.article
           initial={reduceMotion ? false : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -158,13 +160,13 @@ export function LegalPage({ document }: { document: LegalDocument }) {
 
       <footer className="border-t border-border/60 py-6">
         <p className="text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} غزالة. جميع الحقوق محفوظة. —{' '}
+          {t('footerCopyright', { year: new Date().getFullYear() })} —{' '}
           <Link href="/terms" className="underline-offset-4 transition-colors hover:text-foreground hover:underline">
-            شروط الخدمة
+            {t('termsLink')}
           </Link>{' '}
           ·{' '}
           <Link href="/privacy" className="underline-offset-4 transition-colors hover:text-foreground hover:underline">
-            سياسة الخصوصية
+            {t('privacyLink')}
           </Link>
         </p>
       </footer>

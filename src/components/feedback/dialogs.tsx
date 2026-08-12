@@ -1,6 +1,7 @@
 'use client';
 
 import { type ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import { AlertTriangleIcon, CheckCircle2Icon } from 'lucide-react';
 import { ConfirmDialog } from '@/components/global/confirm-dialog';
 import { ModalWrapper } from '@/components/global/modal-wrapper';
@@ -29,18 +30,20 @@ export function WarningDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = 'متابعة',
+  confirmLabel,
   onConfirm,
   isLoading,
   children,
 }: WarningDialogProps) {
+  const tDialogs = useTranslations('dialogs');
+
   return (
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
       title={title}
       description={description}
-      confirmLabel={confirmLabel}
+      confirmLabel={confirmLabel ?? tDialogs('continue')}
       onConfirm={onConfirm}
       isLoading={isLoading}
       variant="destructive"
@@ -67,9 +70,11 @@ export function SuccessDialog({
   onOpenChange,
   title,
   description,
-  actionLabel = 'تم',
+  actionLabel,
   onAction,
 }: SuccessDialogProps) {
+  const tDialogs = useTranslations('dialogs');
+
   return (
     <ModalWrapper
       open={open}
@@ -83,7 +88,7 @@ export function SuccessDialog({
             onOpenChange(false);
           }}
         >
-          {actionLabel}
+          {actionLabel ?? tDialogs('done')}
         </Button>
       }
     >
@@ -116,12 +121,14 @@ export function FormDialog({
   title,
   description,
   children,
-  submitLabel = 'حفظ',
-  cancelLabel = 'إلغاء',
+  submitLabel,
+  cancelLabel,
   onSubmit,
   isLoading = false,
   size = 'md',
 }: FormDialogProps) {
+  const tCommon = useTranslations('common');
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={sizeClass[size]}>
@@ -139,10 +146,10 @@ export function FormDialog({
           {children}
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
-              {cancelLabel}
+              {cancelLabel ?? tCommon('cancel')}
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'جاري الحفظ...' : submitLabel}
+              {isLoading ? tCommon('saving') : (submitLabel ?? tCommon('save'))}
             </Button>
           </div>
         </form>
