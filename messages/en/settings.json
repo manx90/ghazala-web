@@ -252,6 +252,7 @@
     },
     "embeddedSignup": {
       "notConfigured": "Meta Embedded Signup is not configured. Contact support.",
+      "coexistenceNotConfigured": "Meta Coexistence signup is not configured. Contact support.",
       "cancelled": "Connection was cancelled",
       "failed": "Meta connection failed",
       "noWabaData": "WhatsApp Business account data was not received",

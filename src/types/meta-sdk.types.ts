@@ -1,3 +1,5 @@
+import type { MetaOnboardingMode } from '@/types/meta-onboarding.types';
+
 export interface FacebookLoginResponse {
   authResponse?: {
     code?: string;
@@ -66,4 +68,5 @@ export interface EmbeddedSignupSessionInfo {
 export interface EmbeddedSignupResult {
   authorizationCode: string;
   session: EmbeddedSignupSessionInfo;
+  onboardingMode: MetaOnboardingMode;
 }

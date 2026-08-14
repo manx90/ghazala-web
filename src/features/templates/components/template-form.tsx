@@ -22,6 +22,7 @@ import {
   createTemplateFormSchema,
   type TemplateFormValues,
 } from '@/features/templates/schemas/template.schemas';
+import { enrichTemplateComponents } from '@/features/templates/utils/template-meta-payload';
 import { whatsappApi } from '@/features/whatsapp/api/whatsapp.api';
 import { TemplateCategory, TemplateComponentType } from '@/types/template.types';
 import type { CreateTemplatePayload } from '@/types/template.types';
@@ -39,6 +40,7 @@ interface TemplateFormProps {
 }
 
 export function toCreateTemplatePayload(values: TemplateFormValues): CreateTemplatePayload {
+  const language = values.language.trim();
   const components = [];
 
   if (values.headerText?.trim()) {
@@ -65,8 +67,8 @@ export function toCreateTemplatePayload(values: TemplateFormValues): CreateTempl
     wabaId: values.wabaId || undefined,
     name: values.name.trim(),
     category: values.category,
-    language: values.language.trim(),
-    components,
+    language,
+    components: enrichTemplateComponents(components, language),
   };
 }
 
@@ -193,7 +195,10 @@ export function TemplateForm({ onSubmit, isLoading = false, onCancel }: Template
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="headerText">{t('headerOptional')}</Label>
-          <Input id="headerText" {...register('headerText')} />
+          <Input id="headerText" {...register('headerText')} aria-invalid={!!errors.headerText} />
+          {errors.headerText ? (
+            <p className="text-xs text-destructive">{errors.headerText.message}</p>
+          ) : null}
         </div>
 
         <div className="flex flex-col gap-1.5">

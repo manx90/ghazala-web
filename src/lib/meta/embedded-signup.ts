@@ -1,5 +1,6 @@
 import { loadFacebookSdk } from '@/lib/meta/load-facebook-sdk';
 import { MetaSignupError } from '@/lib/meta/meta-signup-error';
+import type { MetaOnboardingMode } from '@/types/meta-onboarding.types';
 import type {
   EmbeddedSignupMessage,
   EmbeddedSignupResult,
@@ -16,6 +17,11 @@ const SUCCESS_EVENTS = new Set([
   'FINISH_OBO_MIGRATION',
   'FINISH_GRANT_ONLY_API_ACCESS',
 ]);
+
+const FEATURE_TYPE_BY_MODE: Record<MetaOnboardingMode, string> = {
+  standard: 'embedded_signup_v2',
+  coexistence: 'whatsapp_business_app_onboarding',
+};
 
 function isFacebookOrigin(origin: string): boolean {
   try {
@@ -60,12 +66,14 @@ export interface LaunchEmbeddedSignupParams {
   appId: string;
   graphApiVersion: string;
   embeddedSignupConfigId: string;
+  mode?: MetaOnboardingMode;
 }
 
 export function launchEmbeddedSignup(
   params: LaunchEmbeddedSignupParams,
 ): Promise<EmbeddedSignupResult> {
-  const { appId, graphApiVersion, embeddedSignupConfigId } = params;
+  const { appId, graphApiVersion, embeddedSignupConfigId, mode = 'standard' } = params;
+  const featureType = FEATURE_TYPE_BY_MODE[mode];
 
   return new Promise((resolve, reject) => {
     let settled = false;
@@ -98,6 +106,7 @@ export function launchEmbeddedSignup(
       resolve({
         authorizationCode,
         session: sessionInfo,
+        onboardingMode: mode,
       });
     };
 
@@ -187,7 +196,7 @@ export function launchEmbeddedSignup(
             response_type: 'code',
             override_default_response_type: true,
             extras: {
-              featureType: 'embedded_signup_v2',
+              featureType,
               setup: {},
               sessionInfoVersion: '3',
             },

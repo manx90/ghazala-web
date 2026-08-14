@@ -17,6 +17,8 @@ export interface MetaIntegration {
   disconnectedAt: string | null;
   lastSyncAt: string | null;
   tokenExpiresAt: string | null;
+  onboardingMode?: 'standard' | 'coexistence';
+  coexistencePhoneNumberId?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -25,6 +27,9 @@ export interface EmbeddedSignupSession {
   appId: string;
   graphApiVersion: string;
   embeddedSignupConfigId?: string;
+  coexistenceConfigId?: string;
+  standardSignupConfigured?: boolean;
+  coexistenceSignupConfigured?: boolean;
 }
 
 export interface MetaStatusResponse {
@@ -37,6 +42,8 @@ export interface ConnectMetaPayload {
   authorizationCode?: string;
   metaBusinessId?: string;
   wabaId: string;
+  phoneNumberId?: string;
+  onboardingMode?: 'standard' | 'coexistence';
   systemUserId?: string;
   accessToken?: string;
   tokenExpiresAt?: string;

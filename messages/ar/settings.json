@@ -252,6 +252,7 @@
     },
     "embeddedSignup": {
       "notConfigured": "Meta Embedded Signup غير مهيأ. تواصل مع الدعم.",
+      "coexistenceNotConfigured": "Meta Coexistence غير مهيأ. تواصل مع الدعم.",
       "cancelled": "تم إلغاء عملية الربط",
       "failed": "فشلت عملية الربط مع Meta",
       "noWabaData": "لم يتم استلام بيانات حساب WhatsApp Business",

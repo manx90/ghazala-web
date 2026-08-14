@@ -38,8 +38,13 @@ export function ConnectWhatsappForm() {
 
   const integration = metaStatus.data?.integration;
   const embeddedSession = metaStatus.data?.embeddedSignupSession;
-  const isEmbeddedConfigured = Boolean(
-    embeddedSession?.appId && embeddedSession?.embeddedSignupConfigId,
+  const isStandardConfigured = Boolean(
+    embeddedSession?.standardSignupConfigured ??
+      (embeddedSession?.appId && embeddedSession?.embeddedSignupConfigId),
+  );
+  const isCoexistenceConfigured = Boolean(
+    embeddedSession?.coexistenceSignupConfigured ??
+      (embeddedSession?.appId && embeddedSession?.coexistenceConfigId),
   );
   const primaryWaba = businessAccounts.data?.items?.[0] ?? null;
   const primaryPhone = phoneNumbers.data?.items?.[0] ?? null;
@@ -54,11 +59,15 @@ export function ConnectWhatsappForm() {
     authorizationCode: string;
     wabaId: string;
     metaBusinessId?: string;
+    phoneNumberId?: string;
+    onboardingMode: 'standard' | 'coexistence';
   }) => {
     await connectMeta.mutateAsync({
       authorizationCode: payload.authorizationCode,
       wabaId: payload.wabaId,
       metaBusinessId: payload.metaBusinessId,
+      phoneNumberId: payload.phoneNumberId,
+      onboardingMode: payload.onboardingMode,
     });
   };
 
@@ -133,15 +142,43 @@ export function ConnectWhatsappForm() {
                   </ol>
                 </div>
 
-                {isEmbeddedConfigured ? (
-                  <MetaEmbeddedSignupButton
-                    session={embeddedSession!}
-                    disabled={connectMeta.isPending}
-                    onConnect={handleConnect}
-                  />
-                ) : (
-                  <p className="text-sm text-destructive">{t('embeddedNotConfigured')}</p>
-                )}
+                <div className="flex flex-col gap-4">
+                  <div className="rounded-xl border border-border/60 p-4">
+                    <p className="text-sm font-medium">{t('standardFlow.title')}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{t('standardFlow.description')}</p>
+                    <div className="mt-4">
+                      {isStandardConfigured ? (
+                        <MetaEmbeddedSignupButton
+                          session={embeddedSession!}
+                          mode="standard"
+                          label={t('standardFlow.action')}
+                          disabled={connectMeta.isPending}
+                          onConnect={handleConnect}
+                        />
+                      ) : (
+                        <p className="text-sm text-destructive">{t('embeddedNotConfigured')}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-border/60 p-4">
+                    <p className="text-sm font-medium">{t('coexistenceFlow.title')}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{t('coexistenceFlow.description')}</p>
+                    <div className="mt-4">
+                      {isCoexistenceConfigured ? (
+                        <MetaEmbeddedSignupButton
+                          session={embeddedSession!}
+                          mode="coexistence"
+                          label={t('coexistenceFlow.action')}
+                          disabled={connectMeta.isPending}
+                          onConnect={handleConnect}
+                        />
+                      ) : (
+                        <p className="text-sm text-muted-foreground">{t('coexistenceFlow.notConfigured')}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
 
                 {connectMeta.isPending ? (
                   <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">

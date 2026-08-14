@@ -54,7 +54,18 @@
     "disconnectSuccess": "تم فصل WhatsApp Business",
     "syncSuccess": "تمت المزامنة",
     "loadingDetails": "جاري تحميل تفاصيل الاتصال...",
-    "detailsLoadFailed": "تم الربط بنجاح. بعض التفاصيل غير متاحة حالياً — يمكنك المزامنة لاحقاً من الإعدادات."
+    "detailsLoadFailed": "تم الربط بنجاح. بعض التفاصيل غير متاحة حالياً — يمكنك المزامنة لاحقاً من الإعدادات.",
+    "standardFlow": {
+      "title": "ربط رقم WhatsApp API جديد",
+      "description": "للمنشآت التي تضيف رقماً جديداً عبر Cloud API من Meta.",
+      "action": "ربط رقم API جديد"
+    },
+    "coexistenceFlow": {
+      "title": "ربط رقم WhatsApp Business App موجود",
+      "description": "استمر باستخدام التطبيق على جوالك واربط نفس الرقم مع غزالة عبر Cloud API.",
+      "action": "ربط الرقم الموجود",
+      "notConfigured": "Coexistence غير مهيأ بعد. تواصل مع الدعم أو استخدم تدفق API العادي."
+    }
   },
   "billingCallback": {
     "paymentFailed": "فشل الدفع",

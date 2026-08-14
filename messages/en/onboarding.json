@@ -54,7 +54,18 @@
     "disconnectSuccess": "WhatsApp Business disconnected",
     "syncSuccess": "Synced successfully",
     "loadingDetails": "Loading connection details...",
-    "detailsLoadFailed": "Connected successfully. Some details are unavailable — you can sync later from settings."
+    "detailsLoadFailed": "Connected successfully. Some details are unavailable — you can sync later from settings.",
+    "standardFlow": {
+      "title": "Connect a new WhatsApp API number",
+      "description": "For businesses adding a new Cloud API number through Meta Embedded Signup.",
+      "action": "Connect new API number"
+    },
+    "coexistenceFlow": {
+      "title": "Connect an existing WhatsApp Business App number",
+      "description": "Keep using WhatsApp Business App on your phone while connecting the same number to Ghazala via Cloud API.",
+      "action": "Connect existing app number",
+      "notConfigured": "Coexistence signup is not configured yet. Contact support or use the standard API flow."
+    }
   },
   "billingCallback": {
     "paymentFailed": "Payment failed",

@@ -173,7 +173,11 @@
     "nameFormat": "Must contain lowercase letters, numbers, and underscores only",
     "categoryRequired": "Category is required",
     "languageRequired": "Language code is required",
-    "bodyRequired": "Template body is required"
+    "bodyRequired": "Template body is required",
+    "variableAtStartHeader": "Header cannot start with a variable — add static text before {{1}}",
+    "variableAtEndHeader": "Header cannot end with a variable — add static text after {{1}}",
+    "variableAtStartBody": "Body cannot start with a variable — add static text before {{1}}",
+    "variableAtEndBody": "Body cannot end with a variable — add static text after {{1}}"
   },
   "statusHints": {
     "PENDING": "Pending Meta review — sync later after approval",
