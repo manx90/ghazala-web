@@ -7,6 +7,7 @@ import type {
   PlanListResponse,
   SubscribePayload,
   Subscription,
+  SubscriptionStatusResponse,
   OrganizationUsage,
   CheckoutSessionResponse,
 } from '@/types/billing.types';
@@ -16,8 +17,10 @@ export const billingApi = {
     return apiClient.get<PlanListResponse>('/billing/plans', undefined, { skipOrgHeader: true });
   },
 
-  getSubscription(): Promise<Subscription> {
-    return apiClient.get<Subscription>('/billing/subscription');
+  getSubscription(): Promise<Subscription | null> {
+    return apiClient
+      .get<SubscriptionStatusResponse>('/billing/subscription')
+      .then((response) => response.subscription);
   },
 
   subscribe(payload: SubscribePayload): Promise<CheckoutSessionResponse> {

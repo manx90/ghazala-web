@@ -59,6 +59,10 @@ export interface Subscription {
   updatedAt: string;
 }
 
+export interface SubscriptionStatusResponse {
+  subscription: Subscription | null;
+}
+
 export interface Invoice {
   id: string;
   organizationId: string;

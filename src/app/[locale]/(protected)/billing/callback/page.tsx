@@ -52,7 +52,7 @@ export default function BillingCallbackPage() {
       try {
         const subscription = await billingApi.getSubscription();
 
-        if (ACTIVE_STATUSES.has(subscription.status)) {
+        if (subscription && ACTIVE_STATUSES.has(subscription.status)) {
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: queryKeys.billing.subscription }),
             invalidateOnboardingState(queryClient),
