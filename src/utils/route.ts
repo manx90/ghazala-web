@@ -22,7 +22,34 @@ export function isAdminRoute(pathname: string): boolean {
   return pathname.startsWith(ADMIN_ROUTE_PREFIX);
 }
 
-export function getPostLoginRedirect(role: UserRole, orgSlug?: string | null): string {
+export function isVerifyEmailRoute(pathname: string): boolean {
+  return pathname === ROUTES.auth.verifyEmail || pathname.startsWith(`${ROUTES.auth.verifyEmail}/`);
+}
+
+export function getVerifyEmailRedirect(email?: string | null): string {
+  if (email) {
+    return `${ROUTES.auth.verifyEmail}?email=${encodeURIComponent(email)}`;
+  }
+
+  return ROUTES.auth.verifyEmail;
+}
+
+export interface PostLoginRedirectOptions {
+  emailVerified?: boolean;
+  email?: string | null;
+}
+
+export function getPostLoginRedirect(
+  role: UserRole,
+  orgSlug?: string | null,
+  options: PostLoginRedirectOptions = {},
+): string {
+  const emailVerified = options.emailVerified ?? true;
+
+  if (role !== UserRole.SUPER_ADMIN && !emailVerified) {
+    return ROUTES.app.root;
+  }
+
   if (role === UserRole.SUPER_ADMIN) {
     return ROUTES.admin.dashboard;
   }
@@ -38,12 +65,13 @@ export function getDefaultRedirectForAuth(
   isAuthenticated: boolean,
   role?: UserRole | null,
   orgSlug?: string | null,
+  options: PostLoginRedirectOptions = {},
 ): string {
   if (!isAuthenticated) {
     return ROUTES.auth.login;
   }
 
-  return getPostLoginRedirect(role ?? UserRole.USER, orgSlug);
+  return getPostLoginRedirect(role ?? UserRole.USER, orgSlug, options);
 }
 
 export function matchOrgSlugFromPath(pathname: string): string | null {

@@ -9,6 +9,8 @@ export const ROUTES = {
     verifyEmail: '/verify-email',
   },
 
+  invite: (token: string) => `/invite/${token}`,
+
   app: {
     root: '/app',
     dashboard: (orgSlug: string) => `/app/${orgSlug}/dashboard`,

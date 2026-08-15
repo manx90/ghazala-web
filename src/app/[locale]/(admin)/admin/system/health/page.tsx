@@ -3,6 +3,7 @@
 import type { CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
 import {
+  ActivityIcon,
   CpuIcon,
   DatabaseIcon,
   HardDriveIcon,
@@ -13,13 +14,28 @@ import {
 import { PageContainer } from '@/components/global/page-container';
 import { PageHeader } from '@/components/shared/page-header';
 import { StatsGrid, StatusCard } from '@/components/cards';
-import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSystemHealth } from '@/features/admin/hooks/use-system-health';
+import {
+  useAdminDatabaseHealth,
+  useAdminQueueStatus,
+  useAdminRedisHealth,
+  useAdminStorageHealth,
+  useAdminWorkersStatus,
+} from '@/features/admin/hooks/use-admin-dashboard-metrics';
+import type { AdminHealthStatus } from '@/types/admin.types';
 import { cn } from '@/lib/utils';
 
-type ServiceState = 'ok' | 'unknown' | 'error';
+type ServiceState = 'ok' | 'unknown' | 'error' | 'degraded' | 'not_configured';
+
+function toServiceState(status?: AdminHealthStatus, isError?: boolean, isLoading?: boolean): ServiceState {
+  if (isLoading) return 'unknown';
+  if (isError) return 'error';
+  if (!status) return 'unknown';
+  if (status === 'down') return 'error';
+  return status;
+}
 
 interface ServiceRowProps {
   name: string;
@@ -30,19 +46,24 @@ interface ServiceRowProps {
 }
 
 function ServiceRow({ name, endpoint, state, stateLabel, icon: Icon }: ServiceRowProps) {
+  const isOk = state === 'ok';
+  const isError = state === 'error';
+
   return (
     <div className="flex items-center justify-between gap-4 rounded-xl px-4 py-3 ring-1 ring-border/60 transition-colors hover:bg-muted/50">
       <div className="flex min-w-0 items-center gap-3">
         <span className="relative flex size-2.5 shrink-0">
-          {state === 'ok' && (
+          {isOk && (
             <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-60" />
           )}
           <span
             className={cn(
               'relative inline-flex size-2.5 rounded-full',
-              state === 'ok' && 'bg-emerald-500',
+              isOk && 'bg-emerald-500',
+              state === 'degraded' && 'bg-amber-500',
+              state === 'not_configured' && 'bg-blue-500/60',
+              isError && 'bg-destructive',
               state === 'unknown' && 'bg-muted-foreground/40',
-              state === 'error' && 'bg-destructive',
             )}
           />
         </span>
@@ -59,9 +80,11 @@ function ServiceRow({ name, endpoint, state, stateLabel, icon: Icon }: ServiceRo
       <span
         className={cn(
           'shrink-0 text-xs font-medium',
-          state === 'ok' && 'text-emerald-600',
+          isOk && 'text-emerald-600',
+          state === 'degraded' && 'text-amber-600',
+          state === 'not_configured' && 'text-blue-600',
+          isError && 'text-destructive',
           state === 'unknown' && 'text-muted-foreground',
-          state === 'error' && 'text-destructive',
         )}
       >
         {stateLabel}
@@ -74,19 +97,45 @@ export default function AdminSystemHealthPage() {
   const t = useTranslations('admin.pages.systemHealth');
   const tHealth = useTranslations('admin.health');
   const tCommon = useTranslations('admin.common');
-  const { data, isLoading, isError, refetch, isFetching } = useSystemHealth();
 
-  const apiState: ServiceState = isLoading ? 'unknown' : isError ? 'error' : data?.status === 'ok' ? 'ok' : 'unknown';
-  const apiLabel = isLoading
+  const api = useSystemHealth();
+  const database = useAdminDatabaseHealth();
+  const redis = useAdminRedisHealth();
+  const storage = useAdminStorageHealth();
+  const queue = useAdminQueueStatus();
+  const workers = useAdminWorkersStatus();
+
+  const refetchAll = () => {
+    void api.refetch();
+    void database.refetch();
+    void redis.refetch();
+    void storage.refetch();
+    void queue.refetch();
+    void workers.refetch();
+  };
+
+  const isFetching =
+    api.isFetching || database.isFetching || redis.isFetching || storage.isFetching || queue.isFetching;
+
+  const getHealthLabel = (status?: AdminHealthStatus, isLoading?: boolean, isError?: boolean) => {
+    if (isLoading) return tHealth('checking');
+    if (isError) return tHealth('error');
+    if (!status) return tHealth('unavailable');
+    if (status === 'ok') return tHealth('ok');
+    if (status === 'degraded') return tHealth('degraded');
+    if (status === 'down') return tHealth('down');
+    if (status === 'not_configured') return tHealth('notConfigured');
+    return tHealth('unknown');
+  };
+
+  const apiState: ServiceState = toServiceState(api.data?.status === 'ok' ? 'ok' : undefined, api.isError, api.isLoading);
+  const apiLabel = api.isLoading
     ? tHealth('checking')
-    : isError
+    : api.isError
       ? tHealth('error')
-      : data?.status === 'ok'
+      : api.data?.status === 'ok'
         ? tHealth('ok')
         : tHealth('unavailable');
-
-  const unavailableLabel = tHealth('unavailable');
-  const requiresEndpoint = tHealth('requiresEndpoint');
 
   return (
     <PageContainer>
@@ -95,7 +144,7 @@ export default function AdminSystemHealthPage() {
           title={t('title')}
           description={t('description')}
           actions={
-            <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
+            <Button variant="outline" size="sm" onClick={refetchAll} disabled={isFetching}>
               <RefreshCwIcon data-icon="inline-start" />
               {tCommon('refresh')}
             </Button>
@@ -107,30 +156,30 @@ export default function AdminSystemHealthPage() {
             [
               {
                 title: 'API',
-                status: isLoading ? 'loading' : isError ? 'error' : data?.status ?? 'unknown',
+                status: api.isLoading ? 'loading' : api.isError ? 'error' : api.data?.status ?? 'unknown',
                 statusLabel: apiLabel,
                 description: 'GET /health',
                 icon: ServerIcon,
               },
               {
                 title: tHealth('database'),
-                status: 'unknown',
-                statusLabel: unavailableLabel,
-                description: requiresEndpoint,
+                status: database.data?.status ?? 'unknown',
+                statusLabel: getHealthLabel(database.data?.status, database.isLoading, database.isError),
+                description: 'GET /admin/health/database',
                 icon: DatabaseIcon,
               },
               {
                 title: tHealth('redis'),
-                status: 'unknown',
-                statusLabel: unavailableLabel,
-                description: requiresEndpoint,
+                status: redis.data?.status ?? 'unknown',
+                statusLabel: getHealthLabel(redis.data?.status, redis.isLoading, redis.isError),
+                description: 'GET /admin/health/redis',
                 icon: CpuIcon,
               },
               {
                 title: tHealth('storage'),
-                status: 'unknown',
-                statusLabel: unavailableLabel,
-                description: requiresEndpoint,
+                status: storage.data?.status ?? 'unknown',
+                statusLabel: getHealthLabel(storage.data?.status, storage.isLoading, storage.isError),
+                description: 'GET /admin/health/storage',
                 icon: HardDriveIcon,
               },
             ] as const
@@ -159,25 +208,64 @@ export default function AdminSystemHealthPage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
             <ServiceRow name={tHealth('apiServer')} endpoint="GET /health" state={apiState} stateLabel={apiLabel} icon={ServerIcon} />
-            <ServiceRow name={tHealth('database')} endpoint="GET /admin/health/database" state="unknown" stateLabel={unavailableLabel} icon={DatabaseIcon} />
-            <ServiceRow name={tHealth('redis')} endpoint="GET /admin/health/redis" state="unknown" stateLabel={unavailableLabel} icon={CpuIcon} />
-            <ServiceRow name={tHealth('storage')} endpoint="GET /admin/health/storage" state="unknown" stateLabel={unavailableLabel} icon={HardDriveIcon} />
+            <ServiceRow
+              name={tHealth('database')}
+              endpoint="GET /admin/health/database"
+              state={toServiceState(database.data?.status, database.isError, database.isLoading)}
+              stateLabel={getHealthLabel(database.data?.status, database.isLoading, database.isError)}
+              icon={DatabaseIcon}
+            />
+            <ServiceRow
+              name={tHealth('redis')}
+              endpoint="GET /admin/health/redis"
+              state={toServiceState(redis.data?.status, redis.isError, redis.isLoading)}
+              stateLabel={getHealthLabel(redis.data?.status, redis.isLoading, redis.isError)}
+              icon={CpuIcon}
+            />
+            <ServiceRow
+              name={tHealth('storage')}
+              endpoint="GET /admin/health/storage"
+              state={toServiceState(storage.data?.status, storage.isError, storage.isLoading)}
+              stateLabel={getHealthLabel(storage.data?.status, storage.isLoading, storage.isError)}
+              icon={HardDriveIcon}
+            />
           </CardContent>
         </Card>
 
-        <UnavailableFeatureAlert
-          title={t('advancedUnavailableTitle')}
-          description={t('advancedUnavailableDescription')}
-          requiredEndpoints={[
-            'GET /admin/health/database',
-            'GET /admin/health/redis',
-            'GET /admin/health/storage',
-            'GET /admin/queue/status',
-            'GET /admin/workers/status',
-            'GET /admin/cron/jobs',
-            'GET /admin/jobs/background',
-          ]}
-        />
+        <Card className="stagger-in" style={{ '--stagger-delay': '400ms' } as CSSProperties}>
+          <CardHeader>
+            <CardTitle className="text-base">{t('backgroundJobs')}</CardTitle>
+            <CardDescription>{t('backgroundJobsDescription')}</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-2">
+            <ServiceRow
+              name={tHealth('queue')}
+              endpoint="GET /admin/queue/status"
+              state={queue.isLoading ? 'unknown' : queue.isError ? 'error' : 'ok'}
+              stateLabel={
+                queue.isLoading
+                  ? tHealth('checking')
+                  : queue.isError
+                    ? tHealth('error')
+                    : `${queue.data?.waiting ?? 0} waiting · ${queue.data?.failed ?? 0} failed`
+              }
+              icon={ActivityIcon}
+            />
+            <ServiceRow
+              name={tHealth('workers')}
+              endpoint="GET /admin/workers/status"
+              state={workers.isLoading ? 'unknown' : workers.isError ? 'error' : 'ok'}
+              stateLabel={
+                workers.isLoading
+                  ? tHealth('checking')
+                  : workers.isError
+                    ? tHealth('error')
+                    : workers.data?.message ?? tHealth('ok')
+              }
+              icon={CpuIcon}
+            />
+          </CardContent>
+        </Card>
       </div>
     </PageContainer>
   );

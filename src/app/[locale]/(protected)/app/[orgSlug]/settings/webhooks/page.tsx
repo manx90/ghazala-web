@@ -1,12 +1,14 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { WebhookIcon } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/components/shared/page-header';
-import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 import { PermissionGuard } from '@/components/guards/permission-guard';
+import { WebhooksManager } from '@/features/settings/components/webhooks-manager';
 
-export default async function WebhooksSettingsPage() {
-  const t = await getTranslations('settings.pages.webhooks');
+export default function WebhooksSettingsPage() {
+  const t = useTranslations('settings.pages.webhooks');
 
   return (
     <PermissionGuard permission="org.manage">
@@ -23,16 +25,7 @@ export default async function WebhooksSettingsPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <UnavailableFeatureAlert
-              title={t('unavailableTitle')}
-              description={t('unavailableDescription')}
-              requiredEndpoints={[
-                'GET /webhooks',
-                'POST /webhooks',
-                'PATCH /webhooks/:id',
-                'DELETE /webhooks/:id',
-              ]}
-            />
+            <WebhooksManager />
           </CardContent>
         </Card>
       </div>

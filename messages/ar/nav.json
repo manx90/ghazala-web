@@ -115,6 +115,7 @@
     "title": "الإشعارات",
     "markAllRead": "تحديد الكل كمقروء",
     "empty": "لا توجد إشعارات",
+    "loading": "جاري التحميل...",
     "ariaLabel": "الإشعارات",
     "ariaLabelUnread": "الإشعارات، {count} غير مقروء",
     "apiUnavailable": "API الإشعارات غير متوفر — GET /notifications"

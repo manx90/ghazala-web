@@ -35,6 +35,7 @@ function toFormValues(contact?: Contact): ContactFormValues {
     profilePhotoUrl: contact?.profilePhotoUrl ?? '',
     email: contact?.email ?? '',
     notes: contact?.notes ?? '',
+    tags: (contact?.tags ?? []).join(', '),
     isBlocked: contact?.isBlocked ?? false,
   };
 }
@@ -138,6 +139,17 @@ export function ContactForm({
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="notes">{t('notes')}</Label>
         <Textarea id="notes" rows={4} disabled={readOnly} {...register('notes')} />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="tags">{t('tags')}</Label>
+        <Input
+          id="tags"
+          disabled={readOnly}
+          placeholder={t('tagsPlaceholder')}
+          {...register('tags')}
+        />
+        <p className="text-xs text-muted-foreground">{t('tagsHint')}</p>
       </div>
 
       {mode === 'edit' && (

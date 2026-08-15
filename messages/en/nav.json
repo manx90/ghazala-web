@@ -115,6 +115,7 @@
     "title": "Notifications",
     "markAllRead": "Mark all as read",
     "empty": "No notifications",
+    "loading": "Loading...",
     "ariaLabel": "Notifications",
     "ariaLabelUnread": "Notifications, {count} unread",
     "apiUnavailable": "Notifications API unavailable — GET /notifications"

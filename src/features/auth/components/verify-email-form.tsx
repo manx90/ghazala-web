@@ -19,7 +19,17 @@ import {
 import { AuthCardLayout } from './auth-card-layout';
 import { FormField } from './form-field';
 
-export function VerifyEmailForm() {
+interface VerifyEmailFormProps {
+  variant?: 'page' | 'modal';
+  email?: string;
+  onVerified?: () => void;
+}
+
+export function VerifyEmailForm({
+  variant = 'page',
+  email: emailProp,
+  onVerified,
+}: VerifyEmailFormProps) {
   const t = useTranslations('auth');
   const tVal = useTranslations('validation');
   const router = useRouter();
@@ -27,6 +37,9 @@ export function VerifyEmailForm() {
   const verifyEmail = useVerifyEmail();
   const resendVerification = useResendVerification();
   const emailFromQuery = searchParams.get('email') ?? '';
+  const inviteToken = searchParams.get('invite') ?? '';
+  const defaultEmail = emailProp ?? emailFromQuery;
+  const isModal = variant === 'modal';
 
   const schema = useMemo(() => createVerifyEmailSchema((k) => tVal(k)), [tVal]);
 
@@ -37,14 +50,22 @@ export function VerifyEmailForm() {
     formState: { errors },
   } = useForm<VerifyEmailFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { email: emailFromQuery, otp: '' },
+    defaultValues: { email: defaultEmail, otp: '' },
   });
+
+  const handleVerified = () => {
+    if (onVerified) {
+      onVerified();
+      return;
+    }
+
+    // عند وجود دعوة نعود لصفحتها لإتمام القبول تلقائياً
+    router.replace(inviteToken ? `/invite/${inviteToken}` : ROUTES.app.root);
+  };
 
   const onSubmit = handleSubmit((values) => {
     verifyEmail.mutate(values, {
-      onSuccess: () => {
-        router.replace(ROUTES.onboarding.createOrganization);
-      },
+      onSuccess: handleVerified,
     });
   });
 
@@ -53,6 +74,81 @@ export function VerifyEmailForm() {
     if (!email) return;
     resendVerification.mutate({ email });
   };
+
+  const form = (
+    <form onSubmit={onSubmit} className="space-y-5">
+      {isModal ? (
+        <div className="space-y-1 text-center">
+          <h2 className="text-xl font-bold tracking-tight">{t('verifyEmailTitle')}</h2>
+          <p className="text-sm text-muted-foreground">{t('verifyEmailSubtitle')}</p>
+        </div>
+      ) : null}
+
+      <FormField id="email" label={t('email')} error={errors.email?.message}>
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          dir="ltr"
+          readOnly={isModal && Boolean(defaultEmail)}
+          placeholder={t('emailPlaceholder')}
+          aria-invalid={Boolean(errors.email)}
+          className="h-11"
+          {...register('email')}
+        />
+      </FormField>
+
+      <FormField id="otp" label={t('verificationCode')} error={errors.otp?.message}>
+        <Input
+          id="otp"
+          inputMode="numeric"
+          maxLength={6}
+          autoComplete="one-time-code"
+          dir="ltr"
+          aria-invalid={Boolean(errors.otp)}
+          className="h-11 text-center font-mono tracking-[0.5em]"
+          {...register('otp')}
+        />
+      </FormField>
+
+      <Button
+        type="submit"
+        variant="gradient"
+        className="h-11 w-full text-sm font-semibold"
+        disabled={verifyEmail.isPending}
+      >
+        {verifyEmail.isPending ? (
+          <>
+            <Loader2Icon className="animate-spin" />
+            {t('verifying')}
+          </>
+        ) : (
+          t('confirmEmail')
+        )}
+      </Button>
+
+      <Button
+        type="button"
+        variant="outline"
+        className="h-11 w-full"
+        disabled={resendVerification.isPending}
+        onClick={handleResend}
+      >
+        {resendVerification.isPending ? (
+          <>
+            <Loader2Icon className="animate-spin" />
+            {t('resending')}
+          </>
+        ) : (
+          t('resendCode')
+        )}
+      </Button>
+    </form>
+  );
+
+  if (isModal) {
+    return form;
+  }
 
   return (
     <AuthCardLayout
@@ -67,66 +163,7 @@ export function VerifyEmailForm() {
         </Link>
       }
     >
-      <form onSubmit={onSubmit} className="space-y-5">
-        <FormField id="email" label={t('email')} error={errors.email?.message}>
-          <Input
-            id="email"
-            type="email"
-            autoComplete="email"
-            dir="ltr"
-            placeholder={t('emailPlaceholder')}
-            aria-invalid={Boolean(errors.email)}
-            className="h-11"
-            {...register('email')}
-          />
-        </FormField>
-
-        <FormField id="otp" label={t('verificationCode')} error={errors.otp?.message}>
-          <Input
-            id="otp"
-            inputMode="numeric"
-            maxLength={6}
-            autoComplete="one-time-code"
-            dir="ltr"
-            aria-invalid={Boolean(errors.otp)}
-            className="h-11 text-center font-mono tracking-[0.5em]"
-            {...register('otp')}
-          />
-        </FormField>
-
-        <Button
-          type="submit"
-          variant="gradient"
-          className="h-11 w-full text-sm font-semibold"
-          disabled={verifyEmail.isPending}
-        >
-          {verifyEmail.isPending ? (
-            <>
-              <Loader2Icon className="animate-spin" />
-              {t('verifying')}
-            </>
-          ) : (
-            t('confirmEmail')
-          )}
-        </Button>
-
-        <Button
-          type="button"
-          variant="outline"
-          className="h-11 w-full"
-          disabled={resendVerification.isPending}
-          onClick={handleResend}
-        >
-          {resendVerification.isPending ? (
-            <>
-              <Loader2Icon className="animate-spin" />
-              {t('resending')}
-            </>
-          ) : (
-            t('resendCode')
-          )}
-        </Button>
-      </form>
+      {form}
     </AuthCardLayout>
   );
 }

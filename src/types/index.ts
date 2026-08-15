@@ -11,3 +11,4 @@ export * from './whatsapp.types';
 export * from './meta.types';
 export * from './billing.types';
 export * from './member.types';
+export * from './feature.types';

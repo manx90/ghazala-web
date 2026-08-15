@@ -12,6 +12,7 @@ export function createContactFormSchema(t: Translate) {
     profilePhotoUrl: z.string().url(t('validation.photoUrlInvalid')).optional().or(z.literal('')),
     email: z.string().email(t('validation.emailInvalid')).optional().or(z.literal('')),
     notes: z.string().optional(),
+    tags: z.string().optional(),
     isBlocked: z.boolean().optional(),
   });
 }
@@ -27,3 +28,16 @@ export type ContactFormValues = z.infer<ReturnType<typeof createContactFormSchem
 export type CreateContactFormValues = ContactFormValues;
 export type UpdateContactFormValues = Omit<ContactFormValues, 'phone'>;
 export type MergeContactsFormValues = z.infer<ReturnType<typeof createMergeContactsSchema>>;
+
+export function parseContactTags(raw?: string): string[] | undefined {
+  if (!raw?.trim()) return undefined;
+  const tags = [
+    ...new Set(
+      raw
+        .split(',')
+        .map((tag) => tag.trim().slice(0, 32))
+        .filter(Boolean),
+    ),
+  ].slice(0, 20);
+  return tags.length > 0 ? tags : undefined;
+}

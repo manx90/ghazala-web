@@ -6,11 +6,13 @@ import { queryKeys } from '@/config/query';
 import { useAuthStore } from '@/store/auth.store';
 import { useOrganizationStore } from '@/store/organization.store';
 import type {
+  ChangePasswordPayload,
   ForgotPasswordPayload,
   LoginPayload,
   RegisterPayload,
   ResendVerificationPayload,
   ResetPasswordPayload,
+  UpdateProfilePayload,
   VerifyEmailPayload,
 } from '@/types/auth.types';
 import { ApiError } from '@/types/api.types';
@@ -74,6 +76,31 @@ export function useRegister() {
   });
 }
 
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+  const setUser = useAuthStore((state) => state.setUser);
+
+  return useMutation({
+    mutationFn: (payload: UpdateProfilePayload) => authApi.updateProfile(payload),
+    onSuccess: (user) => {
+      setUser(user);
+      queryClient.setQueryData(queryKeys.auth.me, user);
+    },
+    onError: (error) => {
+      toastError(getErrorMessage(error));
+    },
+  });
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: (payload: ChangePasswordPayload) => authApi.changePassword(payload),
+    onError: (error) => {
+      toastError(getErrorMessage(error));
+    },
+  });
+}
+
 export function useLogout() {
   const queryClient = useQueryClient();
   const clearAuth = useAuthStore((state) => state.clearAuth);
@@ -114,10 +141,20 @@ export function useResetPassword() {
 }
 
 export function useVerifyEmail() {
+  const setUser = useAuthStore((state) => state.setUser);
+  const user = useAuthStore((state) => state.user);
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (payload: VerifyEmailPayload) => authApi.verifyEmail(payload),
     onSuccess: (response) => {
       toastSuccess(response.message);
+
+      if (user) {
+        const updatedUser = { ...user, emailVerified: true };
+        setUser(updatedUser);
+        queryClient.setQueryData(queryKeys.auth.me, updatedUser);
+      }
     },
     onError: (error) => {
       toastError(getErrorMessage(error));

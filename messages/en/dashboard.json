@@ -23,6 +23,13 @@
     "messages": "Messages",
     "whatsappSettings": "WhatsApp settings"
   },
+  "whatsappBanner": {
+    "title": "Connect WhatsApp to start messaging",
+    "description": "Link your WhatsApp Business account to send messages, manage templates, and receive conversations.",
+    "connectNow": "Connect now",
+    "settingsLink": "WhatsApp settings",
+    "dismiss": "Dismiss"
+  },
   "metaConnection": {
     "title": "Meta connection",
     "description": "Meta Business account connection status",

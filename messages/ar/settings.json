@@ -60,10 +60,62 @@
       "emailVerified": "البريد موثّق",
       "lastLogin": "آخر تسجيل دخول"
     },
-    "unavailable": {
-      "title": "تحديث الملف الشخصي غير متاح",
-      "description": "لا يمكن تعديل بيانات الملف الشخصي حالياً لعدم توفر واجهة API."
+    "edit": {
+      "nameRequired": "الاسم الأول واسم العائلة مطلوبان",
+      "saved": "تم تحديث الملف الشخصي بنجاح"
     }
+  },
+  "webhooks": {
+    "title": "Webhooks",
+    "description": "إدارة نقاط نهاية webhook للإشعارات الفورية",
+    "create": "إنشاء Webhook",
+    "createTitle": "إنشاء نقطة نهاية Webhook",
+    "createDescription": "إضافة نقطة نهاية webhook جديدة لاستقبال إشعارات الأحداث",
+    "urlLabel": "رابط Webhook",
+    "urlRequired": "الرابط مطلوب",
+    "descriptionLabel": "الوصف",
+    "descriptionPlaceholder": "وصف اختياري",
+    "eventsLabel": "الأحداث المشترك بها",
+    "createSuccess": "تم إنشاء Webhook بنجاح",
+    "createError": "فشل إنشاء Webhook",
+    "deleteSuccess": "تم حذف Webhook بنجاح",
+    "deleteError": "فشل حذف Webhook",
+    "updateError": "فشل تحديث Webhook",
+    "activated": "تم تفعيل Webhook",
+    "deactivated": "تم إيقاف Webhook",
+    "secretCopied": "تم نسخ المفتاح السري",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "empty": "لا توجد webhooks مُعدّة",
+    "loading": "جاري تحميل webhooks...",
+    "creating": "جاري الإنشاء...",
+    "cancel": "إلغاء",
+    "close": "إغلاق"
+  },
+  "apiKeys": {
+    "title": "مفاتيح API",
+    "description": "إدارة مفاتيح API للوصول البرمجي",
+    "create": "إنشاء مفتاح API",
+    "createTitle": "إنشاء مفتاح API",
+    "createDescription": "إنشاء مفتاح API جديد للتكاملات الخارجية",
+    "nameLabel": "اسم المفتاح",
+    "namePlaceholder": "مثال: تكامل الإنتاج",
+    "nameRequired": "الاسم مطلوب",
+    "createSuccess": "تم إنشاء مفتاح API بنجاح",
+    "createError": "فشل إنشاء مفتاح API",
+    "deleteSuccess": "تم حذف مفتاح API بنجاح",
+    "deleteError": "فشل حذف مفتاح API",
+    "keyCreated": "تم إنشاء مفتاح API",
+    "keyWarning": "احفظ هذا المفتاح بأمان — سيظهر مرة واحدة فقط",
+    "copied": "تم النسخ",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "createdAt": "تاريخ الإنشاء",
+    "empty": "لا توجد مفاتيح API",
+    "loading": "جاري تحميل مفاتيح API...",
+    "creating": "جاري الإنشاء...",
+    "cancel": "إلغاء",
+    "close": "إغلاق"
   },
   "security": {
     "logout": {
@@ -76,12 +128,24 @@
       "button": "نسيت كلمة المرور"
     },
     "sessions": {
-      "unavailableTitle": "إدارة الجلسات غير متاحة",
-      "unavailableDescription": "لا يمكن عرض أو إنهاء الجلسات النشطة حالياً."
+      "title": "الجلسات النشطة",
+      "description": "الأجهزة المسجّل دخولها إلى حسابك حالياً",
+      "empty": "لا توجد جلسات نشطة",
+      "revoke": "إنهاء",
+      "revoked": "تم إنهاء الجلسة",
+      "revokeError": "فشل إنهاء الجلسة",
+      "currentSession": "الحالية"
     },
     "changePassword": {
-      "unavailableTitle": "تغيير كلمة المرور غير متاح",
-      "unavailableDescription": "لا يمكن تغيير كلمة المرور من الإعدادات حالياً."
+      "title": "تغيير كلمة المرور",
+      "description": "سيتم تسجيل خروجك من جميع الأجهزة بعد تغيير كلمة المرور",
+      "current": "كلمة المرور الحالية",
+      "new": "كلمة المرور الجديدة",
+      "confirm": "تأكيد كلمة المرور الجديدة",
+      "submit": "تغيير كلمة المرور",
+      "required": "يرجى تعبئة جميع حقول كلمة المرور",
+      "mismatch": "كلمتا المرور الجديدتان غير متطابقتين",
+      "success": "تم تغيير كلمة المرور. يرجى تسجيل الدخول مجدداً"
     }
   },
   "organization": {
@@ -132,7 +196,7 @@
   "team": {
     "title": "أعضاء الفريق",
     "description": "إدارة أعضاء المنظمة وأدوارهم",
-    "addMember": "إضافة عضو",
+    "inviteMember": "دعوة عضو",
     "emptyTitle": "لا يوجد أعضاء",
     "emptyDescription": "أضف أعضاء للفريق للبدء",
     "columns": {
@@ -157,6 +221,34 @@
       "description": "هل تريد إزالة {name} من الفريق؟",
       "confirm": "إزالة",
       "ariaLabel": "إزالة العضو"
+    },
+    "inviteModal": {
+      "title": "دعوة عضو",
+      "description": "سيتم إرسال رابط الدعوة إلى البريد. ينضم العضو بعد إنشاء حساب أو تسجيل الدخول.",
+      "email": "البريد الإلكتروني",
+      "role": "الدور",
+      "send": "إرسال الدعوة"
+    },
+    "invites": {
+      "title": "الدعوات المعلقة",
+      "description": "دعوات لم تُقبل بعد",
+      "emptyTitle": "لا توجد دعوات معلقة",
+      "emptyDescription": "ادعُ عضواً بالبريد للبدء",
+      "revokeAria": "إلغاء الدعوة",
+      "columns": {
+        "sentAt": "أُرسلت",
+        "expiresAt": "تنتهي"
+      },
+      "status": {
+        "pending": "معلقة",
+        "accepted": "مقبولة",
+        "expired": "منتهية"
+      },
+      "revokeDialog": {
+        "title": "إلغاء الدعوة",
+        "description": "إلغاء الدعوة المرسلة إلى {email}؟",
+        "confirm": "إلغاء"
+      }
     }
   },
   "billing": {
@@ -263,6 +355,10 @@
     }
   },
   "whatsapp": {
+    "connect": {
+      "title": "ربط WhatsApp Business",
+      "description": "اربط حساب واتساب عبر Meta Embedded Signup"
+    },
     "waba": {
       "title": "حسابات WhatsApp Business",
       "description": "حسابات WABA المرتبطة بالمنظمة",
@@ -301,6 +397,8 @@
     "memberAdded": "تمت إضافة العضو",
     "memberUpdated": "تم تحديث دور العضو",
     "memberRemoved": "تمت إزالة العضو",
+    "inviteSent": "تم إرسال الدعوة",
+    "inviteRevoked": "تم إلغاء الدعوة",
     "subscribed": "تم الاشتراك بنجاح",
     "planChanged": "تم تغيير الخطة",
     "subscriptionCancelled": "تم إلغاء الاشتراك",
@@ -316,9 +414,11 @@
     "logoTooLong": "رابط الشعار طويل جداً",
     "logoInvalid": "رابط الشعار غير صالح",
     "timezoneRequired": "المنطقة الزمنية مطلوبة",
+    "timezoneInvalid": "المنطقة الزمنية غير صالحة",
     "countryLength": "رمز الدولة يجب أن يكون حرفين",
     "countryInvalid": "رمز الدولة غير صالح",
     "userIdInvalid": "معرف المستخدم غير صالح",
+    "emailInvalid": "البريد الإلكتروني غير صالح",
     "wabaIdRequired": "معرف WABA مطلوب",
     "planIdInvalid": "معرف الخطة غير صالح"
   }

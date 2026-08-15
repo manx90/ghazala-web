@@ -108,6 +108,9 @@
       "advancedUnavailableTitle": "مراقبة متقدمة غير متوفرة",
       "advancedUnavailableDescription": "الـ backend يوفّر GET /health فقط حالياً."
     },
+    "backgroundJobs": "المهام الخلفية",
+    "backgroundJobsDescription": "حالة قائمة الانتظار والمعالجات"
+  },
     "whop": {
       "title": "إدارة Whop",
       "description": "مراقبة التكامل، ربط الخطط، ومتابعة المدفوعات والعضويات"
@@ -123,6 +126,8 @@
     "notConfigured": "غير مفعّل",
     "unknown": "غير معروف",
     "unavailable": "غير متاح",
+    "queue": "قائمة الانتظار",
+    "workers": "المعالجات",
     "requiresEndpoint": "يتطلب endpoint",
     "runningNormally": "يعمل بشكل طبيعي",
     "available": "متاح: {size}",

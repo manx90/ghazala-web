@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Loader2Icon, PhoneIcon, RefreshCwIcon, SmartphoneIcon, UnplugIcon } from 'lucide-react';
 import type { CSSProperties } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -17,18 +18,22 @@ import { ConfirmDialog } from '@/components/global/confirm-dialog';
 import { QueryState } from '@/components/shared/query-state';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { ConnectionStatusPill } from '@/features/meta/components/connection-status-pill';
+import { WhatsappEmbeddedConnectPanel } from '@/features/meta/components/whatsapp-embedded-connect-panel';
 import {
+  useConnectMeta,
   useDisconnectPhoneNumber,
+  useMetaStatus,
   useSyncWhatsappAccounts,
   useSyncWhatsappPhoneNumbers,
   useWhatsappBusinessAccounts,
   useWhatsappPhoneNumbers,
 } from '@/features/settings/hooks/use-integration-settings';
 import { WhatsappAccountStatus, type PhoneNumber } from '@/types/whatsapp.types';
-import { useState } from 'react';
 
 export function WhatsappSettingsSection() {
   const t = useTranslations('settings.whatsapp');
+  const metaStatus = useMetaStatus();
+  const connectMeta = useConnectMeta();
   const wabaQuery = useWhatsappBusinessAccounts();
   const phoneQuery = useWhatsappPhoneNumbers();
   const syncAccounts = useSyncWhatsappAccounts();
@@ -36,6 +41,23 @@ export function WhatsappSettingsSection() {
   const disconnectPhone = useDisconnectPhoneNumber();
 
   const [phoneToDisconnect, setPhoneToDisconnect] = useState<PhoneNumber | null>(null);
+  const isMetaConnected = metaStatus.data?.isConnected ?? false;
+
+  const handleConnect = async (payload: {
+    authorizationCode: string;
+    wabaId: string;
+    metaBusinessId?: string;
+    phoneNumberId?: string;
+    onboardingMode: 'standard' | 'coexistence';
+  }) => {
+    await connectMeta.mutateAsync({
+      authorizationCode: payload.authorizationCode,
+      wabaId: payload.wabaId,
+      metaBusinessId: payload.metaBusinessId,
+      phoneNumberId: payload.phoneNumberId,
+      onboardingMode: payload.onboardingMode,
+    });
+  };
 
   const handleDisconnect = async () => {
     if (!phoneToDisconnect) return;
@@ -45,6 +67,33 @@ export function WhatsappSettingsSection() {
 
   return (
     <div className="flex flex-col gap-6">
+      {!isMetaConnected && (
+        <Card className="stagger-in">
+          <div className="bg-gradient-brand h-1" aria-hidden="true" />
+          <CardHeader>
+            <CardTitle>{t('connect.title')}</CardTitle>
+            <CardDescription>{t('connect.description')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <QueryState
+              isLoading={metaStatus.isLoading}
+              isError={metaStatus.isError}
+              error={metaStatus.error}
+              isEmpty={false}
+              emptyTitle=""
+              onRetry={() => void metaStatus.refetch()}
+            >
+              <WhatsappEmbeddedConnectPanel
+                session={metaStatus.data?.embeddedSignupSession}
+                disabled={connectMeta.isPending}
+                isConnecting={connectMeta.isPending}
+                onConnect={handleConnect}
+              />
+            </QueryState>
+          </CardContent>
+        </Card>
+      )}
+
       <Card className="stagger-in">
         <div className="bg-gradient-brand h-1" aria-hidden="true" />
         <CardHeader className="flex flex-row items-start justify-between gap-4">

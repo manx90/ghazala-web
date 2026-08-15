@@ -4,8 +4,9 @@ import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2Icon, PlusIcon, Trash2Icon, UsersIcon } from 'lucide-react';
+import { Loader2Icon, MailPlusIcon, Trash2Icon, UsersIcon, XCircleIcon } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -29,17 +30,20 @@ import { DeleteDialog } from '@/components/global/delete-dialog';
 import { ModalWrapper } from '@/components/global/modal-wrapper';
 import { QueryState } from '@/components/shared/query-state';
 import {
-  createAddTeamMemberSchema,
-  type AddMemberFormValues,
+  createInviteTeamMemberSchema,
+  type InviteMemberFormValues,
 } from '@/features/settings/schemas/settings.schemas';
 import {
-  useAddTeamMember,
+  useInviteMember,
+  useOrgInvites,
   useRemoveTeamMember,
+  useRevokeInvite,
   useTeamMembers,
   useUpdateTeamMember,
 } from '@/features/settings/hooks/use-settings';
 import { OrganizationMemberRole } from '@/types/organization.types';
 import type { OrganizationMember } from '@/types/member.types';
+import type { OrganizationInvite } from '@/types/invite.types';
 import { formatDate } from '@/utils/date';
 
 const ROLE_VALUES = [
@@ -53,30 +57,33 @@ export function TeamMembersSection() {
   const tValidation = useTranslations('settings.validation');
   const tCommon = useTranslations('common');
   const { data, isLoading, isError, error, refetch } = useTeamMembers();
-  const addMember = useAddTeamMember();
+  const invites = useOrgInvites();
+  const inviteMember = useInviteMember();
+  const revokeInvite = useRevokeInvite();
   const updateMember = useUpdateTeamMember();
   const removeMember = useRemoveTeamMember();
 
-  const [addOpen, setAddOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
   const [memberToRemove, setMemberToRemove] = useState<OrganizationMember | null>(null);
+  const [inviteToRevoke, setInviteToRevoke] = useState<OrganizationInvite | null>(null);
 
   const schema = useMemo(
-    () => createAddTeamMemberSchema((k) => tValidation(k)),
+    () => createInviteTeamMemberSchema((k) => tValidation(k)),
     [tValidation],
   );
 
-  const addForm = useForm<AddMemberFormValues>({
+  const inviteForm = useForm<InviteMemberFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      userId: '',
+      email: '',
       role: OrganizationMemberRole.MEMBER,
     },
   });
 
-  const handleAddMember = addForm.handleSubmit(async (values) => {
-    await addMember.mutateAsync(values);
-    addForm.reset();
-    setAddOpen(false);
+  const handleInvite = inviteForm.handleSubmit(async (values) => {
+    await inviteMember.mutateAsync(values);
+    inviteForm.reset();
+    setInviteOpen(false);
   });
 
   const handleRoleChange = async (member: OrganizationMember, role: OrganizationMemberRole) => {
@@ -88,6 +95,12 @@ export function TeamMembersSection() {
     if (!memberToRemove) return;
     await removeMember.mutateAsync(memberToRemove.id);
     setMemberToRemove(null);
+  };
+
+  const handleRevoke = async () => {
+    if (!inviteToRevoke) return;
+    await revokeInvite.mutateAsync(inviteToRevoke.id);
+    setInviteToRevoke(null);
   };
 
   const removeName = memberToRemove
@@ -107,9 +120,9 @@ export function TeamMembersSection() {
               <CardDescription>{t('description')}</CardDescription>
             </div>
           </div>
-          <Button variant="gradient" onClick={() => setAddOpen(true)}>
-            <PlusIcon />
-            {t('addMember')}
+          <Button variant="gradient" onClick={() => setInviteOpen(true)}>
+            <MailPlusIcon />
+            {t('inviteMember')}
           </Button>
         </CardHeader>
         <CardContent>
@@ -121,9 +134,9 @@ export function TeamMembersSection() {
             emptyTitle={t('emptyTitle')}
             emptyDescription={t('emptyDescription')}
             emptyAction={
-              <Button variant="gradient" onClick={() => setAddOpen(true)}>
-                <PlusIcon />
-                {t('addMember')}
+              <Button variant="gradient" onClick={() => setInviteOpen(true)}>
+                <MailPlusIcon />
+                {t('inviteMember')}
               </Button>
             }
             onRetry={() => void refetch()}
@@ -197,44 +210,112 @@ export function TeamMembersSection() {
         </CardContent>
       </Card>
 
+      <Card className="stagger-in">
+        <CardHeader>
+          <div className="flex items-start gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+              <MailPlusIcon className="size-5" aria-hidden="true" />
+            </span>
+            <div>
+              <CardTitle>{t('invites.title')}</CardTitle>
+              <CardDescription>{t('invites.description')}</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <QueryState
+            isLoading={invites.isLoading}
+            isError={invites.isError}
+            error={invites.error}
+            isEmpty={!invites.data?.items.length}
+            emptyTitle={t('invites.emptyTitle')}
+            emptyDescription={t('invites.emptyDescription')}
+            onRetry={() => void invites.refetch()}
+          >
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t('columns.email')}</TableHead>
+                  <TableHead>{t('columns.role')}</TableHead>
+                  <TableHead>{t('invites.columns.sentAt')}</TableHead>
+                  <TableHead>{t('invites.columns.expiresAt')}</TableHead>
+                  <TableHead>{t('columns.status')}</TableHead>
+                  <TableHead className="w-12" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {invites.data?.items.map((invite) => (
+                  <TableRow key={invite.id}>
+                    <TableCell className="font-medium">{invite.email}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{t(`roles.${invite.role.toLowerCase()}`)}</Badge>
+                    </TableCell>
+                    <TableCell>{formatDate(invite.createdAt)}</TableCell>
+                    <TableCell>{formatDate(invite.expiresAt)}</TableCell>
+                    <TableCell>
+                      <Badge variant={invite.status === 'pending' ? 'outline' : 'secondary'}>
+                        {t(`invites.status.${invite.status}`)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label={t('invites.revokeAria')}
+                        onClick={() => setInviteToRevoke(invite)}
+                      >
+                        <XCircleIcon className="text-destructive" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </QueryState>
+        </CardContent>
+      </Card>
+
       <ModalWrapper
-        open={addOpen}
-        onOpenChange={setAddOpen}
-        title={t('addModal.title')}
-        description={t('addModal.description')}
+        open={inviteOpen}
+        onOpenChange={setInviteOpen}
+        title={t('inviteModal.title')}
+        description={t('inviteModal.description')}
         footer={
           <>
-            <Button variant="outline" onClick={() => setAddOpen(false)}>
+            <Button variant="outline" onClick={() => setInviteOpen(false)}>
               {tCommon('cancel')}
             </Button>
-            <Button variant="gradient" onClick={() => void handleAddMember()} disabled={addMember.isPending}>
-              {addMember.isPending && <Loader2Icon className="animate-spin" />}
-              {tCommon('add')}
+            <Button variant="gradient" onClick={() => void handleInvite()} disabled={inviteMember.isPending}>
+              {inviteMember.isPending && <Loader2Icon className="animate-spin" />}
+              {t('inviteModal.send')}
             </Button>
           </>
         }
       >
-        <form className="flex flex-col gap-5" onSubmit={handleAddMember}>
+        <form className="flex flex-col gap-5" onSubmit={handleInvite}>
           <div className="space-y-2">
-            <Label htmlFor="userId">{t('addModal.userId')}</Label>
+            <Label htmlFor="email">{t('inviteModal.email')}</Label>
             <Input
-              id="userId"
+              id="email"
+              type="email"
               dir="ltr"
-              className="text-left font-mono text-xs"
-              placeholder="550e8400-e29b-41d4-a716-446655440000"
-              {...addForm.register('userId')}
-              aria-invalid={Boolean(addForm.formState.errors.userId)}
+              className="text-left"
+              placeholder="name@company.com"
+              {...inviteForm.register('email')}
+              aria-invalid={Boolean(inviteForm.formState.errors.email)}
             />
-            {addForm.formState.errors.userId && (
-              <p className="text-sm text-destructive">{addForm.formState.errors.userId.message}</p>
+            {inviteForm.formState.errors.email && (
+              <p className="text-sm text-destructive">{inviteForm.formState.errors.email.message}</p>
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="role">{t('addModal.role')}</Label>
+            <Label htmlFor="role">{t('inviteModal.role')}</Label>
             <Select
-              value={addForm.watch('role')}
+              value={inviteForm.watch('role')}
               onValueChange={(value) =>
-                addForm.setValue('role', value as OrganizationMemberRole, { shouldValidate: true })
+                inviteForm.setValue('role', value as InviteMemberFormValues['role'], {
+                  shouldValidate: true,
+                })
               }
             >
               <SelectTrigger id="role" className="w-full">
@@ -260,6 +341,16 @@ export function TeamMembersSection() {
         confirmLabel={t('removeDialog.confirm')}
         onConfirm={() => void handleRemove()}
         isLoading={removeMember.isPending}
+      />
+
+      <DeleteDialog
+        open={Boolean(inviteToRevoke)}
+        onOpenChange={(open) => !open && setInviteToRevoke(null)}
+        title={t('invites.revokeDialog.title')}
+        description={t('invites.revokeDialog.description', { email: inviteToRevoke?.email ?? '' })}
+        confirmLabel={t('invites.revokeDialog.confirm')}
+        onConfirm={() => void handleRevoke()}
+        isLoading={revokeInvite.isPending}
       />
     </>
   );

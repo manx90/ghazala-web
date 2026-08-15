@@ -19,7 +19,12 @@ export function GuestGuard({ children }: GuestGuardProps) {
   useEffect(() => {
     if (isSessionLoading || !isAuthenticated || !user) return;
 
-    router.replace(getPostLoginRedirect(user.role, currentOrganization?.slug));
+    router.replace(
+      getPostLoginRedirect(user.role, currentOrganization?.slug, {
+        emailVerified: user.emailVerified,
+        email: user.email,
+      }),
+    );
   }, [isAuthenticated, isSessionLoading, user, currentOrganization?.slug, router]);
 
   if (isSessionLoading) {

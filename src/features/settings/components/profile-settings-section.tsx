@@ -1,16 +1,19 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { Loader2Icon, MailCheckIcon } from 'lucide-react';
+import { Loader2Icon, MailCheckIcon, PencilIcon } from 'lucide-react';
+import { toast } from 'sonner';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { ROUTES } from '@/config/routes';
-import { useResendVerification } from '@/features/auth/hooks';
+import { useResendVerification, useUpdateProfile } from '@/features/auth/hooks';
 import { useSession } from '@/features/auth/hooks/use-session';
-import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 import { SkeletonLoader } from '@/components/global/skeleton-loader';
 import { formatDateTime } from '@/utils/date';
 
@@ -19,6 +22,11 @@ export function ProfileSettingsSection() {
   const tCommon = useTranslations('common');
   const { user, isSessionLoading } = useSession();
   const resendVerification = useResendVerification();
+  const updateProfile = useUpdateProfile();
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
   if (isSessionLoading) {
     return <SkeletonLoader rows={4} />;
@@ -30,6 +38,29 @@ export function ProfileSettingsSection() {
 
   const handleResend = () => {
     resendVerification.mutate({ email: user.email });
+  };
+
+  const startEditing = () => {
+    setFirstName(user.firstName);
+    setLastName(user.lastName);
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    if (!firstName.trim() || !lastName.trim()) {
+      toast.error(t('edit.nameRequired'));
+      return;
+    }
+
+    updateProfile.mutate(
+      { firstName: firstName.trim(), lastName: lastName.trim() },
+      {
+        onSuccess: () => {
+          toast.success(t('edit.saved'));
+          setIsEditing(false);
+        },
+      },
+    );
   };
 
   return (
@@ -80,21 +111,55 @@ export function ProfileSettingsSection() {
               {user.lastName?.[0] ?? ''}
             </AvatarFallback>
           </Avatar>
-          <div>
+          <div className="flex-1">
             <CardTitle>
               {user.firstName} {user.lastName}
             </CardTitle>
             <CardDescription>{user.email}</CardDescription>
           </div>
+          {!isEditing ? (
+            <Button variant="outline" size="sm" onClick={startEditing}>
+              <PencilIcon />
+              {tCommon('edit')}
+            </Button>
+          ) : null}
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">{t('fields.firstName')}</p>
-            <p className="font-medium">{user.firstName}</p>
+            {isEditing ? (
+              <>
+                <Label htmlFor="firstName">{t('fields.firstName')}</Label>
+                <Input
+                  id="firstName"
+                  value={firstName}
+                  onChange={(event) => setFirstName(event.target.value)}
+                  disabled={updateProfile.isPending}
+                />
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground">{t('fields.firstName')}</p>
+                <p className="font-medium">{user.firstName}</p>
+              </>
+            )}
           </div>
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">{t('fields.lastName')}</p>
-            <p className="font-medium">{user.lastName}</p>
+            {isEditing ? (
+              <>
+                <Label htmlFor="lastName">{t('fields.lastName')}</Label>
+                <Input
+                  id="lastName"
+                  value={lastName}
+                  onChange={(event) => setLastName(event.target.value)}
+                  disabled={updateProfile.isPending}
+                />
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground">{t('fields.lastName')}</p>
+                <p className="font-medium">{user.lastName}</p>
+              </>
+            )}
           </div>
           <div className="space-y-1">
             <p className="text-sm text-muted-foreground">{t('fields.email')}</p>
@@ -112,14 +177,26 @@ export function ProfileSettingsSection() {
             <p className="text-sm text-muted-foreground">{t('fields.lastLogin')}</p>
             <p>{formatDateTime(user.lastLoginAt)}</p>
           </div>
+          {isEditing ? (
+            <div className="flex justify-end gap-2 sm:col-span-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsEditing(false)}
+                disabled={updateProfile.isPending}
+              >
+                {tCommon('cancel')}
+              </Button>
+              <Button onClick={handleSave} disabled={updateProfile.isPending}>
+                {updateProfile.isPending ? (
+                  <Loader2Icon className="animate-spin" />
+                ) : (
+                  tCommon('save')
+                )}
+              </Button>
+            </div>
+          ) : null}
         </CardContent>
       </Card>
-
-      <UnavailableFeatureAlert
-        title={t('unavailable.title')}
-        description={t('unavailable.description')}
-        requiredEndpoints={['PATCH /auth/me']}
-      />
     </div>
   );
 }

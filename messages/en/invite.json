@@ -1,0 +1,23 @@
+{
+  "meta": {
+    "title": "Organization invitation"
+  },
+  "invalidTitle": "Invitation not found",
+  "invalidDescription": "This invitation link is invalid or has already been used.",
+  "expiredTitle": "Invitation expired",
+  "expiredDescription": "The invitation to join {org} is no longer valid.",
+  "acceptingTitle": "Joining organization",
+  "acceptingDescription": "Accepting your invitation to {org}…",
+  "invitedTitle": "You're invited",
+  "invitedDescription": "You've been invited to join {org} as {role}.",
+  "createAccount": "Create an account",
+  "haveAccount": "I already have an account",
+  "backHome": "Back to home",
+  "goToApp": "Go to app",
+  "acceptFailed": "Could not accept the invitation. Try again.",
+  "roles": {
+    "owner": "Owner",
+    "admin": "Admin",
+    "member": "Member"
+  }
+}

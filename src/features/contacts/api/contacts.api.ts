@@ -1,10 +1,13 @@
 import { apiClient } from '@/services/api/client';
+import { downloadFromResponse } from '@/services/api/download';
 import type { ApiMessageResponse } from '@/types/api.types';
 import type {
   Contact,
   ContactListResponse,
   ContactQueryParams,
   CreateContactPayload,
+  ImportContactsPayload,
+  ImportContactsResult,
   MergeContactsPayload,
   MergeContactsResponse,
   UpdateContactPayload,
@@ -36,5 +39,14 @@ export const contactsApi = {
 
   merge(payload: MergeContactsPayload): Promise<MergeContactsResponse> {
     return apiClient.post<MergeContactsResponse>(`${BASE}/merge`, payload);
+  },
+
+  importContacts(payload: ImportContactsPayload): Promise<ImportContactsResult> {
+    return apiClient.post<ImportContactsResult>(`${BASE}/import`, payload);
+  },
+
+  async exportContacts(): Promise<void> {
+    const response = await apiClient.download(`${BASE}/export`);
+    await downloadFromResponse(response, { filename: 'contacts.csv', mimeType: 'text/csv' });
   },
 };

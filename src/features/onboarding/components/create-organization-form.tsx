@@ -3,17 +3,12 @@
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Building2Icon, Loader2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { SearchableSelect } from '@/components/forms/searchable-select';
+import { buildCountryOptions, buildTimezoneOptions } from '@/constants/geo.constants';
 import { PageContainer } from '@/components/global/page-container';
 import {
   Card,
@@ -25,20 +20,20 @@ import {
 import { FormField } from '@/features/auth/components/form-field';
 import { useCreateOrganization } from '@/features/onboarding/hooks/use-create-organization';
 import {
-  COUNTRY_OPTIONS,
-  TIMEZONE_OPTIONS,
   createOrganizationSchema,
   type CreateOrganizationFormValues,
 } from '@/features/onboarding/schemas/onboarding.schemas';
 import { generateSlugFromName } from '@/features/onboarding/utils/slug';
 
 export function CreateOrganizationForm() {
+  const locale = useLocale();
   const t = useTranslations('onboarding.createOrganization');
-  const tOnboarding = useTranslations('onboarding');
   const tVal = useTranslations('validation');
   const createOrganization = useCreateOrganization();
 
   const schema = useMemo(() => createOrganizationSchema((k) => tVal(k)), [tVal]);
+  const countryOptions = useMemo(() => buildCountryOptions(locale), [locale]);
+  const timezoneOptions = useMemo(() => buildTimezoneOptions(locale), [locale]);
 
   const {
     register,
@@ -101,39 +96,25 @@ export function CreateOrganizationForm() {
             </FormField>
 
             <FormField id="timezone" label={t('timezone')} error={errors.timezone?.message}>
-              <Select
+              <SearchableSelect
+                id="timezone"
+                options={timezoneOptions}
                 value={timezone}
-                onValueChange={(value) => setValue('timezone', value ?? '', { shouldValidate: true })}
-              >
-                <SelectTrigger id="timezone" className="w-full">
-                  <SelectValue placeholder={t('selectTimezone')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {TIMEZONE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {tOnboarding(option.labelKey)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder={t('selectTimezone')}
+                aria-invalid={Boolean(errors.timezone)}
+                onChange={(value) => setValue('timezone', value, { shouldValidate: true })}
+              />
             </FormField>
 
             <FormField id="country" label={t('country')} error={errors.country?.message}>
-              <Select
+              <SearchableSelect
+                id="country"
+                options={countryOptions}
                 value={country}
-                onValueChange={(value) => setValue('country', value ?? '', { shouldValidate: true })}
-              >
-                <SelectTrigger id="country" className="w-full">
-                  <SelectValue placeholder={t('selectCountry')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {COUNTRY_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {tOnboarding(option.labelKey)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder={t('selectCountry')}
+                aria-invalid={Boolean(errors.country)}
+                onChange={(value) => setValue('country', value, { shouldValidate: true })}
+              />
             </FormField>
 
             <Button

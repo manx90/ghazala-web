@@ -32,17 +32,13 @@
       "title": "Webhooks",
       "description": "Manage event webhooks",
       "cardTitle": "Event endpoints",
-      "cardDescription": "Receive real-time notifications about events in your systems",
-      "unavailableTitle": "Webhooks unavailable",
-      "unavailableDescription": "Webhooks cannot be managed yet because API endpoints are not available."
+      "cardDescription": "Receive real-time notifications about events in your systems"
     },
     "apiKeys": {
       "title": "API keys",
       "description": "Create and manage access keys",
       "cardTitle": "Access keys",
-      "cardDescription": "Create API keys to connect your external systems to the platform",
-      "unavailableTitle": "API keys unavailable",
-      "unavailableDescription": "API keys cannot be managed yet because API endpoints are not available."
+      "cardDescription": "Create API keys to connect your external systems to the platform"
     }
   },
   "profile": {
@@ -60,10 +56,62 @@
       "emailVerified": "Email verified",
       "lastLogin": "Last login"
     },
-    "unavailable": {
-      "title": "Profile update unavailable",
-      "description": "Profile data cannot be edited currently because the API is not available."
+    "edit": {
+      "nameRequired": "First and last name are required",
+      "saved": "Profile updated successfully"
     }
+  },
+  "webhooks": {
+    "title": "Webhooks",
+    "description": "Manage webhook endpoints for real-time event notifications",
+    "create": "Create Webhook",
+    "createTitle": "Create Webhook Endpoint",
+    "createDescription": "Add a new webhook endpoint to receive event notifications",
+    "urlLabel": "Webhook URL",
+    "urlRequired": "URL is required",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Optional description",
+    "eventsLabel": "Events to subscribe",
+    "createSuccess": "Webhook created successfully",
+    "createError": "Failed to create webhook",
+    "deleteSuccess": "Webhook deleted successfully",
+    "deleteError": "Failed to delete webhook",
+    "updateError": "Failed to update webhook",
+    "activated": "Webhook activated",
+    "deactivated": "Webhook deactivated",
+    "secretCopied": "Secret copied to clipboard",
+    "active": "Active",
+    "inactive": "Inactive",
+    "empty": "No webhooks configured",
+    "loading": "Loading webhooks...",
+    "creating": "Creating...",
+    "cancel": "Cancel",
+    "close": "Close"
+  },
+  "apiKeys": {
+    "title": "API Keys",
+    "description": "Manage API keys for programmatic access",
+    "create": "Create API Key",
+    "createTitle": "Create API Key",
+    "createDescription": "Generate a new API key for external integrations",
+    "nameLabel": "Key Name",
+    "namePlaceholder": "e.g., Production Integration",
+    "nameRequired": "Name is required",
+    "createSuccess": "API key created successfully",
+    "createError": "Failed to create API key",
+    "deleteSuccess": "API key deleted successfully",
+    "deleteError": "Failed to delete API key",
+    "keyCreated": "API Key Created",
+    "keyWarning": "Save this key securely — it will only be shown once",
+    "copied": "Copied to clipboard",
+    "active": "Active",
+    "inactive": "Inactive",
+    "createdAt": "Created",
+    "empty": "No API keys created",
+    "loading": "Loading API keys...",
+    "creating": "Creating...",
+    "cancel": "Cancel",
+    "close": "Close"
   },
   "security": {
     "logout": {
@@ -76,12 +124,24 @@
       "button": "Forgot password"
     },
     "sessions": {
-      "unavailableTitle": "Session management unavailable",
-      "unavailableDescription": "Active sessions cannot be viewed or terminated currently."
+      "title": "Active sessions",
+      "description": "Devices currently signed in to your account",
+      "empty": "No active sessions found",
+      "revoke": "Revoke",
+      "revoked": "Session revoked",
+      "revokeError": "Failed to revoke session",
+      "currentSession": "Current"
     },
     "changePassword": {
-      "unavailableTitle": "Password change unavailable",
-      "unavailableDescription": "Password cannot be changed from settings currently."
+      "title": "Change password",
+      "description": "You will be signed out of all devices after changing your password",
+      "current": "Current password",
+      "new": "New password",
+      "confirm": "Confirm new password",
+      "submit": "Change password",
+      "required": "Please fill in all password fields",
+      "mismatch": "New passwords do not match",
+      "success": "Password changed. Please sign in again"
     }
   },
   "organization": {
@@ -132,7 +192,7 @@
   "team": {
     "title": "Team members",
     "description": "Manage organization members and roles",
-    "addMember": "Add member",
+    "inviteMember": "Invite member",
     "emptyTitle": "No members",
     "emptyDescription": "Add team members to get started",
     "columns": {
@@ -157,6 +217,34 @@
       "description": "Remove {name} from the team?",
       "confirm": "Remove",
       "ariaLabel": "Remove member"
+    },
+    "inviteModal": {
+      "title": "Invite member",
+      "description": "Send an email invitation. The recipient will join after creating an account or signing in.",
+      "email": "Email",
+      "role": "Role",
+      "send": "Send invitation"
+    },
+    "invites": {
+      "title": "Pending invitations",
+      "description": "Invitations that have not been accepted yet",
+      "emptyTitle": "No pending invitations",
+      "emptyDescription": "Invite a member by email to get started",
+      "revokeAria": "Revoke invitation",
+      "columns": {
+        "sentAt": "Sent",
+        "expiresAt": "Expires"
+      },
+      "status": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "expired": "Expired"
+      },
+      "revokeDialog": {
+        "title": "Revoke invitation",
+        "description": "Cancel the invitation sent to {email}?",
+        "confirm": "Revoke"
+      }
     }
   },
   "billing": {
@@ -263,6 +351,10 @@
     }
   },
   "whatsapp": {
+    "connect": {
+      "title": "Connect WhatsApp Business",
+      "description": "Link your WhatsApp account via Meta Embedded Signup"
+    },
     "waba": {
       "title": "WhatsApp Business accounts",
       "description": "WABA accounts linked to the organization",
@@ -301,6 +393,8 @@
     "memberAdded": "Member added",
     "memberUpdated": "Member role updated",
     "memberRemoved": "Member removed",
+    "inviteSent": "Invitation sent",
+    "inviteRevoked": "Invitation revoked",
     "subscribed": "Subscribed successfully",
     "planChanged": "Plan changed",
     "subscriptionCancelled": "Subscription cancelled",
@@ -316,9 +410,11 @@
     "logoTooLong": "Logo URL is too long",
     "logoInvalid": "Logo URL is invalid",
     "timezoneRequired": "Timezone is required",
+    "timezoneInvalid": "Invalid timezone",
     "countryLength": "Country code must be 2 characters",
     "countryInvalid": "Invalid country code",
     "userIdInvalid": "Invalid user ID",
+    "emailInvalid": "Invalid email address",
     "wabaIdRequired": "WABA ID is required",
     "planIdInvalid": "Invalid plan ID"
   }

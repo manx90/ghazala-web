@@ -6,11 +6,11 @@
   "mergeButton": "Merge",
   "newContact": "New contact",
   "importTitle": "Import contacts",
-  "importUnavailable": "Import unavailable",
-  "importUnavailableDescription": "Contact import requires an API that is not available yet.",
+  "importCardDescription": "Paste a list of phone numbers to add or update contacts in bulk.",
+  "importButton": "Import",
   "exportTitle": "Export contacts",
-  "exportUnavailable": "Export unavailable",
-  "exportUnavailableDescription": "Contact export requires an API that is not available yet.",
+  "exportCardDescription": "Download all contacts as a CSV file.",
+  "exportButton": "Export CSV",
   "searchPlaceholder": "Search by name or phone...",
   "noContacts": "No contacts",
   "noContactsSearch": "No matching results found",
@@ -38,6 +38,7 @@
     "name": "Name",
     "phone": "Phone",
     "email": "Email",
+    "tags": "Tags",
     "lastMessage": "Last message",
     "status": "Status",
     "actions": "Actions",
@@ -57,6 +58,9 @@
     "waId": "WhatsApp ID",
     "photoUrl": "Photo URL",
     "notes": "Notes",
+    "tags": "Tags",
+    "tagsPlaceholder": "VIP, wholesale, follow-up",
+    "tagsHint": "Separate tags with commas (max 20)",
     "blockContact": "Block contact",
     "blockHint": "Prevent sending and receiving messages",
     "addContact": "Add contact",
@@ -69,6 +73,15 @@
     "primaryLabel": "Primary contact (kept)",
     "duplicateLabel": "Duplicate contact (will be deleted)"
   },
+  "import": {
+    "title": "Import contacts",
+    "description": "Paste one contact per line: phone,firstName,lastName,profileName,tags. Separate tags with |. A header row is optional.",
+    "placeholder": "966501234567,Ahmed,Mohammed,Ahmed WA,VIP|wholesale\n966509876543,Sarah,Ali,Sarah,follow-up",
+    "submit": "Import",
+    "detectedCount": "{count} contacts detected",
+    "tooMany": "Maximum {max} contacts per import",
+    "noValidRows": "No valid rows found"
+  },
   "validation": {
     "phoneRequired": "Phone number is required",
     "photoUrlInvalid": "Invalid photo URL",
@@ -80,6 +93,8 @@
     "created": "Contact created successfully",
     "updated": "Contact updated successfully",
     "deleted": "Contact deleted successfully",
-    "merged": "Contacts merged ({count} conversations)"
+    "merged": "Contacts merged ({count} conversations)",
+    "imported": "Import completed: {imported} added, {updated} updated, {skipped} skipped",
+    "exported": "Contacts exported successfully"
   }
 }

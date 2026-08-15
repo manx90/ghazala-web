@@ -10,7 +10,12 @@ import { LoadingScreen } from '@/components/global/loading-screen';
 import type { ApiError } from '@/types/api.types';
 import { UserRole } from '@/types/auth.types';
 import { useAuthStore } from '@/store/auth.store';
-import { getPostLoginRedirect, isAdminRoute, isGuestRoute, isProtectedRoute } from '@/utils/route';
+import {
+  getPostLoginRedirect,
+  isAdminRoute,
+  isGuestRoute,
+  isProtectedRoute,
+} from '@/utils/route';
 import { useOrganizationStore } from '@/store/organization.store';
 import { clearAuthSession } from '@/services/api/client';
 import { UNAUTHORIZED_EVENT } from '@/utils/events';
@@ -59,7 +64,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     if (isGuestRoute(pathname) && user) {
-      router.replace(getPostLoginRedirect(user.role, currentOrganization?.slug));
+      router.replace(
+        getPostLoginRedirect(user.role, currentOrganization?.slug, {
+          emailVerified: user.emailVerified,
+          email: user.email,
+        }),
+      );
     }
   }, [isHydrated, isSessionLoading, user, pathname, router, currentOrganization?.slug]);
 

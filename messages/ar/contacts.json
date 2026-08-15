@@ -6,11 +6,11 @@
   "mergeButton": "دمج",
   "newContact": "جهة اتصال جديدة",
   "importTitle": "استيراد جهات الاتصال",
-  "importUnavailable": "الاستيراد غير متاح",
-  "importUnavailableDescription": "واجهة استيراد جهات الاتصال تتطلب API غير متوفر حالياً.",
+  "importCardDescription": "الصق قائمة أرقام الهواتف لإضافة أو تحديث جهات الاتصال دفعة واحدة.",
+  "importButton": "استيراد",
   "exportTitle": "تصدير جهات الاتصال",
-  "exportUnavailable": "التصدير غير متاح",
-  "exportUnavailableDescription": "واجهة تصدير جهات الاتصال تتطلب API غير متوفر حالياً.",
+  "exportCardDescription": "تنزيل جميع جهات الاتصال كملف CSV.",
+  "exportButton": "تصدير CSV",
   "searchPlaceholder": "بحث بالاسم أو الهاتف...",
   "noContacts": "لا توجد جهات اتصال",
   "noContactsSearch": "لم يتم العثور على نتائج مطابقة",
@@ -37,7 +37,8 @@
     "selectContact": "تحديد {name}",
     "name": "الاسم",
     "phone": "الهاتف",
-    "email": "البريد",
+    "email": "البريد الإلكتروني",
+    "tags": "الوسوم",
     "lastMessage": "آخر رسالة",
     "status": "الحالة",
     "actions": "إجراءات",
@@ -57,6 +58,9 @@
     "waId": "WhatsApp ID",
     "photoUrl": "رابط الصورة",
     "notes": "ملاحظات",
+    "tags": "الوسوم",
+    "tagsPlaceholder": "VIP، جملة، متابعة",
+    "tagsHint": "افصل الوسوم بفاصلة (حتى 20 وسماً)",
     "blockContact": "حظر جهة الاتصال",
     "blockHint": "منع إرسال واستقبال الرسائل",
     "addContact": "إضافة جهة اتصال",
@@ -69,6 +73,15 @@
     "primaryLabel": "جهة الاتصال الأساسية (المحتفظ بها)",
     "duplicateLabel": "جهة الاتصال المكررة (سيتم حذفها)"
   },
+  "import": {
+    "title": "استيراد جهات الاتصال",
+    "description": "الصق جهة اتصال في كل سطر بالصيغة: phone,firstName,lastName,profileName,tags — افصل الوسوم بـ | — سطر العناوين اختياري.",
+    "placeholder": "966501234567,أحمد,محمد,أحمد واتساب,VIP|جملة\n966509876543,سارة,علي,سارة,متابعة",
+    "submit": "استيراد",
+    "detectedCount": "تم اكتشاف {count} جهة اتصال",
+    "tooMany": "الحد الأقصى {max} جهة اتصال في كل عملية استيراد",
+    "noValidRows": "لم يتم العثور على صفوف صالحة"
+  },
   "validation": {
     "phoneRequired": "رقم الهاتف مطلوب",
     "photoUrlInvalid": "رابط الصورة غير صالح",
@@ -80,6 +93,8 @@
     "created": "تم إنشاء جهة الاتصال بنجاح",
     "updated": "تم تحديث جهة الاتصال بنجاح",
     "deleted": "تم حذف جهة الاتصال بنجاح",
-    "merged": "تم دمج جهات الاتصال ({count} محادثة)"
+    "merged": "تم دمج جهات الاتصال ({count} محادثة)",
+    "imported": "اكتمل الاستيراد: {imported} مضافة، {updated} محدثة، {skipped} متخطاة",
+    "exported": "تم تصدير جهات الاتصال بنجاح"
   }
 }

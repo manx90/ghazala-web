@@ -11,10 +11,6 @@ export function resolveOnboardingPath(state: OnboardingState): string {
     return ROUTES.onboarding.createOrganization;
   }
 
-  if (!state.isMetaConnected) {
-    return ROUTES.onboarding.connectWhatsapp;
-  }
-
   if (!state.hasSubscription) {
     return ROUTES.onboarding.selectPlan;
   }
@@ -23,5 +19,9 @@ export function resolveOnboardingPath(state: OnboardingState): string {
 }
 
 export function isOnboardingComplete(state: OnboardingState): boolean {
-  return Boolean(state.orgSlug && state.isMetaConnected && state.hasSubscription);
+  return Boolean(state.orgSlug && state.hasSubscription);
+}
+
+export function isOptionalWhatsappOnboardingPath(pathname: string, state: OnboardingState): boolean {
+  return pathname === ROUTES.onboarding.connectWhatsapp && Boolean(state.orgSlug);
 }

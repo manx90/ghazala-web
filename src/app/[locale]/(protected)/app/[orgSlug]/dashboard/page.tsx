@@ -2,6 +2,7 @@
 
 import type React from 'react';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import { RefreshCwIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { PageContainer } from '@/components/global/page-container';
@@ -14,6 +15,7 @@ import { PhoneHealthCard } from '@/features/dashboard/components/phone-health-ca
 import { QuickActionsCard } from '@/features/dashboard/components/quick-actions-card';
 import { RecentConversationsTable } from '@/features/dashboard/components/recent-conversations-table';
 import { TemplateSummaryCard } from '@/features/dashboard/components/template-summary-card';
+import { WhatsappConnectBanner } from '@/features/dashboard/components/whatsapp-connect-banner';
 import { useDashboard } from '@/features/dashboard/hooks/use-dashboard';
 
 function StaggerSection({
@@ -40,6 +42,8 @@ export default function DashboardPage() {
   const orgSlug = params.orgSlug;
   const t = useTranslations('dashboard.page');
   const { stats, meta, phones, templates, recentConversations, isLoading, refetchAll } = useDashboard();
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const showWhatsappBanner = !bannerDismissed && meta.data && !meta.data.isConnected;
 
   return (
     <PageContainer>
@@ -54,6 +58,10 @@ export default function DashboardPage() {
             </Button>
           }
         />
+
+        {showWhatsappBanner ? (
+          <WhatsappConnectBanner orgSlug={orgSlug} onDismiss={() => setBannerDismissed(true)} />
+        ) : null}
 
         <DashboardKpis stats={stats} phones={phones} templates={templates} />
 

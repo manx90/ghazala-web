@@ -120,7 +120,10 @@ export function useSession() {
 
   const redirectAfterLogin = useCallback(() => {
     if (!user) return ROUTES.auth.login;
-    return getPostLoginRedirect(user.role, currentOrganization?.slug ?? organizationStorage.getSlug());
+    return getPostLoginRedirect(user.role, currentOrganization?.slug ?? organizationStorage.getSlug(), {
+      emailVerified: user.emailVerified,
+      email: user.email,
+    });
   }, [user, currentOrganization?.slug]);
 
   return {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, type CSSProperties } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Building2Icon, Loader2Icon, Settings2Icon } from 'lucide-react';
@@ -9,13 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { SearchableSelect } from '@/components/forms/searchable-select';
+import { buildCountryOptions, buildTimezoneOptions } from '@/constants/geo.constants';
 import { QueryState } from '@/components/shared/query-state';
 import { StatusBadge } from '@/components/shared/status-badge';
 import {
@@ -28,22 +23,6 @@ import {
 } from '@/features/settings/hooks/use-settings';
 import type { Organization } from '@/types/organization.types';
 
-const TIMEZONE_VALUES = [
-  'Asia/Riyadh',
-  'Asia/Dubai',
-  'Asia/Kuwait',
-  'Asia/Qatar',
-  'Asia/Bahrain',
-  'Asia/Muscat',
-  'Africa/Cairo',
-  'Asia/Amman',
-  'Asia/Beirut',
-  'Africa/Casablanca',
-  'UTC',
-] as const;
-
-const COUNTRY_VALUES = ['SA', 'AE', 'KW', 'QA', 'BH', 'OM', 'EG', 'JO', 'LB', 'MA', 'TN'] as const;
-
 function toFormValues(organization: Organization): OrganizationSettingsFormValues {
   return {
     logo: organization.logo ?? '',
@@ -53,6 +32,7 @@ function toFormValues(organization: Organization): OrganizationSettingsFormValue
 }
 
 export function OrganizationSettingsForm() {
+  const locale = useLocale();
   const t = useTranslations('settings.organization');
   const tValidation = useTranslations('settings.validation');
   const tCommon = useTranslations('common');
@@ -63,6 +43,8 @@ export function OrganizationSettingsForm() {
     () => createOrganizationSettingsSchema((k) => tValidation(k)),
     [tValidation],
   );
+  const countryOptions = useMemo(() => buildCountryOptions(locale), [locale]);
+  const timezoneOptions = useMemo(() => buildTimezoneOptions(locale), [locale]);
 
   const form = useForm<OrganizationSettingsFormValues>({
     resolver: zodResolver(schema),
@@ -152,23 +134,16 @@ export function OrganizationSettingsForm() {
 
                 <div className="space-y-2">
                   <Label htmlFor="timezone">{t('form.timezone')}</Label>
-                  <Select
+                  <SearchableSelect
+                    id="timezone"
+                    options={timezoneOptions}
                     value={form.watch('timezone')}
-                    onValueChange={(value) =>
-                      form.setValue('timezone', value as string, { shouldValidate: true })
+                    placeholder={t('form.timezonePlaceholder')}
+                    aria-invalid={Boolean(form.formState.errors.timezone)}
+                    onChange={(value) =>
+                      form.setValue('timezone', value, { shouldValidate: true })
                     }
-                  >
-                    <SelectTrigger id="timezone" className="w-full">
-                      <SelectValue placeholder={t('form.timezonePlaceholder')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {TIMEZONE_VALUES.map((value) => (
-                        <SelectItem key={value} value={value}>
-                          {t(`timezones.${value}`)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  />
                   {form.formState.errors.timezone && (
                     <p className="text-sm text-destructive">
                       {form.formState.errors.timezone.message}
@@ -178,23 +153,14 @@ export function OrganizationSettingsForm() {
 
                 <div className="space-y-2">
                   <Label htmlFor="country">{t('form.country')}</Label>
-                  <Select
+                  <SearchableSelect
+                    id="country"
+                    options={countryOptions}
                     value={form.watch('country')}
-                    onValueChange={(value) =>
-                      form.setValue('country', value as string, { shouldValidate: true })
-                    }
-                  >
-                    <SelectTrigger id="country" className="w-full">
-                      <SelectValue placeholder={t('form.countryPlaceholder')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {COUNTRY_VALUES.map((value) => (
-                        <SelectItem key={value} value={value}>
-                          {t(`countries.${value}`)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    placeholder={t('form.countryPlaceholder')}
+                    aria-invalid={Boolean(form.formState.errors.country)}
+                    onChange={(value) => form.setValue('country', value, { shouldValidate: true })}
+                  />
                   {form.formState.errors.country && (
                     <p className="text-sm text-destructive">{form.formState.errors.country.message}</p>
                   )}

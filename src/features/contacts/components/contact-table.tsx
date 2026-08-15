@@ -5,6 +5,7 @@ import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -98,6 +99,7 @@ export function ContactTable({
             <TableHead>{t('name')}</TableHead>
             <TableHead>{t('phone')}</TableHead>
             <TableHead>{t('email')}</TableHead>
+            <TableHead>{t('tags')}</TableHead>
             <TableHead>{t('lastMessage')}</TableHead>
             <TableHead>{t('status')}</TableHead>
             <TableHead className="w-12" />
@@ -133,6 +135,22 @@ export function ContactTable({
               </TableCell>
               <TableCell dir="ltr" className="text-start text-muted-foreground">
                 {contact.email ?? '—'}
+              </TableCell>
+              <TableCell>
+                {(contact.tags ?? []).length > 0 ? (
+                  <div className="flex flex-wrap gap-1">
+                    {contact.tags.slice(0, 3).map((tag) => (
+                      <Badge key={tag} variant="secondary">
+                        {tag}
+                      </Badge>
+                    ))}
+                    {contact.tags.length > 3 ? (
+                      <Badge variant="outline">+{contact.tags.length - 3}</Badge>
+                    ) : null}
+                  </div>
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
               </TableCell>
               <TableCell
                 title={formatDateTime(contact.lastMessageAt)}

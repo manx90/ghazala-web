@@ -48,6 +48,7 @@
       "بعد الموافقة، سيتم ربط حسابك تلقائياً دون إدخال أي رموز"
     ],
     "continueToPlan": "المتابعة لاختيار الخطة",
+    "skipForNow": "افعلها لاحقاً",
     "connecting": "جاري إكمال الربط...",
     "embeddedNotConfigured": "Meta Embedded Signup غير مهيأ. تأكد من إعداد التطبيق في Meta Developer Console.",
     "connectSuccess": "تم ربط WhatsApp Business بنجاح",

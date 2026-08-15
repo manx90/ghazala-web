@@ -70,6 +70,16 @@ export interface ResendVerificationPayload {
   email: string;
 }
 
+export interface UpdateProfilePayload {
+  firstName: string;
+  lastName: string;
+}
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface AuthSession extends AuthTokens {
   user: User;
 }

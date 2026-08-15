@@ -12,6 +12,7 @@ export interface Contact {
   notes: string | null;
   lastMessageAt: string | null;
   isBlocked: boolean;
+  tags: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -38,6 +39,7 @@ export interface CreateContactPayload {
   profilePhotoUrl?: string;
   email?: string;
   notes?: string;
+  tags?: string[];
 }
 
 export interface UpdateContactPayload {
@@ -49,6 +51,7 @@ export interface UpdateContactPayload {
   email?: string;
   notes?: string;
   isBlocked?: boolean;
+  tags?: string[];
 }
 
 export interface MergeContactsPayload {
@@ -59,4 +62,28 @@ export interface MergeContactsPayload {
 export interface MergeContactsResponse {
   contact: Contact;
   transferredConversations: number;
+}
+
+export interface ImportContactRow {
+  phone: string;
+  firstName?: string;
+  lastName?: string;
+  profileName?: string;
+  tags?: string[];
+}
+
+export interface ImportContactsPayload {
+  contacts: ImportContactRow[];
+}
+
+export interface ImportContactError {
+  row: number;
+  reason: string;
+}
+
+export interface ImportContactsResult {
+  imported: number;
+  updated: number;
+  skipped: number;
+  errors: ImportContactError[];
 }

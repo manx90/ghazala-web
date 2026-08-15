@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/card';
 import { QueryState } from '@/components/shared/query-state';
 import { MetaConnectionSummary } from '@/features/meta/components/meta-connection-summary';
-import { MetaEmbeddedSignupButton } from '@/features/meta/components/meta-embedded-signup-button';
+import { WhatsappEmbeddedConnectPanel } from '@/features/meta/components/whatsapp-embedded-connect-panel';
 import {
   useConnectMeta,
   useDisconnectMeta,
@@ -33,19 +33,11 @@ export function ConnectWhatsappForm() {
   const disconnectMeta = useDisconnectMeta();
 
   const isConnected = metaStatus.data?.isConnected ?? false;
+  const embeddedSession = metaStatus.data?.embeddedSignupSession;
   const businessAccounts = useWhatsappBusinessAccounts(isConnected);
   const phoneNumbers = useWhatsappPhoneNumbers(isConnected);
 
   const integration = metaStatus.data?.integration;
-  const embeddedSession = metaStatus.data?.embeddedSignupSession;
-  const isStandardConfigured = Boolean(
-    embeddedSession?.standardSignupConfigured ??
-      (embeddedSession?.appId && embeddedSession?.embeddedSignupConfigId),
-  );
-  const isCoexistenceConfigured = Boolean(
-    embeddedSession?.coexistenceSignupConfigured ??
-      (embeddedSession?.appId && embeddedSession?.coexistenceConfigId),
-  );
   const primaryWaba = businessAccounts.data?.items?.[0] ?? null;
   const primaryPhone = phoneNumbers.data?.items?.[0] ?? null;
 
@@ -142,50 +134,21 @@ export function ConnectWhatsappForm() {
                   </ol>
                 </div>
 
-                <div className="flex flex-col gap-4">
-                  <div className="rounded-xl border border-border/60 p-4">
-                    <p className="text-sm font-medium">{t('standardFlow.title')}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">{t('standardFlow.description')}</p>
-                    <div className="mt-4">
-                      {isStandardConfigured ? (
-                        <MetaEmbeddedSignupButton
-                          session={embeddedSession!}
-                          mode="standard"
-                          label={t('standardFlow.action')}
-                          disabled={connectMeta.isPending}
-                          onConnect={handleConnect}
-                        />
-                      ) : (
-                        <p className="text-sm text-destructive">{t('embeddedNotConfigured')}</p>
-                      )}
-                    </div>
-                  </div>
+                <WhatsappEmbeddedConnectPanel
+                  session={embeddedSession}
+                  disabled={connectMeta.isPending}
+                  isConnecting={connectMeta.isPending}
+                  onConnect={handleConnect}
+                />
 
-                  <div className="rounded-xl border border-border/60 p-4">
-                    <p className="text-sm font-medium">{t('coexistenceFlow.title')}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">{t('coexistenceFlow.description')}</p>
-                    <div className="mt-4">
-                      {isCoexistenceConfigured ? (
-                        <MetaEmbeddedSignupButton
-                          session={embeddedSession!}
-                          mode="coexistence"
-                          label={t('coexistenceFlow.action')}
-                          disabled={connectMeta.isPending}
-                          onConnect={handleConnect}
-                        />
-                      ) : (
-                        <p className="text-sm text-muted-foreground">{t('coexistenceFlow.notConfigured')}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {connectMeta.isPending ? (
-                  <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                    <Loader2Icon className="size-4 animate-spin" />
-                    {t('connecting')}
-                  </div>
-                ) : null}
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="w-full text-muted-foreground"
+                  render={<Link href={ROUTES.onboarding.selectPlan} />}
+                >
+                  {t('skipForNow')}
+                </Button>
               </div>
             )}
           </QueryState>

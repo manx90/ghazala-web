@@ -17,5 +17,6 @@
   "slugMin": "Slug must be at least 3 characters",
   "slugFormat": "Lowercase letters, numbers, and hyphens only",
   "timezoneRequired": "Timezone is required",
+  "timezoneInvalid": "Invalid timezone",
   "countryInvalid": "Invalid country code"
 }

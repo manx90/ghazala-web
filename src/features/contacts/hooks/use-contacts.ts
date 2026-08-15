@@ -8,6 +8,7 @@ import { contactsApi } from '@/features/contacts/api/contacts.api';
 import type {
   ContactQueryParams,
   CreateContactPayload,
+  ImportContactsPayload,
   MergeContactsPayload,
   UpdateContactPayload,
 } from '@/types/contact.types';
@@ -80,6 +81,38 @@ export function useMergeContacts() {
       queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all });
       queryClient.setQueryData(queryKeys.contacts.detail(result.contact.id), result.contact);
       toastSuccess(t('toast.merged', { count: result.transferredConversations }));
+    },
+    onError: toastApiError,
+  });
+}
+
+export function useImportContacts() {
+  const t = useTranslations('contacts');
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: ImportContactsPayload) => contactsApi.importContacts(payload),
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.contacts.all });
+      toastSuccess(
+        t('toast.imported', {
+          imported: result.imported,
+          updated: result.updated,
+          skipped: result.skipped,
+        }),
+      );
+    },
+    onError: toastApiError,
+  });
+}
+
+export function useExportContacts() {
+  const t = useTranslations('contacts');
+
+  return useMutation({
+    mutationFn: () => contactsApi.exportContacts(),
+    onSuccess: () => {
+      toastSuccess(t('toast.exported'));
     },
     onError: toastApiError,
   });

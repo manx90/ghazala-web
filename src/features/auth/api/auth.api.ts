@@ -5,6 +5,7 @@ import {
 } from '@/services/api/client';
 import type {
   AuthResponse,
+  ChangePasswordPayload,
   ForgotPasswordPayload,
   LoginPayload,
   LogoutPayload,
@@ -12,6 +13,7 @@ import type {
   RegisterPayload,
   ResendVerificationPayload,
   ResetPasswordPayload,
+  UpdateProfilePayload,
   User,
   VerifyEmailPayload,
 } from '@/types/auth.types';
@@ -53,6 +55,18 @@ export const authApi = {
 
   me(): Promise<User> {
     return apiClient.get<User>(`${AUTH_BASE}/me`, undefined, {
+      skipOrgHeader: true,
+    });
+  },
+
+  updateProfile(payload: UpdateProfilePayload): Promise<User> {
+    return apiClient.patch<User>(`${AUTH_BASE}/me`, payload, undefined, {
+      skipOrgHeader: true,
+    });
+  },
+
+  changePassword(payload: ChangePasswordPayload): Promise<ApiMessageResponse> {
+    return apiClient.patch<ApiMessageResponse>(`${AUTH_BASE}/me/password`, payload, undefined, {
       skipOrgHeader: true,
     });
   },

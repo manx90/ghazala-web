@@ -1,6 +1,6 @@
 'use client';
 
-import { BellIcon } from 'lucide-react';
+import { BellIcon, CheckCheckIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { memo } from 'react';
 import { Button } from '@/components/ui/button';
@@ -13,15 +13,33 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useNotifications } from '@/features/shell/hooks/use-notifications';
+import { useMarkAllNotificationsAsRead, useNotifications } from '@/features/shell/hooks/use-notifications-api';
 import { cn } from '@/lib/utils';
+import { formatDistanceToNow } from 'date-fns';
+import { ar, enUS } from 'date-fns/locale';
+import { useLocale } from 'next-intl';
 
 function NotificationButtonComponent() {
-  const { isAvailable, unreadCount, items, markAllAsRead } = useNotifications();
+  const { data, isLoading } = useNotifications();
+  const markAllAsRead = useMarkAllNotificationsAsRead();
   const t = useTranslations('nav.notifications');
+  const locale = useLocale();
 
+  const unreadCount = data?.unreadCount ?? 0;
+  const items = data?.items ?? [];
   const ariaLabel =
     unreadCount > 0 ? t('ariaLabelUnread', { count: unreadCount }) : t('ariaLabel');
+
+  const formatTime = (dateString: string) => {
+    try {
+      return formatDistanceToNow(new Date(dateString), {
+        addSuffix: true,
+        locale: locale === 'ar' ? ar : enUS,
+      });
+    } catch {
+      return dateString;
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -31,6 +49,7 @@ function NotificationButtonComponent() {
             variant="ghost"
             size="icon-sm"
             aria-label={ariaLabel}
+            disabled={isLoading}
           />
         }
       >
@@ -49,37 +68,48 @@ function NotificationButtonComponent() {
           )}
         </span>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80">
+      <DropdownMenuContent align="end" className="w-96">
         <DropdownMenuGroup>
           <DropdownMenuLabel className="flex items-center justify-between">
             <span>{t('title')}</span>
-            {isAvailable && unreadCount > 0 && (
+            {unreadCount > 0 && (
               <button
                 type="button"
-                className="text-xs font-normal text-primary hover:underline"
-                onClick={markAllAsRead}
+                className="flex items-center gap-1 text-xs font-normal text-primary hover:underline"
+                onClick={() => markAllAsRead.mutate()}
+                disabled={markAllAsRead.isPending}
               >
+                <CheckCheckIcon className="size-3" />
                 {t('markAllRead')}
               </button>
             )}
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        {!isAvailable && (
+        {isLoading && (
           <div className="px-3 py-6 text-center text-sm text-muted-foreground">
-            {t('apiUnavailable')}
+            {t('loading')}
           </div>
         )}
-        {isAvailable && items.length === 0 && (
+        {!isLoading && items.length === 0 && (
           <div className="px-3 py-6 text-center text-sm text-muted-foreground">
             {t('empty')}
           </div>
         )}
-        {isAvailable &&
+        {!isLoading &&
           items.map((item) => (
-            <DropdownMenuItem key={item.id} className="flex flex-col items-start gap-1 py-3">
-              <span className="text-sm font-medium">{item.title}</span>
-              <span className="text-xs text-muted-foreground">{item.body}</span>
+            <DropdownMenuItem
+              key={item.id}
+              className={cn(
+                'flex flex-col items-start gap-1 py-3',
+                !item.read && 'bg-muted/50',
+              )}
+            >
+              <div className="flex w-full items-start justify-between gap-2">
+                <span className="text-sm font-medium">{item.title}</span>
+                <span className="text-xs text-muted-foreground">{formatTime(item.createdAt)}</span>
+              </div>
+              <span className="text-xs text-muted-foreground">{item.message}</span>
             </DropdownMenuItem>
           ))}
       </DropdownMenuContent>

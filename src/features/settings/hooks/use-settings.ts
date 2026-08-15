@@ -10,6 +10,7 @@ import type {
   AddOrganizationMemberPayload,
   UpdateOrganizationMemberPayload,
 } from '@/types/member.types';
+import type { InviteMemberPayload } from '@/types/invite.types';
 import type { UpdateOrganizationSettingsPayload } from '@/types/organization.types';
 
 export function useOrganizationSettings() {
@@ -85,6 +86,43 @@ export function useRemoveTeamMember() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.members.list });
       toastSuccess(t('memberRemoved'));
+    },
+    onError: toastApiError,
+  });
+}
+
+export function useOrgInvites() {
+  return useQuery({
+    queryKey: queryKeys.members.invites,
+    queryFn: () => settingsApi.listInvites(),
+  });
+}
+
+export function useInviteMember() {
+  const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('settings.toast');
+
+  return useMutation({
+    mutationFn: (payload: InviteMemberPayload) => settingsApi.inviteMember(payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.members.invites });
+      toastSuccess(t('inviteSent'));
+    },
+    onError: toastApiError,
+  });
+}
+
+export function useRevokeInvite() {
+  const queryClient = useQueryClient();
+  const { toastSuccess, toastApiError } = useToastI18n();
+  const t = useTranslations('settings.toast');
+
+  return useMutation({
+    mutationFn: (id: string) => settingsApi.revokeInvite(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.members.invites });
+      toastSuccess(t('inviteRevoked'));
     },
     onError: toastApiError,
   });

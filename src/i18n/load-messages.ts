@@ -19,6 +19,7 @@ const NAMESPACES = [
   'legal',
   'errors',
   'landing',
+  'invite',
 ] as const;
 
 function isPlainObject(value: unknown): value is Messages {

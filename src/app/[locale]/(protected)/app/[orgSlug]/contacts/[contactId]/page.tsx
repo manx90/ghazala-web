@@ -22,6 +22,7 @@ import { QueryState } from '@/components/shared/query-state';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { ContactForm } from '@/features/contacts/components/contact-form';
 import { SendTemplateComposeDialog } from '@/features/inbox/components/send-template-compose-dialog';
 import { usePermissions } from '@/features/auth/hooks/use-permissions';
@@ -32,6 +33,7 @@ import {
   useUpdateContact,
 } from '@/features/contacts/hooks/use-contacts';
 import type { ContactFormValues } from '@/features/contacts/schemas/contact.schemas';
+import { parseContactTags } from '@/features/contacts/schemas/contact.schemas';
 import { formatDateTime } from '@/utils/date';
 
 export default function ContactDetailPage() {
@@ -64,6 +66,7 @@ export default function ContactDetailPage() {
       profilePhotoUrl: values.profilePhotoUrl || undefined,
       email: values.email || undefined,
       notes: values.notes || undefined,
+      tags: parseContactTags(values.tags) ?? [],
       isBlocked: values.isBlocked,
     });
   };
@@ -172,6 +175,15 @@ export default function ContactDetailPage() {
                       <span className="flex-1 text-muted-foreground">{t('updatedAt')}</span>
                       <span>{formatDateTime(contact.updatedAt)}</span>
                     </div>
+                    {(contact.tags ?? []).length > 0 ? (
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {contact.tags.map((tag) => (
+                          <Badge key={tag} variant="secondary">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    ) : null}
                   </CardContent>
                 </Card>
 

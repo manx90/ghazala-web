@@ -45,8 +45,21 @@ export const queryKeys = {
     invoices: ['billing', 'invoices'] as const,
     usage: ['billing', 'usage'] as const,
   },
+  notifications: {
+    list: ['notifications', 'list'] as const,
+    unreadCount: ['notifications', 'unread-count'] as const,
+  },
+  settings: {
+    webhooks: ['settings', 'webhooks'] as const,
+    apiKeys: ['settings', 'api-keys'] as const,
+    sessions: ['settings', 'sessions'] as const,
+  },
   members: {
     list: ['members', 'list'] as const,
+    invites: ['members', 'invites'] as const,
+  },
+  invite: {
+    info: (token: string) => ['invite', 'info', token] as const,
   },
   dashboard: ['dashboard'] as const,
   admin: {

@@ -6,6 +6,11 @@ import type {
   OrganizationMemberListResponse,
   UpdateOrganizationMemberPayload,
 } from '@/types/member.types';
+import type {
+  InviteMemberPayload,
+  OrganizationInvite,
+  OrganizationInviteListResponse,
+} from '@/types/invite.types';
 import type { UpdateOrganizationSettingsPayload } from '@/types/organization.types';
 import type { Organization } from '@/types/organization.types';
 
@@ -34,6 +39,18 @@ export const settingsApi = {
 
   removeMember(id: string): Promise<ApiMessageResponse> {
     return apiClient.delete<ApiMessageResponse>(`${BASE}/members/${id}`);
+  },
+
+  inviteMember(payload: InviteMemberPayload): Promise<OrganizationInvite> {
+    return apiClient.post<OrganizationInvite>(`${BASE}/members/invite`, payload);
+  },
+
+  listInvites(): Promise<OrganizationInviteListResponse> {
+    return apiClient.get<OrganizationInviteListResponse>(`${BASE}/members/invites`);
+  },
+
+  revokeInvite(id: string): Promise<ApiMessageResponse> {
+    return apiClient.delete<ApiMessageResponse>(`${BASE}/members/invites/${id}`);
   },
 
   leaveOrganization(): Promise<ApiMessageResponse> {

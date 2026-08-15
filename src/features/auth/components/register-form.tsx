@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { Link } from '@/i18n/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
@@ -19,7 +20,10 @@ export function RegisterForm() {
   const t = useTranslations('auth');
   const tVal = useTranslations('validation');
   const router = useRouter();
+  const searchParams = useSearchParams();
   const registerMutation = useRegister();
+  const inviteToken = searchParams.get('invite') ?? '';
+  const inviteEmail = searchParams.get('email') ?? '';
 
   const schema = useMemo(() => createRegisterSchema((k) => tVal(k)), [tVal]);
 
@@ -29,17 +33,24 @@ export function RegisterForm() {
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { firstName: '', lastName: '', email: '', password: '' },
+    defaultValues: { firstName: '', lastName: '', email: inviteEmail, password: '' },
   });
 
   const onSubmit = handleSubmit((values) => {
     registerMutation.mutate(values, {
       onSuccess: (response) => {
+        // عند وجود دعوة نعود لصفحتها لإتمام القبول تلقائياً
+        const invitePath = inviteToken ? `/invite/${inviteToken}` : null;
+
         if (response.user.emailVerified) {
-          router.replace(ROUTES.onboarding.createOrganization);
+          router.replace(invitePath ?? ROUTES.app.root);
           return;
         }
-        router.replace(`${ROUTES.auth.verifyEmail}?email=${encodeURIComponent(values.email)}`);
+
+        const verifyUrl = `${ROUTES.auth.verifyEmail}?email=${encodeURIComponent(values.email)}`;
+        router.replace(
+          inviteToken ? `${verifyUrl}&invite=${encodeURIComponent(inviteToken)}` : verifyUrl,
+        );
       },
     });
   });
@@ -52,7 +63,11 @@ export function RegisterForm() {
         <>
           {t('hasAccount')}{' '}
           <Link
-            href={ROUTES.auth.login}
+            href={
+              inviteToken
+                ? `${ROUTES.auth.login}?invite=${encodeURIComponent(inviteToken)}`
+                : ROUTES.auth.login
+            }
             className="font-semibold text-primary underline-offset-4 transition-colors hover:text-secondary hover:underline"
           >
             {t('login')}

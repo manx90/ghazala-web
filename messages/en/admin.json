@@ -108,6 +108,9 @@
       "advancedUnavailableTitle": "Advanced monitoring unavailable",
       "advancedUnavailableDescription": "Backend currently provides GET /health only."
     },
+    "backgroundJobs": "Background jobs",
+    "backgroundJobsDescription": "Queue and worker status"
+  },
     "whop": {
       "title": "Whop management",
       "description": "Monitor integration, link plans, and track payments and memberships"
@@ -123,10 +126,11 @@
     "notConfigured": "Not configured",
     "unknown": "Unknown",
     "unavailable": "Unavailable",
+    "queue": "Queue",
+    "workers": "Workers",
     "requiresEndpoint": "Requires endpoint",
-    "runningNormally": "Running normally",
-    "available": "Available: {size}",
     "apiServer": "API server",
+    "runningNormally": "Running normally",
     "database": "Database",
     "redis": "Redis",
     "storage": "Storage",

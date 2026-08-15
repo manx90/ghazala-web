@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { LoadingScreen } from '@/components/global/loading-screen';
 import { useOnboardingStatus } from '@/features/onboarding/hooks/use-onboarding-status';
 import { useSession } from '@/features/auth/hooks/use-session';
-import { resolveOnboardingPath } from '@/utils/onboarding';
+import { resolveOnboardingPath, isOptionalWhatsappOnboardingPath } from '@/utils/onboarding';
 
 interface OnboardingStepGuardProps {
   children: ReactNode;
@@ -25,7 +25,9 @@ export function OnboardingStepGuard({ children }: OnboardingStepGuardProps) {
     if (isResolving || !state) return;
 
     const target = resolveOnboardingPath(state);
-    if (pathname !== target) {
+    const canStayOnWhatsappStep = isOptionalWhatsappOnboardingPath(pathname, state);
+
+    if (pathname !== target && !canStayOnWhatsappStep) {
       router.replace(target);
     }
   }, [isResolving, state, pathname, router]);
@@ -34,7 +36,7 @@ export function OnboardingStepGuard({ children }: OnboardingStepGuardProps) {
     return <LoadingScreen label={t('loading')} />;
   }
 
-  if (state && pathname !== resolveOnboardingPath(state)) {
+  if (state && pathname !== resolveOnboardingPath(state) && !isOptionalWhatsappOnboardingPath(pathname, state)) {
     return null;
   }
 

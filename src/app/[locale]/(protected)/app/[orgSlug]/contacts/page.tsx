@@ -1,6 +1,13 @@
 'use client';
 
-import { GitMergeIcon, PlusIcon, SearchIcon, UploadIcon, DownloadIcon } from 'lucide-react';
+import {
+  GitMergeIcon,
+  Loader2Icon,
+  PlusIcon,
+  SearchIcon,
+  UploadIcon,
+  DownloadIcon,
+} from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useRouter } from '@/i18n/navigation';
 import type React from 'react';
@@ -12,24 +19,27 @@ import { PermissionGuard } from '@/components/guards/permission-guard';
 import { PageHeader } from '@/components/shared/page-header';
 import { PaginationControls } from '@/components/shared/pagination-controls';
 import { QueryState } from '@/components/shared/query-state';
-import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ContactForm } from '@/features/contacts/components/contact-form';
 import { ContactTable } from '@/features/contacts/components/contact-table';
+import { ImportContactsDialog } from '@/features/contacts/components/import-contacts-dialog';
 import { MergeContactsDialog } from '@/features/contacts/components/merge-contacts-dialog';
 import {
   useContactsList,
   useCreateContact,
   useDeleteContact,
+  useExportContacts,
+  useImportContacts,
   useMergeContacts,
 } from '@/features/contacts/hooks/use-contacts';
 import { SendTemplateComposeDialog } from '@/features/inbox/components/send-template-compose-dialog';
 import { usePermissions } from '@/features/auth/hooks/use-permissions';
 import { ROUTES } from '@/config/routes';
 import type { ContactFormValues } from '@/features/contacts/schemas/contact.schemas';
-import type { Contact } from '@/types/contact.types';
+import { parseContactTags } from '@/features/contacts/schemas/contact.schemas';
+import type { Contact, ImportContactRow } from '@/types/contact.types';
 
 const PAGE_LIMIT = 20;
 
@@ -48,6 +58,7 @@ export default function ContactsPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Contact | null>(null);
   const [mergeOpen, setMergeOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [composeOpen, setComposeOpen] = useState(false);
   const [composeRecipient, setComposeRecipient] = useState('');
@@ -61,6 +72,8 @@ export default function ContactsPage() {
   const createMutation = useCreateContact();
   const deleteMutation = useDeleteContact();
   const mergeMutation = useMergeContacts();
+  const importMutation = useImportContacts();
+  const exportMutation = useExportContacts();
 
   const contacts = data?.items ?? [];
 
@@ -80,6 +93,7 @@ export default function ContactsPage() {
         profilePhotoUrl: values.profilePhotoUrl || undefined,
         email: values.email || undefined,
         notes: values.notes || undefined,
+        tags: parseContactTags(values.tags),
       },
       {
         onSuccess: (contact) => {
@@ -108,6 +122,17 @@ export default function ContactsPage() {
         router.push(`/app/${orgSlug}/contacts/${result.contact.id}`);
       },
     });
+  };
+
+  const handleImport = (rows: ImportContactRow[]) => {
+    importMutation.mutate(
+      { contacts: rows },
+      {
+        onSuccess: () => {
+          setImportOpen(false);
+        },
+      },
+    );
   };
 
   return (
@@ -149,42 +174,62 @@ export default function ContactsPage() {
           }
         />
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card className="stagger-in" style={{ '--stagger-delay': '60ms' } as React.CSSProperties}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2.5 text-base">
-                <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
-                  <UploadIcon className="size-4" aria-hidden="true" />
-                </span>
-                {t('importTitle')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <UnavailableFeatureAlert
-                title={t('importUnavailable')}
-                description={t('importUnavailableDescription')}
-                requiredEndpoints={['POST /contacts/import']}
-              />
-            </CardContent>
-          </Card>
-          <Card className="stagger-in" style={{ '--stagger-delay': '120ms' } as React.CSSProperties}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2.5 text-base">
-                <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
-                  <DownloadIcon className="size-4" aria-hidden="true" />
-                </span>
-                {t('exportTitle')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <UnavailableFeatureAlert
-                title={t('exportUnavailable')}
-                description={t('exportUnavailableDescription')}
-                requiredEndpoints={['GET /contacts/export']}
-              />
-            </CardContent>
-          </Card>
-        </div>
+        {canManageContacts ? (
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card
+              className="stagger-in"
+              style={{ '--stagger-delay': '60ms' } as React.CSSProperties}
+            >
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2.5 text-base">
+                  <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                    <UploadIcon className="size-4" aria-hidden="true" />
+                  </span>
+                  {t('importTitle')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3">
+                <p className="text-sm text-muted-foreground">{t('importCardDescription')}</p>
+                <div>
+                  <Button variant="outline" onClick={() => setImportOpen(true)}>
+                    <UploadIcon data-icon="inline-start" />
+                    {t('importButton')}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            <Card
+              className="stagger-in"
+              style={{ '--stagger-delay': '120ms' } as React.CSSProperties}
+            >
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2.5 text-base">
+                  <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-brand-soft text-primary ring-1 ring-primary/10">
+                    <DownloadIcon className="size-4" aria-hidden="true" />
+                  </span>
+                  {t('exportTitle')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3">
+                <p className="text-sm text-muted-foreground">{t('exportCardDescription')}</p>
+                <div>
+                  <Button
+                    variant="outline"
+                    onClick={() => exportMutation.mutate()}
+                    disabled={exportMutation.isPending}
+                  >
+                    {exportMutation.isPending ? (
+                      <Loader2Icon data-icon="inline-start" className="animate-spin" />
+                    ) : (
+                      <DownloadIcon data-icon="inline-start" />
+                    )}
+                    {t('exportButton')}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ) : null}
 
         <div
           className="stagger-in flex flex-wrap items-center gap-2 rounded-xl border bg-card p-3 shadow-2xs"
@@ -290,6 +335,13 @@ export default function ContactsPage() {
           preselectedIds={selectedIds}
           onConfirm={handleMerge}
           isLoading={mergeMutation.isPending}
+        />
+
+        <ImportContactsDialog
+          open={importOpen}
+          onOpenChange={setImportOpen}
+          onConfirm={handleImport}
+          isLoading={importMutation.isPending}
         />
 
         <SendTemplateComposeDialog

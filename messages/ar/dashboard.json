@@ -23,6 +23,13 @@
     "messages": "الرسائل",
     "whatsappSettings": "إعدادات واتساب"
   },
+  "whatsappBanner": {
+    "title": "اربط واتساب لبدء المراسلة",
+    "description": "اربط حساب WhatsApp Business لإرسال الرسائل وإدارة القوالب واستقبال المحادثات.",
+    "connectNow": "ربط الآن",
+    "settingsLink": "إعدادات واتساب",
+    "dismiss": "إخفاء"
+  },
   "metaConnection": {
     "title": "اتصال Meta",
     "description": "حالة ربط حساب Meta Business",

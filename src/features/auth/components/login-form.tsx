@@ -35,6 +35,7 @@ export function LoginForm() {
   const setOrganizations = useOrganizationStore((state) => state.setOrganizations);
 
   const schema = useMemo(() => createLoginSchema((k) => tVal(k)), [tVal]);
+  const inviteToken = searchParams.get('invite');
 
   const {
     register,
@@ -50,10 +51,8 @@ export function LoginForm() {
       onSuccess: async (response) => {
         const returnUrl = searchParams.get('returnUrl');
 
-        if (!response.user.emailVerified) {
-          router.replace(
-            `${ROUTES.auth.verifyEmail}?email=${encodeURIComponent(response.user.email)}`,
-          );
+        if (inviteToken) {
+          router.replace(`/invite/${inviteToken}`);
           return;
         }
 
@@ -72,7 +71,10 @@ export function LoginForm() {
           }
         }
 
-        let fallback = getPostLoginRedirect(response.user.role, orgSlug);
+        let fallback = getPostLoginRedirect(response.user.role, orgSlug, {
+          emailVerified: response.user.emailVerified,
+          email: response.user.email,
+        });
         if (response.user.role === UserRole.USER && orgSlug) {
           const state = await fetchOnboardingState(orgSlug);
           fallback = resolveOnboardingPath(state);
@@ -159,7 +161,11 @@ export function LoginForm() {
       <p className="mt-6 text-center text-sm text-muted-foreground">
         {t('noAccount')}{' '}
         <Link
-          href={ROUTES.auth.register}
+          href={
+            inviteToken
+              ? `${ROUTES.auth.register}?invite=${encodeURIComponent(inviteToken)}`
+              : ROUTES.auth.register
+          }
           className="font-semibold text-primary underline-offset-4 transition-colors hover:text-secondary hover:underline"
         >
           {t('createAccount')}

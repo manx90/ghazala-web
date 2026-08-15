@@ -1,12 +1,14 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { KeyIcon } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/components/shared/page-header';
-import { UnavailableFeatureAlert } from '@/components/shared/unavailable-feature-alert';
 import { PermissionGuard } from '@/components/guards/permission-guard';
+import { ApiKeysManager } from '@/features/settings/components/api-keys-manager';
 
-export default async function ApiKeysSettingsPage() {
-  const t = await getTranslations('settings.pages.apiKeys');
+export default function ApiKeysSettingsPage() {
+  const t = useTranslations('settings.pages.apiKeys');
 
   return (
     <PermissionGuard permission="org.manage">
@@ -23,15 +25,7 @@ export default async function ApiKeysSettingsPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <UnavailableFeatureAlert
-              title={t('unavailableTitle')}
-              description={t('unavailableDescription')}
-              requiredEndpoints={[
-                'GET /api-keys',
-                'POST /api-keys',
-                'DELETE /api-keys/:id',
-              ]}
-            />
+            <ApiKeysManager />
           </CardContent>
         </Card>
       </div>

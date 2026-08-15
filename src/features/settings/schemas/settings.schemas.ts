@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { BillingCycle } from '@/types/billing.types';
 import { OrganizationMemberRole } from '@/types/organization.types';
+import { isValidCountryCode, isValidTimezone } from '@/constants/geo.constants';
 
 type ValidationTranslator = (key: string) => string;
 
@@ -11,18 +12,23 @@ export function createOrganizationSettingsSchema(t: ValidationTranslator) {
       .max(500, t('logoTooLong'))
       .optional()
       .refine((val) => !val || z.string().url().safeParse(val).success, t('logoInvalid')),
-    timezone: z.string().min(1, t('timezoneRequired')).max(64),
+    timezone: z
+      .string()
+      .min(1, t('timezoneRequired'))
+      .max(64)
+      .refine(isValidTimezone, t('timezoneInvalid')),
     country: z
       .string()
       .length(2, t('countryLength'))
-      .regex(/^[A-Z]{2}$/, t('countryInvalid')),
+      .regex(/^[A-Z]{2}$/, t('countryInvalid'))
+      .refine((code) => isValidCountryCode(code), t('countryInvalid')),
   });
 }
 
-export function createAddTeamMemberSchema(t: ValidationTranslator) {
+export function createInviteTeamMemberSchema(t: ValidationTranslator) {
   return z.object({
-    userId: z.string().uuid(t('userIdInvalid')),
-    role: z.nativeEnum(OrganizationMemberRole),
+    email: z.string().email(t('emailInvalid')),
+    role: z.enum([OrganizationMemberRole.ADMIN, OrganizationMemberRole.MEMBER]),
   });
 }
 
@@ -46,6 +52,6 @@ export function createChangePlanSchema(t: ValidationTranslator) {
 export type OrganizationSettingsFormValues = z.infer<
   ReturnType<typeof createOrganizationSettingsSchema>
 >;
-export type AddMemberFormValues = z.infer<ReturnType<typeof createAddTeamMemberSchema>>;
+export type InviteMemberFormValues = z.infer<ReturnType<typeof createInviteTeamMemberSchema>>;
 export type ConnectMetaFormValues = z.infer<ReturnType<typeof createConnectMetaSchema>>;
 export type ChangePlanFormValues = z.infer<ReturnType<typeof createChangePlanSchema>>;

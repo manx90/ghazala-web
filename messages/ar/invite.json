@@ -1,0 +1,23 @@
+{
+  "meta": {
+    "title": "دعوة منظمة"
+  },
+  "invalidTitle": "الدعوة غير موجودة",
+  "invalidDescription": "رابط الدعوة غير صالح أو تم استخدامه مسبقاً.",
+  "expiredTitle": "انتهت صلاحية الدعوة",
+  "expiredDescription": "دعوة الانضمام إلى {org} لم تعد صالحة.",
+  "acceptingTitle": "جاري الانضمام للمنظمة",
+  "acceptingDescription": "جاري قبول دعوتك للانضمام إلى {org}…",
+  "invitedTitle": "تمت دعوتك",
+  "invitedDescription": "تمت دعوتك للانضمام إلى {org} بدور {role}.",
+  "createAccount": "إنشاء حساب",
+  "haveAccount": "لدي حساب بالفعل",
+  "backHome": "العودة للرئيسية",
+  "goToApp": "الذهاب للتطبيق",
+  "acceptFailed": "تعذّر قبول الدعوة. حاول مرة أخرى.",
+  "roles": {
+    "owner": "مالك",
+    "admin": "مدير",
+    "member": "عضو"
+  }
+}

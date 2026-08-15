@@ -48,6 +48,7 @@
       "After approval, your account will be linked automatically without entering any codes"
     ],
     "continueToPlan": "Continue to plan selection",
+    "skipForNow": "Do it later",
     "connecting": "Completing connection...",
     "embeddedNotConfigured": "Meta Embedded Signup is not configured. Ensure the app is set up in Meta Developer Console.",
     "connectSuccess": "WhatsApp Business connected successfully",
