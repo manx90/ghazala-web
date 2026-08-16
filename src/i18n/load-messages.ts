@@ -55,8 +55,8 @@ export async function loadMessages(locale: string): Promise<Messages> {
     try {
       const chunk = (await import(`../../messages/${locale}/${namespace}.json`)).default as Messages;
       messages = deepMerge(messages, { [namespace]: chunk });
-    } catch {
-      // namespace file not created yet
+    } catch (error) {
+      console.error(`[i18n] فشل تحميل messages/${locale}/${namespace}.json`, error);
     }
   }
 

@@ -6,6 +6,10 @@
     "subscriptions": "الاشتراكات",
     "platform": "المنصة",
     "auditLogs": "سجل التدقيق",
+    "featureFlags": "خصائص تجريبية",
+    "announcements": "الإعلانات",
+    "metaConfig": "إعدادات Meta",
+    "whop": "Whop",
     "system": "النظام",
     "systemHealth": "صحة النظام",
     "monitoring": "مراقبة النظام"
@@ -106,11 +110,10 @@
       "coreServices": "الخدمات الأساسية",
       "autoRefresh": "الفحص يتكرر تلقائياً كل 30 ثانية",
       "advancedUnavailableTitle": "مراقبة متقدمة غير متوفرة",
-      "advancedUnavailableDescription": "الـ backend يوفّر GET /health فقط حالياً."
+      "advancedUnavailableDescription": "الـ backend يوفّر GET /health فقط حالياً.",
+      "backgroundJobs": "المهام الخلفية",
+      "backgroundJobsDescription": "حالة قائمة الانتظار والمعالجات"
     },
-    "backgroundJobs": "المهام الخلفية",
-    "backgroundJobsDescription": "حالة قائمة الانتظار والمعالجات"
-  },
     "whop": {
       "title": "إدارة Whop",
       "description": "مراقبة التكامل، ربط الخطط، ومتابعة المدفوعات والعضويات"

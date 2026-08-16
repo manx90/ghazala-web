@@ -170,7 +170,7 @@ export function getAdminNavigation(tNav: NavTranslator, tAdmin: NavTranslator): 
         },
         {
           id: 'admin-whop',
-          label: 'Whop',
+          label: tAdmin('nav.whop'),
           href: ROUTES.admin.whop,
           icon: WalletIcon,
           permission: 'platform.admin',
@@ -197,21 +197,21 @@ export function getAdminNavigation(tNav: NavTranslator, tAdmin: NavTranslator): 
         },
         {
           id: 'admin-feature-flags',
-          label: 'Feature Flags',
+          label: tAdmin('nav.featureFlags'),
           href: ROUTES.admin.featureFlags,
           icon: FlagIcon,
           permission: 'platform.admin',
         },
         {
           id: 'admin-announcements',
-          label: 'Announcements',
+          label: tAdmin('nav.announcements'),
           href: ROUTES.admin.announcements,
           icon: MegaphoneIcon,
           permission: 'platform.admin',
         },
         {
           id: 'admin-meta-config',
-          label: 'Meta Config',
+          label: tAdmin('nav.metaConfig'),
           href: ROUTES.admin.metaConfig,
           icon: WebhookIcon,
           permission: 'platform.admin',

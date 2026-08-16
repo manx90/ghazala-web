@@ -6,6 +6,10 @@
     "subscriptions": "Subscriptions",
     "platform": "Platform",
     "auditLogs": "Audit logs",
+    "featureFlags": "Feature Flags",
+    "announcements": "Announcements",
+    "metaConfig": "Meta Config",
+    "whop": "Whop",
     "system": "System",
     "systemHealth": "System health",
     "monitoring": "Monitoring"
@@ -106,11 +110,10 @@
       "coreServices": "Core services",
       "autoRefresh": "Checks automatically every 30 seconds",
       "advancedUnavailableTitle": "Advanced monitoring unavailable",
-      "advancedUnavailableDescription": "Backend currently provides GET /health only."
+      "advancedUnavailableDescription": "Backend currently provides GET /health only.",
+      "backgroundJobs": "Background jobs",
+      "backgroundJobsDescription": "Queue and worker status"
     },
-    "backgroundJobs": "Background jobs",
-    "backgroundJobsDescription": "Queue and worker status"
-  },
     "whop": {
       "title": "Whop management",
       "description": "Monitor integration, link plans, and track payments and memberships"
@@ -126,6 +129,7 @@
     "notConfigured": "Not configured",
     "unknown": "Unknown",
     "unavailable": "Unavailable",
+    "available": "Available: {size}",
     "queue": "Queue",
     "workers": "Workers",
     "requiresEndpoint": "Requires endpoint",

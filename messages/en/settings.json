@@ -32,13 +32,17 @@
       "title": "Webhooks",
       "description": "Manage event webhooks",
       "cardTitle": "Event endpoints",
-      "cardDescription": "Receive real-time notifications about events in your systems"
+      "cardDescription": "Receive real-time notifications about events in your systems",
+      "unavailableTitle": "Webhooks unavailable",
+      "unavailableDescription": "Webhooks cannot be managed because the API is not available."
     },
     "apiKeys": {
       "title": "API keys",
       "description": "Create and manage access keys",
       "cardTitle": "Access keys",
-      "cardDescription": "Create API keys to connect your external systems to the platform"
+      "cardDescription": "Create API keys to connect your external systems to the platform",
+      "unavailableTitle": "API keys unavailable",
+      "unavailableDescription": "API keys cannot be managed because the API is not available."
     }
   },
   "profile": {
@@ -199,7 +203,8 @@
       "name": "Name",
       "email": "Email",
       "role": "Role",
-      "joinedAt": "Joined"
+      "joinedAt": "Joined",
+      "status": "Status"
     },
     "roles": {
       "owner": "Owner",
