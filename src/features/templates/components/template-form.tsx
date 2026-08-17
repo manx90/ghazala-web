@@ -2,9 +2,9 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2Icon } from 'lucide-react';
+import { Loader2Icon, PlusIcon, Trash2Icon } from 'lucide-react';
 import { useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { queryKeys } from '@/config/query-keys';
 import {
   createTemplateFormSchema,
+  TEMPLATE_BUTTON_TYPES,
+  type TemplateButtonFormType,
   type TemplateFormValues,
 } from '@/features/templates/schemas/template.schemas';
 import { enrichTemplateComponents } from '@/features/templates/utils/template-meta-payload';
@@ -32,6 +34,15 @@ const CATEGORY_VALUES = [
   TemplateCategory.UTILITY,
   TemplateCategory.AUTHENTICATION,
 ] as const;
+
+const MAX_TEMPLATE_BUTTONS = 3;
+
+const DEFAULT_BUTTON: TemplateFormValues['buttons'][number] = {
+  type: 'QUICK_REPLY',
+  text: '',
+  url: '',
+  phone_number: '',
+};
 
 interface TemplateFormProps {
   onSubmit: (payload: CreateTemplatePayload) => void;
@@ -63,6 +74,40 @@ export function toCreateTemplatePayload(values: TemplateFormValues): CreateTempl
     });
   }
 
+  const buttons = (values.buttons ?? [])
+    .map((button) => {
+      const text = button.text.trim();
+      if (!text) return null;
+
+      const payload: {
+        type: string;
+        text: string;
+        url?: string;
+        phone_number?: string;
+      } = {
+        type: button.type,
+        text,
+      };
+
+      if (button.type === 'URL') {
+        payload.url = button.url?.trim();
+      }
+
+      if (button.type === 'PHONE_NUMBER') {
+        payload.phone_number = button.phone_number?.trim();
+      }
+
+      return payload;
+    })
+    .filter((button): button is NonNullable<typeof button> => button !== null);
+
+  if (buttons.length) {
+    components.push({
+      type: TemplateComponentType.BUTTONS,
+      buttons,
+    });
+  }
+
   return {
     wabaId: values.wabaId || undefined,
     name: values.name.trim(),
@@ -88,6 +133,7 @@ export function TemplateForm({ onSubmit, isLoading = false, onCancel }: Template
     handleSubmit,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm<TemplateFormValues>({
     resolver: zodResolver(schema),
@@ -99,11 +145,33 @@ export function TemplateForm({ onSubmit, isLoading = false, onCancel }: Template
       bodyText: '',
       headerText: '',
       footerText: '',
+      buttons: [],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'buttons',
   });
 
   const category = watch('category');
   const wabaId = watch('wabaId');
+  const buttons = watch('buttons');
+
+  const canAddButton = fields.length < MAX_TEMPLATE_BUTTONS;
+  const hasUrlButton = buttons.some((button) => button.type === 'URL');
+  const hasPhoneButton = buttons.some((button) => button.type === 'PHONE_NUMBER');
+
+  const getDefaultButtonType = (): TemplateButtonFormType => {
+    if (!hasUrlButton) return 'URL';
+    if (!hasPhoneButton) return 'PHONE_NUMBER';
+    return 'QUICK_REPLY';
+  };
+
+  const handleAddButton = () => {
+    if (!canAddButton) return;
+    append({ ...DEFAULT_BUTTON, type: getDefaultButtonType() });
+  };
 
   const handleFormSubmit = (values: TemplateFormValues) => {
     onSubmit(toCreateTemplatePayload(values));
@@ -215,6 +283,147 @@ export function TemplateForm({ onSubmit, isLoading = false, onCancel }: Template
           <Label htmlFor="footerText">{t('footerOptional')}</Label>
           <Input id="footerText" {...register('footerText')} />
         </div>
+      </div>
+
+      <div className="flex flex-col gap-5 border-t pt-5">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="flex items-center gap-2 text-sm font-semibold">
+            <span className="h-4 w-1 rounded-full bg-gradient-brand" aria-hidden="true" />
+            {t('buttonsOptional')}
+          </h3>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleAddButton}
+            disabled={!canAddButton}
+          >
+            <PlusIcon data-icon="inline-start" className="size-4" />
+            {t('addButton')}
+          </Button>
+        </div>
+
+        <p className="text-xs text-muted-foreground">{t('buttonsHint')}</p>
+
+        {errors.buttons?.message ? (
+          <p className="text-xs text-destructive">{errors.buttons.message}</p>
+        ) : null}
+
+        {fields.length === 0 ? (
+          <p className="rounded-lg border border-dashed px-3 py-4 text-sm text-muted-foreground">
+            {t('noButtons')}
+          </p>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {fields.map((field, index) => {
+              const buttonType = buttons[index]?.type ?? 'QUICK_REPLY';
+              const buttonErrors = errors.buttons?.[index];
+
+              return (
+                <div key={field.id} className="rounded-lg border bg-muted/20 p-4">
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <p className="text-sm font-medium">{t('buttonNumber', { number: index + 1 })}</p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => remove(index)}
+                      aria-label={t('removeButton')}
+                    >
+                      <Trash2Icon className="size-4 text-destructive" />
+                    </Button>
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="flex flex-col gap-1.5">
+                      <Label>{t('buttonType')}</Label>
+                      <Select
+                        value={buttonType}
+                        onValueChange={(value) =>
+                          setValue(`buttons.${index}.type`, value as TemplateButtonFormType, {
+                            shouldValidate: true,
+                          })
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {TEMPLATE_BUTTON_TYPES.map((type) => (
+                            <SelectItem
+                              key={type}
+                              value={type}
+                              disabled={
+                                (type === 'URL' && hasUrlButton && buttonType !== 'URL') ||
+                                (type === 'PHONE_NUMBER' &&
+                                  hasPhoneButton &&
+                                  buttonType !== 'PHONE_NUMBER')
+                              }
+                            >
+                              {t(`buttonTypes.${type}`)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <Label htmlFor={`button-text-${index}`}>{t('buttonText')}</Label>
+                      <Input
+                        id={`button-text-${index}`}
+                        {...register(`buttons.${index}.text`)}
+                        aria-invalid={!!buttonErrors?.text}
+                      />
+                      {buttonErrors?.text ? (
+                        <p className="text-xs text-destructive">{buttonErrors.text.message}</p>
+                      ) : (
+                        <p className="text-xs text-muted-foreground">{t('buttonTextHint')}</p>
+                      )}
+                    </div>
+
+                    {buttonType === 'URL' ? (
+                      <div className="flex flex-col gap-1.5 sm:col-span-2">
+                        <Label htmlFor={`button-url-${index}`}>{t('buttonUrl')}</Label>
+                        <Input
+                          id={`button-url-${index}`}
+                          dir="ltr"
+                          placeholder="https://example.com/orders/{{1}}"
+                          {...register(`buttons.${index}.url`)}
+                          aria-invalid={!!buttonErrors?.url}
+                        />
+                        {buttonErrors?.url ? (
+                          <p className="text-xs text-destructive">{buttonErrors.url.message}</p>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">{t('buttonUrlHint')}</p>
+                        )}
+                      </div>
+                    ) : null}
+
+                    {buttonType === 'PHONE_NUMBER' ? (
+                      <div className="flex flex-col gap-1.5 sm:col-span-2">
+                        <Label htmlFor={`button-phone-${index}`}>{t('buttonPhone')}</Label>
+                        <Input
+                          id={`button-phone-${index}`}
+                          dir="ltr"
+                          placeholder="+966501234567"
+                          {...register(`buttons.${index}.phone_number`)}
+                          aria-invalid={!!buttonErrors?.phone_number}
+                        />
+                        {buttonErrors?.phone_number ? (
+                          <p className="text-xs text-destructive">
+                            {buttonErrors.phone_number.message}
+                          </p>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">{t('buttonPhoneHint')}</p>
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className="flex justify-end gap-2 border-t pt-4">
