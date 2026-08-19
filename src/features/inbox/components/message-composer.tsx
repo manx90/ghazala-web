@@ -24,10 +24,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
+import { FileUpload } from '@/components/forms/file-upload';
 import { TemplatePickerDialog } from '@/features/templates/components/template-picker-dialog';
 import { buildTemplateSendMeta } from '@/features/templates/utils/template-preview';
 import { useSendMessage } from '@/features/inbox/hooks/use-send-message';
 import { usePhoneNumbers } from '@/components/shared/phone-number-select';
+import { useFileUpload } from '@/hooks/use-file-upload';
 import { ConversationStatus, type Conversation } from '@/types/conversation.types';
 import type { Template } from '@/types/template.types';
 import type { SendTemplateMessagePayload } from '@/types/message.types';
@@ -36,6 +38,10 @@ const COMMON_EMOJIS = [
   '😀', '😂', '😍', '😊', '🙏', '👍', '❤️', '🔥', '✅', '🎉',
   '😢', '😡', '🤔', '👋', '💯', '⭐', '📞', '📦', '🚚', '💬',
 ];
+
+const IMAGE_ACCEPT = 'image/*';
+const DOCUMENT_ACCEPT =
+  'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,text/csv';
 
 interface MessageComposerProps {
   conversation: Conversation;
@@ -55,6 +61,26 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
   const [attachmentCaption, setAttachmentCaption] = useState('');
   const [attachmentFilename, setAttachmentFilename] = useState('');
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
+
+  const fileUpload = useFileUpload({
+    maxSizeMB: 10,
+    acceptedTypes: attachmentKind === 'image' ? IMAGE_ACCEPT : DOCUMENT_ACCEPT,
+    onSuccess: (url) => setAttachmentUrl(url),
+  });
+
+  const resetAttachmentForm = () => {
+    setAttachmentUrl('');
+    setAttachmentCaption('');
+    setAttachmentFilename('');
+    fileUpload.reset();
+  };
+
+  const handleAttachmentOpenChange = (open: boolean) => {
+    setAttachmentOpen(open);
+    if (!open) {
+      resetAttachmentForm();
+    }
+  };
 
   const { sendText, sendTemplate, sendImage, sendDocument, isSending } = useSendMessage();
   const phoneNumbersQuery = usePhoneNumbers();
@@ -109,9 +135,27 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
     });
   };
 
+  const handleFileChange = async (file: File | null) => {
+    if (!file) {
+      fileUpload.reset();
+      setAttachmentUrl('');
+      return;
+    }
+
+    setAttachmentUrl('');
+    if (attachmentKind === 'document') {
+      setAttachmentFilename(file.name);
+    }
+
+    const url = await fileUpload.upload(file);
+    if (url && attachmentKind === 'document') {
+      setAttachmentFilename((prev) => prev || file.name);
+    }
+  };
+
   const handleSendAttachment = async () => {
     const link = attachmentUrl.trim();
-    if (!link || disabled || isSending) return;
+    if (!link || disabled || isSending || fileUpload.isUploading) return;
 
     if (attachmentKind === 'image') {
       await sendImage({
@@ -129,10 +173,10 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
     }
 
     setAttachmentOpen(false);
-    setAttachmentUrl('');
-    setAttachmentCaption('');
-    setAttachmentFilename('');
+    resetAttachmentForm();
   };
+
+  const canSendAttachment = Boolean(attachmentUrl.trim()) && !fileUpload.isUploading && !isSending;
 
   if (disabled) {
     return (
@@ -207,7 +251,7 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
           variant="ghost"
           size="icon-sm"
           className="rounded-full text-muted-foreground hover:text-foreground"
-          aria-label={t('attachByUrl')}
+          aria-label={t('attachFile')}
           onClick={() => setAttachmentOpen(true)}
         >
           <PaperclipIcon />
@@ -241,20 +285,12 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
         </Button>
       </div>
 
-      <Dialog open={attachmentOpen} onOpenChange={setAttachmentOpen}>
+      <Dialog open={attachmentOpen} onOpenChange={handleAttachmentOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{t('attachDialog.title')}</DialogTitle>
-            <DialogDescription>
-              {t('attachDialog.description', { endpoint: 'POST /media/upload' })}
-            </DialogDescription>
+            <DialogDescription>{t('attachDialog.description')}</DialogDescription>
           </DialogHeader>
-
-          <Alert>
-            <AlertDescription className="text-xs">
-              {t('attachDialog.urlMustBePublic')}
-            </AlertDescription>
-          </Alert>
 
           <div className="space-y-3">
             <div className="flex gap-2">
@@ -262,7 +298,10 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
                 type="button"
                 variant={attachmentKind === 'image' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setAttachmentKind('image')}
+                onClick={() => {
+                  setAttachmentKind('image');
+                  resetAttachmentForm();
+                }}
               >
                 <ImageIcon />
                 {t('attachDialog.image')}
@@ -271,12 +310,62 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
                 type="button"
                 variant={attachmentKind === 'document' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setAttachmentKind('document')}
+                onClick={() => {
+                  setAttachmentKind('document');
+                  resetAttachmentForm();
+                }}
               >
                 <FileIcon />
                 {t('attachDialog.document')}
               </Button>
             </div>
+
+            <div className="space-y-1.5">
+              <Label>{t('attachDialog.uploadFile')}</Label>
+              <FileUpload
+                value={fileUpload.file}
+                onChange={(file) => void handleFileChange(file)}
+                accept={attachmentKind === 'image' ? IMAGE_ACCEPT : DOCUMENT_ACCEPT}
+                maxSizeMB={10}
+                label={t('attachDialog.chooseFile')}
+              />
+              {fileUpload.isUploading && fileUpload.progress && (
+                <div className="space-y-1">
+                  <div className="h-2 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all duration-200"
+                      style={{ width: `${fileUpload.progress.percentage}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {t('attachDialog.uploading', { progress: fileUpload.progress.percentage })}
+                  </p>
+                </div>
+              )}
+              {fileUpload.success && attachmentUrl && (
+                <p className="text-xs text-emerald-600">{t('attachDialog.uploadSuccess')}</p>
+              )}
+              {fileUpload.error && (
+                <p className="text-sm text-destructive">{fileUpload.error.message}</p>
+              )}
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  {t('attachDialog.orManualUrl')}
+                </span>
+              </div>
+            </div>
+
+            <Alert>
+              <AlertDescription className="text-xs">
+                {t('attachDialog.urlMustBePublic')}
+              </AlertDescription>
+            </Alert>
 
             <div className="space-y-1.5">
               <Label htmlFor="attachment-url">{t('attachDialog.fileUrl')}</Label>
@@ -320,10 +409,14 @@ export function MessageComposer({ conversation, disabled }: MessageComposerProps
             <Button
               type="button"
               variant="gradient"
-              disabled={!attachmentUrl.trim() || isSending}
+              disabled={!canSendAttachment}
               onClick={() => void handleSendAttachment()}
             >
-              {isSending ? <Loader2Icon className="animate-spin" /> : t('send')}
+              {isSending || fileUpload.isUploading ? (
+                <Loader2Icon className="animate-spin" />
+              ) : (
+                t('send')
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

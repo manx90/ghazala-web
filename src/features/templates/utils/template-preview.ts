@@ -1,7 +1,8 @@
-import { TemplateComponentType, type Template, type TemplateComponent } from '@/types/template.types';
+import { TemplateComponentType, TemplateHeaderFormat, type Template, type TemplateComponent } from '@/types/template.types';
 
 export interface TemplateMessagePreview {
   header?: string;
+  headerFormat?: string;
   body?: string;
   footer?: string;
   buttons?: string[];
@@ -13,8 +14,13 @@ export function extractTemplatePreview(components: TemplateComponent[]): Templat
   for (const component of components) {
     const type = String(component.type).toUpperCase();
 
-    if (type === TemplateComponentType.HEADER && component.text) {
-      preview.header = component.text;
+    if (type === TemplateComponentType.HEADER) {
+      const format = String(component.format ?? '').toUpperCase();
+      if (format === TemplateHeaderFormat.IMAGE) {
+        preview.headerFormat = TemplateHeaderFormat.IMAGE;
+      } else if (component.text) {
+        preview.header = component.text;
+      }
     }
 
     if (type === TemplateComponentType.BODY && component.text) {

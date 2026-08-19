@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2Icon, PlusIcon, Trash2Icon } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
@@ -17,16 +17,20 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { ImageUpload } from '@/components/forms/file-upload';
 import { queryKeys } from '@/config/query-keys';
+import { templatesApi } from '@/features/templates/api/templates.api';
 import {
   createTemplateFormSchema,
   TEMPLATE_BUTTON_TYPES,
+  TEMPLATE_HEADER_TYPES,
   type TemplateButtonFormType,
   type TemplateFormValues,
+  type TemplateHeaderFormType,
 } from '@/features/templates/schemas/template.schemas';
 import { enrichTemplateComponents } from '@/features/templates/utils/template-meta-payload';
 import { whatsappApi } from '@/features/whatsapp/api/whatsapp.api';
-import { TemplateCategory, TemplateComponentType } from '@/types/template.types';
+import { TemplateCategory, TemplateComponentType, TemplateHeaderFormat } from '@/types/template.types';
 import type { CreateTemplatePayload } from '@/types/template.types';
 
 const CATEGORY_VALUES = [
@@ -54,11 +58,19 @@ export function toCreateTemplatePayload(values: TemplateFormValues): CreateTempl
   const language = values.language.trim();
   const components = [];
 
-  if (values.headerText?.trim()) {
+  if (values.headerType === 'TEXT' && values.headerText?.trim()) {
     components.push({
       type: TemplateComponentType.HEADER,
-      format: 'TEXT',
+      format: TemplateHeaderFormat.TEXT,
       text: values.headerText.trim(),
+    });
+  }
+
+  if (values.headerType === 'IMAGE' && values.headerHandle?.trim()) {
+    components.push({
+      type: TemplateComponentType.HEADER,
+      format: TemplateHeaderFormat.IMAGE,
+      example: { header_handle: [values.headerHandle.trim()] },
     });
   }
 
@@ -122,6 +134,10 @@ export function TemplateForm({ onSubmit, isLoading = false, onCancel }: Template
   const tCommon = useTranslations('common');
   const tTemplates = useTranslations('templates');
   const schema = useMemo(() => createTemplateFormSchema(tTemplates), [tTemplates]);
+  const [headerImageFile, setHeaderImageFile] = useState<File | null>(null);
+  const [headerPreviewUrl, setHeaderPreviewUrl] = useState<string | null>(null);
+  const [isUploadingHeader, setIsUploadingHeader] = useState(false);
+  const [headerUploadError, setHeaderUploadError] = useState<string | null>(null);
 
   const { data: wabaData } = useQuery({
     queryKey: queryKeys.whatsapp.businessAccounts,
@@ -143,7 +159,10 @@ export function TemplateForm({ onSubmit, isLoading = false, onCancel }: Template
       category: TemplateCategory.UTILITY,
       language: 'ar',
       bodyText: '',
+      headerType: 'none',
       headerText: '',
+      headerHandle: '',
+      headerImageUrl: '',
       footerText: '',
       buttons: [],
     },
@@ -157,6 +176,9 @@ export function TemplateForm({ onSubmit, isLoading = false, onCancel }: Template
   const category = watch('category');
   const wabaId = watch('wabaId');
   const buttons = watch('buttons');
+  const headerType = watch('headerType');
+  const headerHandle = watch('headerHandle');
+  const headerImageUrl = watch('headerImageUrl');
 
   const canAddButton = fields.length < MAX_TEMPLATE_BUTTONS;
   const hasUrlButton = buttons.some((button) => button.type === 'URL');
@@ -171,6 +193,56 @@ export function TemplateForm({ onSubmit, isLoading = false, onCancel }: Template
   const handleAddButton = () => {
     if (!canAddButton) return;
     append({ ...DEFAULT_BUTTON, type: getDefaultButtonType() });
+  };
+
+  const handleHeaderTypeChange = (value: TemplateHeaderFormType) => {
+    setValue('headerType', value, { shouldValidate: true });
+    setValue('headerText', '');
+    setValue('headerHandle', '');
+    setValue('headerImageUrl', '');
+    setHeaderImageFile(null);
+    setHeaderPreviewUrl(null);
+    setHeaderUploadError(null);
+  };
+
+  const uploadHeaderSample = async (file?: File | null, url?: string) => {
+    setHeaderUploadError(null);
+    setIsUploadingHeader(true);
+
+    try {
+      const result = await templatesApi.uploadHeaderMedia({
+        format: 'IMAGE',
+        file: file ?? undefined,
+        url: url?.trim() || undefined,
+      });
+      setValue('headerHandle', result.handle, { shouldValidate: true });
+      if (url?.trim()) {
+        setHeaderPreviewUrl(url.trim());
+      }
+    } catch {
+      setHeaderUploadError(t('headerImageUploadFailed'));
+      setValue('headerHandle', '');
+    } finally {
+      setIsUploadingHeader(false);
+    }
+  };
+
+  const handleHeaderImageFileChange = async (file: File | null) => {
+    setHeaderImageFile(file);
+    setValue('headerImageUrl', '');
+    setHeaderPreviewUrl(null);
+    setValue('headerHandle', '');
+
+    if (file) {
+      await uploadHeaderSample(file);
+    }
+  };
+
+  const handleHeaderImageUrlUpload = async () => {
+    const url = headerImageUrl?.trim();
+    if (!url) return;
+    setHeaderImageFile(null);
+    await uploadHeaderSample(null, url);
   };
 
   const handleFormSubmit = (values: TemplateFormValues) => {
@@ -262,12 +334,80 @@ export function TemplateForm({ onSubmit, isLoading = false, onCancel }: Template
         </h3>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="headerText">{t('headerOptional')}</Label>
-          <Input id="headerText" {...register('headerText')} aria-invalid={!!errors.headerText} />
-          {errors.headerText ? (
-            <p className="text-xs text-destructive">{errors.headerText.message}</p>
-          ) : null}
+          <Label>{t('headerType')}</Label>
+          <Select value={headerType} onValueChange={(value) => handleHeaderTypeChange(value as TemplateHeaderFormType)}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {TEMPLATE_HEADER_TYPES.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {t(`headerTypes.${type}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">{t('headerTypeHint')}</p>
         </div>
+
+        {headerType === 'TEXT' ? (
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="headerText">{t('headerText')}</Label>
+            <Input id="headerText" {...register('headerText')} aria-invalid={!!errors.headerText} />
+            {errors.headerText ? (
+              <p className="text-xs text-destructive">{errors.headerText.message}</p>
+            ) : null}
+          </div>
+        ) : null}
+
+        {headerType === 'IMAGE' ? (
+          <div className="flex flex-col gap-3 rounded-lg border bg-muted/20 p-4">
+            <div>
+              <Label>{t('headerImageFile')}</Label>
+              <p className="mb-2 text-xs text-muted-foreground">{t('headerImageHint')}</p>
+              <ImageUpload
+                value={headerImageFile}
+                onChange={handleHeaderImageFileChange}
+                preview={headerPreviewUrl}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="headerImageUrl">{t('headerImageUrl')}</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="headerImageUrl"
+                  dir="ltr"
+                  placeholder="https://example.com/sample.jpg"
+                  {...register('headerImageUrl')}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleHeaderImageUrlUpload}
+                  disabled={isUploadingHeader || !headerImageUrl?.trim()}
+                >
+                  {isUploadingHeader ? (
+                    <Loader2Icon className="size-4 animate-spin" />
+                  ) : (
+                    t('uploadSample')
+                  )}
+                </Button>
+              </div>
+            </div>
+            {isUploadingHeader ? (
+              <p className="text-xs text-muted-foreground">{t('headerImageUploading')}</p>
+            ) : null}
+            {headerHandle ? (
+              <p className="text-xs text-emerald-600">{t('headerImageReady')}</p>
+            ) : null}
+            {headerUploadError ? (
+              <p className="text-xs text-destructive">{headerUploadError}</p>
+            ) : null}
+            {errors.headerHandle ? (
+              <p className="text-xs text-destructive">{errors.headerHandle.message}</p>
+            ) : null}
+          </div>
+        ) : null}
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="bodyText">{t('body')}</Label>
@@ -432,7 +572,7 @@ export function TemplateForm({ onSubmit, isLoading = false, onCancel }: Template
             {tCommon('cancel')}
           </Button>
         )}
-        <Button type="submit" variant="gradient" disabled={isLoading}>
+        <Button type="submit" variant="gradient" disabled={isLoading || isUploadingHeader}>
           {isLoading && <Loader2Icon data-icon="inline-start" className="animate-spin" />}
           {t('createTemplate')}
         </Button>

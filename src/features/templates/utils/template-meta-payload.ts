@@ -1,5 +1,11 @@
-import { TemplateComponentType, type TemplateComponent } from '@/types/template.types';
+import { TemplateComponentType, TemplateHeaderFormat, type TemplateComponent } from '@/types/template.types';
 import { countTemplateVariablesInText } from '@/features/templates/utils/template-variables';
+
+const MEDIA_HEADER_FORMATS = new Set([
+  TemplateHeaderFormat.IMAGE,
+  TemplateHeaderFormat.VIDEO,
+  TemplateHeaderFormat.DOCUMENT,
+]);
 
 const AR_SAMPLES = ['أحمد', '12345', 'Rabbit', 'خدمة العملاء'];
 const EN_SAMPLES = ['John', '12345', 'Rabbit', 'Support'];
@@ -16,6 +22,17 @@ export function textStartsWithVariable(text: string): boolean {
 export function textEndsWithVariable(text: string): boolean {
   const normalized = text.trim().replace(/[،,.!?…\s]+$/u, '');
   return /\{\{\d+\}\}$/.test(normalized);
+}
+
+function buildHeaderMediaExample(
+  example?: Record<string, unknown>,
+): Record<string, unknown> | undefined {
+  const handles = example?.header_handle;
+  if (!Array.isArray(handles) || !handles.length || typeof handles[0] !== 'string') {
+    return undefined;
+  }
+
+  return { header_handle: [handles[0]] };
 }
 
 function buildHeaderExample(text: string, language?: string): Record<string, unknown> | undefined {
@@ -46,7 +63,13 @@ export function enrichTemplateComponents(
 ): TemplateComponent[] {
   return components.map((component) => {
     const type = String(component.type).toUpperCase();
+    const format = String(component.format ?? '').toUpperCase();
     const text = component.text ?? '';
+
+    if (type === TemplateComponentType.HEADER && MEDIA_HEADER_FORMATS.has(format as TemplateHeaderFormat)) {
+      const example = buildHeaderMediaExample(component.example);
+      return example ? { ...component, example } : component;
+    }
 
     if (component.example) {
       return component;

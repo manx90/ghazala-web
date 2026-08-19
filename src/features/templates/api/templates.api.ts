@@ -15,6 +15,7 @@ import type {
 } from '@/types/template.types';
 import { toQueryString } from '@/utils/query';
 import { sanitizeCreateFromLibraryPayload } from '@/features/templates/utils/library-template';
+import { apiRequest } from '@/services/api/client';
 
 const BASE = '/templates';
 const LIBRARY_BASE = '/template-library';
@@ -67,5 +68,28 @@ export const templatesApi = {
 
   resubmit(id: string): Promise<Template> {
     return apiClient.post<Template>(`${BASE}/${id}/resubmit`);
+  },
+
+  uploadHeaderMedia(
+    payload: { format: 'IMAGE' | 'VIDEO' | 'DOCUMENT'; file?: File; url?: string },
+  ): Promise<{ handle: string }> {
+    if (payload.file) {
+      const formData = new FormData();
+      formData.append('file', payload.file);
+      formData.append('format', payload.format);
+      return apiRequest<{ handle: string }>({
+        method: 'POST',
+        url: `${BASE}/header-media`,
+        data: formData,
+        timeout: 60_000,
+      });
+    }
+
+    return apiClient.post<{ handle: string }>(
+      `${BASE}/header-media`,
+      { format: payload.format, url: payload.url },
+      undefined,
+      { timeout: 60_000 },
+    );
   },
 };

@@ -40,9 +40,10 @@ export function TemplateVariableFields({ template, values, onChange }: TemplateV
                 [field.key]: event.target.value,
               })
             }
-            placeholder={`{{${field.paramNumber}}}`}
+            placeholder={field.fieldType === 'image' ? 'https://...' : `{{${field.paramNumber}}}`}
             dir="ltr"
-            className="font-mono"
+            className={field.fieldType === 'image' ? '' : 'font-mono'}
+            type={field.fieldType === 'image' ? 'url' : 'text'}
           />
         </div>
       ))}

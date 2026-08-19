@@ -1,4 +1,4 @@
-import { axiosInstance } from '@/services/api/client';
+import { apiRequest } from '@/services/api/client';
 import { parseApiError } from '@/utils/error';
 import { ApiError } from '@/types/api.types';
 
@@ -32,8 +32,10 @@ export async function uploadFile(options: UploadFileOptions): Promise<UploadFile
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
-      const response = await axiosInstance.post<UploadFileResult>(UPLOAD_ENDPOINT, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      return await apiRequest<UploadFileResult>({
+        method: 'POST',
+        url: UPLOAD_ENDPOINT,
+        data: formData,
         signal,
         onUploadProgress: (event) => {
           if (event.total && onProgress) {
@@ -41,7 +43,6 @@ export async function uploadFile(options: UploadFileOptions): Promise<UploadFile
           }
         },
       });
-      return response.data;
     } catch (error) {
       lastError = error;
       const parsed = parseApiError(error);

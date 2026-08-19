@@ -7,6 +7,9 @@ import { TemplateCategory } from '@/types/template.types';
 
 type Translate = (key: string) => string;
 
+export const TEMPLATE_HEADER_TYPES = ['none', 'TEXT', 'IMAGE'] as const;
+export type TemplateHeaderFormType = (typeof TEMPLATE_HEADER_TYPES)[number];
+
 export const TEMPLATE_BUTTON_TYPES = ['QUICK_REPLY', 'URL', 'PHONE_NUMBER'] as const;
 export type TemplateButtonFormType = (typeof TEMPLATE_BUTTON_TYPES)[number];
 
@@ -30,15 +33,19 @@ export function createTemplateFormSchema(t: Translate) {
       category: z.nativeEnum(TemplateCategory, { message: t('validation.categoryRequired') }),
       language: z.string().min(2, t('validation.languageRequired')),
       bodyText: z.string().min(1, t('validation.bodyRequired')),
+      headerType: z.enum(TEMPLATE_HEADER_TYPES),
       headerText: z.string().optional(),
+      headerHandle: z.string().optional(),
+      headerImageUrl: z.string().optional(),
       footerText: z.string().optional(),
       buttons: z.array(buttonSchema).max(MAX_TEMPLATE_BUTTONS, t('validation.buttonsMax')),
     })
     .superRefine((values, ctx) => {
+      const headerType = values.headerType;
       const header = values.headerText?.trim();
       const body = values.bodyText.trim();
 
-      if (header) {
+      if (headerType === 'TEXT' && header) {
         if (textStartsWithVariable(header)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
@@ -52,6 +59,24 @@ export function createTemplateFormSchema(t: Translate) {
             code: z.ZodIssueCode.custom,
             message: t('validation.variableAtEndHeader'),
             path: ['headerText'],
+          });
+        }
+      }
+
+      if (headerType === 'TEXT' && !header) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t('validation.headerTextRequired'),
+          path: ['headerText'],
+        });
+      }
+
+      if (headerType === 'IMAGE') {
+        if (!values.headerHandle?.trim()) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t('validation.headerImageRequired'),
+            path: ['headerHandle'],
           });
         }
       }

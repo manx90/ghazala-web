@@ -4,6 +4,7 @@ import {
   ActivityIcon,
   CheckCheckIcon,
   FileTextIcon,
+  ImageIcon,
   LanguagesIcon,
   MessageSquareIcon,
   StarIcon,
@@ -12,7 +13,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatusBadge } from '@/components/shared/status-badge';
-import { TemplateCategory, TemplateComponentType } from '@/types/template.types';
+import { TemplateCategory, TemplateComponentType, TemplateHeaderFormat } from '@/types/template.types';
 import type { Template } from '@/types/template.types';
 
 interface TemplatePreviewProps {
@@ -24,6 +25,8 @@ export function TemplatePreview({ template }: TemplatePreviewProps) {
   const tCategories = useTranslations('templates.categories');
 
   const header = template.components.find((c) => c.type === TemplateComponentType.HEADER);
+  const headerFormat = String(header?.format ?? '').toUpperCase();
+  const isImageHeader = headerFormat === TemplateHeaderFormat.IMAGE;
   const body = template.components.find((c) => c.type === TemplateComponentType.BODY);
   const footer = template.components.find((c) => c.type === TemplateComponentType.FOOTER);
   const buttons = template.components.find((c) => c.type === TemplateComponentType.BUTTONS);
@@ -47,9 +50,17 @@ export function TemplatePreview({ template }: TemplatePreviewProps) {
             <div className="flex justify-start">
               <div className="max-w-[85%] overflow-hidden rounded-2xl rounded-ss-sm bg-card shadow-2xs ring-1 ring-foreground/5">
                 <div className="p-3">
-                  {header?.text && (
+                  {isImageHeader ? (
+                    <div className="mb-2 flex aspect-video items-center justify-center rounded-md bg-muted">
+                      <div className="flex flex-col items-center gap-1 text-muted-foreground">
+                        <ImageIcon className="size-8" aria-hidden="true" />
+                        <span className="text-xs">{t('imageHeader')}</span>
+                      </div>
+                    </div>
+                  ) : null}
+                  {header?.text && !isImageHeader ? (
                     <p className="mb-2 text-sm font-semibold">{header.text}</p>
-                  )}
+                  ) : null}
                   {body?.text && (
                     <p className="whitespace-pre-wrap text-sm leading-relaxed">{body.text}</p>
                   )}

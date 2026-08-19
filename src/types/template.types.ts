@@ -20,6 +20,13 @@ export enum TemplateComponentType {
   BUTTONS = 'BUTTONS',
 }
 
+export enum TemplateHeaderFormat {
+  TEXT = 'TEXT',
+  IMAGE = 'IMAGE',
+  VIDEO = 'VIDEO',
+  DOCUMENT = 'DOCUMENT',
+}
+
 export interface TemplateComponent {
   type: TemplateComponentType | string;
   format?: string;

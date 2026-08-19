@@ -119,6 +119,12 @@ function attachRequestMetadata(
   };
 
   config.headers = AxiosHeaders.from(config.headers);
+
+  if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+    // axios يحوّل FormData إلى JSON إذا بقي Content-Type: application/json
+    config.headers.set('Content-Type', false as unknown as string);
+  }
+
   config.headers.set(REQUEST_ID_HEADER, generateRequestId());
 
   if (!options.skipAuth) {

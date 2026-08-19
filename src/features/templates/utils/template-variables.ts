@@ -1,10 +1,11 @@
-import { TemplateCategory, TemplateComponentType, type Template } from '@/types/template.types';
+import { TemplateCategory, TemplateComponentType, TemplateHeaderFormat, type Template } from '@/types/template.types';
 import type { SendTemplateMessagePayload } from '@/types/message.types';
 
 export type TemplateVariableLabelKey =
   | 'otpCode'
   | 'headerSingle'
   | 'headerNumbered'
+  | 'headerImage'
   | 'buttonSingle'
   | 'buttonNumbered'
   | 'bodySingle'
@@ -15,6 +16,7 @@ export interface TemplateVariableField {
   labelKey: TemplateVariableLabelKey;
   paramNumber: number;
   componentType: 'header' | 'body' | 'button';
+  fieldType?: 'text' | 'image';
   buttonIndex?: number;
 }
 
@@ -57,11 +59,22 @@ export function getTemplateVariableFields(template: Template): TemplateVariableF
 
   for (const component of template.components) {
     const type = String(component.type).toUpperCase();
+    const format = String(component.format ?? '').toUpperCase();
+
+    if (type === TemplateComponentType.HEADER && format === TemplateHeaderFormat.IMAGE) {
+      fields.push({
+        key: 'header-image',
+        labelKey: 'headerImage',
+        paramNumber: 1,
+        componentType: 'header',
+        fieldType: 'image',
+      });
+    }
 
     if (
       type === TemplateComponentType.HEADER &&
       component.text &&
-      (!component.format || String(component.format).toUpperCase() === 'TEXT')
+      (!format || format === TemplateHeaderFormat.TEXT)
     ) {
       const count = countTemplateVariablesInText(component.text);
       for (let paramNumber = 1; paramNumber <= count; paramNumber += 1) {
@@ -125,11 +138,22 @@ export function buildTemplateSendComponents(
 
   for (const component of template.components) {
     const type = String(component.type).toUpperCase();
+    const format = String(component.format ?? '').toUpperCase();
+
+    if (type === TemplateComponentType.HEADER && format === TemplateHeaderFormat.IMAGE) {
+      const link = values['header-image']?.trim();
+      if (link) {
+        components.push({
+          type: 'header',
+          parameters: [{ type: 'image', image: { link } }],
+        });
+      }
+    }
 
     if (
       type === TemplateComponentType.HEADER &&
       component.text &&
-      (!component.format || String(component.format).toUpperCase() === 'TEXT')
+      (!format || format === TemplateHeaderFormat.TEXT)
     ) {
       const count = countTemplateVariablesInText(component.text);
       if (count > 0) {

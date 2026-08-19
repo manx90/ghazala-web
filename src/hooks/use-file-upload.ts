@@ -89,8 +89,19 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
     [validateFile, options],
   );
 
-  const upload = useCallback(async (): Promise<string | null> => {
-    if (!state.file) return null;
+  const upload = useCallback(async (fileOverride?: File): Promise<string | null> => {
+    const file = fileOverride ?? state.file;
+    if (!file) return null;
+
+    if (fileOverride) {
+      const validationError = validateFile(fileOverride);
+      if (validationError) {
+        setState((prev) => ({ ...prev, file: fileOverride, error: validationError, success: false }));
+        options.onError?.(validationError);
+        return null;
+      }
+      setState((prev) => ({ ...prev, file: fileOverride, error: null, success: false }));
+    }
 
     abortRef.current?.abort();
     const controller = new AbortController();
@@ -100,20 +111,20 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
       ...prev,
       isUploading: true,
       error: null,
-      progress: { loaded: 0, total: state.file!.size, percentage: 0 },
+      progress: { loaded: 0, total: file.size, percentage: 0 },
     }));
 
     try {
       const result = await uploadFile({
-        file: state.file,
+        file,
         signal: controller.signal,
         maxRetries,
         onProgress: (percentage) => {
           setState((prev) => ({
             ...prev,
             progress: {
-              loaded: Math.round((state.file!.size * percentage) / 100),
-              total: state.file!.size,
+              loaded: Math.round((file.size * percentage) / 100),
+              total: file.size,
               percentage,
             },
           }));
@@ -137,7 +148,7 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
     } finally {
       abortRef.current = null;
     }
-  }, [state.file, maxRetries, options]);
+  }, [state.file, maxRetries, options, validateFile]);
 
   const uploadWithPreview = useCallback(async (): Promise<string | null> => {
     const file = state.file;

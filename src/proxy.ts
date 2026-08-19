@@ -41,7 +41,7 @@ function isAdminRoute(pathname: string): boolean {
   return pathname.startsWith(ADMIN_ROUTE_PREFIX);
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const intlResponse = handleI18nRouting(request);
   const { pathname } = request.nextUrl;
   const pathnameWithoutLocale = stripLocalePrefix(pathname);
